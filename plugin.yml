@@ -1,0 +1,34 @@
+name: AutoMessager
+main: hu.montlikadani.AutoMessager.Main
+version: 1.0
+author: montlikadani
+softdepend: [PlaceholderAPI]
+# DO NOT EDIT ANYTHING ABOVE THIS LINE!
+
+commands:
+    automessager:
+        aliases: [am]
+        description: The main command for AutoMessager.
+        usage: <command>
+        
+permissions:
+  # DO NOT EDIT EXISTING PLUGIN NAMES!
+  # THIS WILL BREAK THE PLUGIN!
+  # You can use only the 'default' function.
+  # Use: default: true - Everyone can use it.
+  # Default: false - Can only be used if enabled.
+  # Default: op - Only op ranks can use it.
+  # These are not worth rewritten.
+    automessager.reload:
+        description: Allows a player to the reload all configs.
+        default: op
+    automessager.help:
+        description: Help commands.
+    automessager.plugindisable:
+        description: Plugin disable command.
+        default: op
+    automessager.plugininfo:
+        description: Main plugin info.
+    automessager.seemsg:
+        description: Permission to see the messages broadcasted by Automessager.
+        default: true

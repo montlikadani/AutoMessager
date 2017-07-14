@@ -1,0 +1,104 @@
+#=================================OOO====================================#
+#                       AutoMessager Configuration File                  #
+#=================================OOO====================================#
+# config.yml file. Plugin version: 1.0                                   #
+# Author, created by: montlikadani                                       #
+#=================================OOO====================================#
+# [Default configurations]                                               #
+# https://dev.bukkit.org/projects/automessager/pages/configyml           #
+#                                                                        #
+# [Placeholders]                                                         #
+# https://dev.bukkit.org/projects/automessager/pages/placeholders        #
+#                                                                        #
+# [Tips]                                                                 #
+# - Use color coding '&' character, on this page:                        #
+# http://minecraft.gamepedia.com/Formatting_codes                        #
+# - In case of an error, write here:                                     #
+# https://dev.bukkit.org/projects/automessager/issues                    #
+#=================================OOO====================================#
+
+# If these number mark (#) are in the way, you can safely remove it.
+
+#=========================================#
+#             Plugin Settings             #
+#=========================================#
+# The AutoMessager plugin is disabled (false) or enabled (true).
+# As this function is set to false, the plugin will shut itself down and no commands (which the plugin will detect) will be detected.
+# To reload, write to true and refresh the server /reload.
+enabled: true
+
+# Auto plugin refresh.
+auto-refresh-enable: true
+# In minutes!
+auto-refresh-time: 10
+
+# Log in to the console with plugin messages. (Error, warning, info)
+logconsole: true
+
+# Logging to file messages.
+log-to-file: true
+
+# Enable to use PlaceholderAPI.
+placeholderapi: false
+
+# Plugin enable/disable messages in console.
+# Use %prefix%, %newline% placeholder.
+# >> NO supported the PlaceholderAPI! <<
+plugin-enable-message: true
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.0&a!'
+plugin-disable-message: true
+plugin-disable: '%prefix%&c The plugin successfully disabled!'
+
+# The default is allowed to see the plugin information.
+main-info-amcommand-on-default: false
+
+# Command waiting period.
+# If you set it to 0 you will not have to wait.
+# Measured in seconds. 1 seconds - 20 ticks.
+# (This feature is known that there is no excessive lagg.)
+# Use %seconds% (This placeholder is valid only here), %newline%, %prefix% placeholder.
+# >> NO supported the PlaceholderAPI! <<
+command-wait-time: 3
+command-wait: '%prefix%&c Please wait&7 %seconds%&c seconds to use again!'
+
+# Unknown-command - If more than one word/letter you write to it.
+# Example: /am reload something...
+# Use %newline%, %command%, %prefix% placeholder.
+# %command% - When you type the command (example: /automessager), it writes the command to it.
+# This feature is NOT enter into the unknown command Minecraft, it's just your own.
+# >> NO supported the PlaceholderAPI! <<
+unknown-command-enable: true
+unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
+
+#=========================================#
+#             AutoMessage Settings        #
+#=========================================#
+# Enables broadcasting.
+enable: true
+
+# The file that will contain the messages to broadcast.
+message-file: 'messages.txt'
+
+# The minimal amount of players that has to be online for a message to broadcast. set to 0 to disable this feature.
+min-players: 1
+
+# Time is the time between each message.
+# TIME SHOULD BE IN SECONDS!
+time: 60
+
+# Should messages be sent to console as well?
+broadcast-to-console: false
+
+# Want to broadcast the messages in order or randomly?
+random: false
+
+# Sound playback when broadcasting.
+# All sounds:
+# 1.9.x, 1.10.x, 1.11.x, 1.12.x: https://hub.spigotmc.org/javadocs/spigot/
+# 1.8.x: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
+# 1.7.x: https://jd.bukkit.org/org/bukkit/Sound.html
+sound:
+  enable: false
+  sound: ORB_PICKUP
+  volume: 10
+  pitch: 1
