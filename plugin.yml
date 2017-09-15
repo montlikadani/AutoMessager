@@ -1,7 +1,8 @@
 name: AutoMessager
 main: hu.montlikadani.AutoMessager.Main
-version: 1.0
+version: 1.1
 author: montlikadani
+description: Automatic messages always come in handy! :)
 softdepend: [PlaceholderAPI]
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 
@@ -19,16 +20,6 @@ permissions:
   # Default: false - Can only be used if enabled.
   # Default: op - Only op ranks can use it.
   # These are not worth rewritten.
-    automessager.reload:
-        description: Allows a player to the reload all configs.
-        default: op
-    automessager.help:
-        description: Help commands.
-    automessager.plugindisable:
-        description: Plugin disable command.
-        default: op
-    automessager.plugininfo:
-        description: Main plugin info.
     automessager.seemsg:
         description: Permission to see the messages broadcasted by Automessager.
         default: true
