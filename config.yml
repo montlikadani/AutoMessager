@@ -1,23 +1,67 @@
 #=================================OOO====================================#
 #                       AutoMessager Configuration File                  #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.0                                   #
+# config.yml file. Plugin version: 1.1                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
 # https://dev.bukkit.org/projects/automessager/pages/configyml           #
 #                                                                        #
 # [Placeholders]                                                         #
+# https://www.spigotmc.org/wiki/placeholderapi-placeholders/             #
+#                                                                        #
+# [Other placeholders]                                                   #
 # https://dev.bukkit.org/projects/automessager/pages/placeholders        #
 #                                                                        #
 # [Tips]                                                                 #
 # - Use color coding '&' character, on this page:                        #
 # http://minecraft.gamepedia.com/Formatting_codes                        #
 # - In case of an error, write here:                                     #
-# https://dev.bukkit.org/projects/automessager/issues                    #
+# https://github.com/montlikadani/AutoMessager/issues                    #
 #=================================OOO====================================#
 
 # If these number mark (#) are in the way, you can safely remove it.
+
+#=========================================#
+#             AutoMessage Settings        #
+#=========================================#
+# Enables broadcasting.
+enable-broadcast: true
+
+# Enable to use PlaceholderAPI.
+placeholderapi: false
+
+# The messages.txt (you have entered here) can use special characters here:
+# https://dev.bukkit.org/projects/automessager/pages/symbols
+# The file that will contain the messages to broadcast.
+message-file: 'messages.txt'
+
+# The minimal amount of players that has to be online for a message to broadcast.
+# Set to 0 to disable this feature.
+min-players: 1
+
+# The %title% site filler. You can enter this in the messages.txt file.
+# Use %newline% placeholder.
+title: '&c[&aAuto&9Messager&c] '
+
+# Time is the time between each message.
+# TIME SHOULD BE IN SECONDS!
+time: 60
+
+# Want to broadcast the messages in order or randomly?
+random: false
+
+# Sound playback when broadcasting.
+# All sounds:
+# 1.9.x, 1.10.x, 1.11.x, 1.12.x: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+# 1.8.x: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
+# 1.7.x: https://jd.bukkit.org/org/bukkit/Sound.html
+sound:
+  enable: false
+  # Example: ENTITY_EXPERIENCE_ORB_PICKUP - 1.9.x - ORB_PICKUP - 1.8
+  sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  volume: 10
+  pitch: 1
 
 #=========================================#
 #             Plugin Settings             #
@@ -27,25 +71,28 @@
 # To reload, write to true and refresh the server /reload.
 enabled: true
 
+# bStats Metrics.
+metrics: true
+
+# Check for updates.
+check-update: true
+
 # Auto plugin refresh.
-auto-refresh-enable: true
+auto-refresh-enable: false
 # In minutes!
 auto-refresh-time: 10
 
-# Log in to the console with plugin messages. (Error, warning, info)
+# Log in to the console with plugin messages.
 logconsole: true
 
-# Logging to file messages.
+# Logging to file plugin messages.
 log-to-file: true
-
-# Enable to use PlaceholderAPI.
-placeholderapi: false
 
 # Plugin enable/disable messages in console.
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.0&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.1&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
@@ -69,36 +116,3 @@ command-wait: '%prefix%&c Please wait&7 %seconds%&c seconds to use again!'
 # >> NO supported the PlaceholderAPI! <<
 unknown-command-enable: true
 unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
-
-#=========================================#
-#             AutoMessage Settings        #
-#=========================================#
-# Enables broadcasting.
-enable: true
-
-# The file that will contain the messages to broadcast.
-message-file: 'messages.txt'
-
-# The minimal amount of players that has to be online for a message to broadcast. set to 0 to disable this feature.
-min-players: 1
-
-# Time is the time between each message.
-# TIME SHOULD BE IN SECONDS!
-time: 60
-
-# Should messages be sent to console as well?
-broadcast-to-console: false
-
-# Want to broadcast the messages in order or randomly?
-random: false
-
-# Sound playback when broadcasting.
-# All sounds:
-# 1.9.x, 1.10.x, 1.11.x, 1.12.x: https://hub.spigotmc.org/javadocs/spigot/
-# 1.8.x: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
-# 1.7.x: https://jd.bukkit.org/org/bukkit/Sound.html
-sound:
-  enable: false
-  sound: ORB_PICKUP
-  volume: 10
-  pitch: 1
