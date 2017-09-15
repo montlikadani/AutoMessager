@@ -3,22 +3,31 @@
 #=========================================#
 # Default language: 'EN' - English.
 # That is the apostrophe ('') inside them you can feel free to edit.
-# >> NO supported the PlaceholderAPI! <<
-prefix: '&6&l[&4&lAuto&9&lMessager&6&l]&7&l »'
+# >> These features are NOT supported by PlaceholderAPI! <<
+prefix: '&6&l[&4&lAuto&9&lMessager&6&l]&7&l Â»'
 
-# Use %prefix%, %newline% placeholder.
-no-permission: '&cYou don''t have permission for that!'
+# Use %prefix%, %newline%, %perm% placeholder.
+no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
 reload-config: '%prefix%&a The plugin successfully reloaded!'
 
-# This feature lists all the chat panel help.
-# >> NO supported the PlaceholderAPI! <<
+# Use %subcmd% placeholder.
+unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
+
 # Use %command% placeholder.
+toggle-cmd-usage: '%prefix%&c Use: "&7/%command% toggle on/off&c".'
+messages-already-disabled: '%prefix%&c You''ve already disabled auto messages.'
+messages-already-enabled: '%prefix%&c You''ve already enabled auto messages.'
+messages-disabled: '%prefix%&c You have disabled auto messages.'
+messages-enabled: '%prefix%&a You have enabled auto messages.'
+
+# This feature lists all the chat panel help.
 chat-messages:
-- '&c&m---------&b> &e[&6Auto&9Messager&2 Help&e]&b <&c&m----------'
-- '&8/&a%command%&4 -&6 Main plugin info.'
+- '&c&m---------&b> &e[&4Auto&9Messager&2 Help&e]&b <&c&m----------'
+- '&8/&a%command% [TAB]&4 -&6 Main plugin info.'
 - '&8/&a%command% disable&4 -&6 Plugin disable.'
 - '&8/&a%command% help&4 -&6 Help commands.'
-- '&8/&a%command% reload&4 -&6 Reload the config files. (Abbreviated: /am rl)'
+- '&8/&a%command% reload (or rl)&4 -&6 Reload the config files.'
+- '&8/&a%command% toggle on/off&4 -&6 Toggle the auto messages.'
 - '&c&m-----------------------------------------------------'
 #You can add more paragraphs.
 warning-disablecommand: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
