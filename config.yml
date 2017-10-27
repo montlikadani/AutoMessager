@@ -1,23 +1,25 @@
 #=================================OOO====================================#
 #                       AutoMessager Configuration File                  #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.1                                   #
+# config.yml file. Plugin version: 1.2                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
-# https://dev.bukkit.org/projects/automessager/pages/configyml           #
+# https://github.com/montlikadani/AutoMessager/blob/master/config.yml    #
 #                                                                        #
 # [Placeholders]                                                         #
 # https://www.spigotmc.org/wiki/placeholderapi-placeholders/             #
 #                                                                        #
 # [Other placeholders]                                                   #
-# https://dev.bukkit.org/projects/automessager/pages/placeholders        #
+# https://github.com/montlikadani/AutoMessager/wiki/placeholders         #
 #                                                                        #
 # [Tips]                                                                 #
 # - Use color coding '&' character, on this page:                        #
 # http://minecraft.gamepedia.com/Formatting_codes                        #
 # - In case of an error, write here:                                     #
 # https://github.com/montlikadani/AutoMessager/issues                    #
+# - Use symbols in messages, on this page:                               #
+# https://github.com/montlikadani/AutoMessager/wiki/Symbols              #
 #=================================OOO====================================#
 
 # If these number mark (#) are in the way, you can safely remove it.
@@ -31,8 +33,14 @@ enable-broadcast: true
 # Enable to use PlaceholderAPI.
 placeholderapi: false
 
+# Which worlds are you allowed to display auto-messages?
+# If you do not want it in any world, use it like this: enabled-worlds: []
+#enabled-worlds:
+#- world
+#- lobby
+
 # The messages.txt (you have entered here) can use special characters here:
-# https://dev.bukkit.org/projects/automessager/pages/symbols
+# https://github.com/montlikadani/AutoMessager/wiki/Symbols
 # The file that will contain the messages to broadcast.
 message-file: 'messages.txt'
 
@@ -45,8 +53,11 @@ min-players: 1
 title: '&c[&aAuto&9Messager&c] '
 
 # Time is the time between each message.
-# TIME SHOULD BE IN SECONDS!
-time: 60
+time: 3
+# Time settings.
+# Variables: ticks, sec, min (beta), h (beta)
+# Example: 20 ticks = 1 second; 1 second = 20 ticks; 1 minute = 60 second; 1 hour = 60 minute
+time-setup: min
 
 # Want to broadcast the messages in order or randomly?
 random: false
@@ -58,7 +69,7 @@ random: false
 # 1.7.x: https://jd.bukkit.org/org/bukkit/Sound.html
 sound:
   enable: false
-  # Example: ENTITY_EXPERIENCE_ORB_PICKUP - 1.9.x - ORB_PICKUP - 1.8
+  # Example: 1.9.x: ENTITY_EXPERIENCE_ORB_PICKUP; 1.8: ORB_PICKUP
   sound: ENTITY_EXPERIENCE_ORB_PICKUP
   volume: 10
   pitch: 1
@@ -92,7 +103,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.1&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.2&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
