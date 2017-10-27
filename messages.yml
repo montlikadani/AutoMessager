@@ -14,20 +14,29 @@ reload-config: '%prefix%&a The plugin successfully reloaded!'
 unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command% placeholder.
-toggle-cmd-usage: '%prefix%&c Use: "&7/%command% toggle on/off&c".'
+toggle-cmd-usage: '%prefix%&c Please use "&7/%command% toggle <on/off>&c".'
 messages-already-disabled: '%prefix%&c You''ve already disabled auto messages.'
 messages-already-enabled: '%prefix%&c You''ve already enabled auto messages.'
 messages-disabled: '%prefix%&c You have disabled auto messages.'
 messages-enabled: '%prefix%&a You have enabled auto messages.'
 
+# Use %args% placeholder.
+broadcast-usage: '%prefix%&c Please use "&7/%command% %args% <message>&c".%newline%&7Use PAPI placeholders, symbols, color codes.'
+no-console: '%prefix%&c This command "&7/%command% %args%&c" can only be used in the game.'
+
+# Use %message% placeholder.
+broadcast-message: '&a[&cBroadcast&a]&r %message%'
+
 # This feature lists all the chat panel help.
 chat-messages:
 - '&c&m---------&b> &e[&4Auto&9Messager&2 Help&e]&b <&c&m----------'
 - '&8/&a%command% [TAB]&4 -&6 Main plugin info.'
-- '&8/&a%command% disable&4 -&6 Plugin disable.'
+- '&8/&a%command% disable&4 -&6 Disable the plugin.'
 - '&8/&a%command% help&4 -&6 Help commands.'
 - '&8/&a%command% reload (or rl)&4 -&6 Reload the config files.'
-- '&8/&a%command% toggle on/off&4 -&6 Toggle the auto messages.'
-- '&c&m-----------------------------------------------------'
+- '&8/&a%command% toggle <on/off>&4 -&6 Toggle auto messages.'
+- '&8/&a%command% broadcast (or bc)&4 -&6 Broadcast message.'
+- '&8/&a%command% list&4 -&6 List messages.'
+- '&c&m----------------------------------------------'
 #You can add more paragraphs.
-warning-disablecommand: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
+warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
