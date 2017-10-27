@@ -1,25 +1,48 @@
 name: AutoMessager
-main: hu.montlikadani.AutoMessager.Main
-version: 1.1
+main: hu.montlikadani.AutoMessager.AutoMessager
+version: 1.2
 author: montlikadani
 description: Automatic messages always come in handy! :)
 softdepend: [PlaceholderAPI]
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 
 commands:
-    automessager:
-        aliases: [am]
-        description: The main command for AutoMessager.
-        usage: <command>
+  automessager:
+    aliases: [am]
+    description: The main command for AutoMessager.
+    usage: <command>
         
 permissions:
-  # DO NOT EDIT EXISTING PLUGIN NAMES!
-  # THIS WILL BREAK THE PLUGIN!
-  # You can use only the 'default' function.
-  # Use: default: true - Everyone can use it.
-  # Default: false - Can only be used if enabled.
-  # Default: op - Only op ranks can use it.
-  # These are not worth rewritten.
-    automessager.seemsg:
-        description: Permission to see the messages broadcasted by Automessager.
-        default: true
+  automessager.seemsg:
+    description: Permission to see the messages broadcasted by AutoMessager.
+    default: true
+  automessager.cmd.nocooldown:
+    description: Command wait time permission.
+    default: false
+  automessager.help:
+    description: Help commands for AutoMessager.
+    default: false
+  automessager.reload:
+    description: Reload the config files.
+    default: op
+  automessager.toggle:
+    description: Allows the player to use the /am toggle command.
+    default: false
+  automessager.plugindisable:
+    description: Disable the plugin.
+    default: op
+  automessager.cmd.tabcomplete:
+    description: You can use [TAB] in commands.
+    default: false
+  automessager.toggle.off:
+    description: Allows the player to use the /am toggle off command.
+    default: false
+  automessager.toggle.on:
+    description: Allows the player to use the /am toggle on command.
+    default: false
+  automessager.broadcast:
+    description: Allows the player to use the /am broadcast command.
+    default: false
+  automessager.list:
+    description: Allows the player to use the /am list command.
+    default: false
