@@ -1,6 +1,6 @@
 name: AutoMessager
 main: hu.montlikadani.AutoMessager.AutoMessager
-version: 1.2
+version: 1.3
 author: montlikadani
 description: Automatic messages always come in handy! :)
 softdepend: [PlaceholderAPI]
@@ -8,17 +8,14 @@ softdepend: [PlaceholderAPI]
 
 commands:
   automessager:
-    aliases: [am]
     description: The main command for AutoMessager.
     usage: <command>
-        
+    aliases: [am]
+
 permissions:
   automessager.seemsg:
-    description: Permission to see the messages broadcasted by AutoMessager.
+    description: Allows you to see the messages broadcasted by AutoMessager.
     default: true
-  automessager.cmd.nocooldown:
-    description: Command wait time permission.
-    default: false
   automessager.help:
     description: Help commands for AutoMessager.
     default: false
