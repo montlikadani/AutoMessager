@@ -1,0 +1,36 @@
+# v1.2
+        Bug fixes.
+        Updated config files.
+        Fixed plugin permissions.
+        Removed :n placeholder. - It was unnecessary.
+        Added +10 symbols.
+        Fixed creation file. - It did not generate the file when the server started.
+        Fixed line error. - The first line did not notice it and did not write it out to chat.
+        Added enabled worlds. - Display messages in worlds.
+        Fixed issue no file was created at the start of the plugin. #1
+        Added new commands:
+
+        /am broadcast (or bc) - Broadcast message.
+        /am list - List messages.
+
+        Added time setup.
+# v1.1
+        Bug fixes.
+        Updated config files.
+        Added 80+ symbols.
+        Fixed bug the first line could not be written, so it did not write the message.
+        Fixed bug placeholerapi boolean if it was false it did not do anything and did not specify the placeholders.
+        Added title - prefix title which can be used to post messages to this placeholder: %title%
+        Changed enable to enable-broadcast boolean.
+        Fixed bug the plugin did not start and this is why the server froze.
+        Added new command: /am toggle on/off. - Toggle auto messages.
+        Fixed plugin permissions & commands.
+        Added update checker - notify when an update is available. (In console)
+        Fixed /am reload command. - It did not update the messages and did not execute the messages.
+        Fixed random messages not working - they only wrote random messages into the chat and could not be disabled.
+        Fixed sound boolean - even if the sound was false, the sound even dropped an error message.
+        Added bStats metrics.
+
+    Tested Minecraft versions: 1.7.x, 1.8.x, 1.9.x, 1.10.x, 1.11.x, 1.12.x
+
+        Other bug fixes.
