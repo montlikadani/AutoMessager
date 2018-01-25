@@ -1,3 +1,20 @@
+# v1.3
+     Added:
+        Added 30+ symbols.
+        Added broadcast to console boolean. - Auto-messages appear in the console.
+    Fixes:
+        Fixed all tasks stopped. - It has stopped all tasks that run on the server only.
+        Fixed min & hour time it was more than necessary.
+        Fixed not cancel message. - It does not cancel the automatic messages, so it keeps message.
+        Fixed automessager.seemsg permission not working. - The permission does not work, so the player not received any messages.
+    Changed:
+        Changed main-info-amcommand-on-default boolean to default-can-see-plugin-information.
+        Changed enabled-worlds to disabled-worlds string list.
+    Removed:
+        Removed auto refresh. - It was unnecessary.
+        Removed some spaces & code.
+        Removed enabled-worlds string list.
+        Removed command wait time.
 # v1.2
         Bug fixes.
         Updated config files.
