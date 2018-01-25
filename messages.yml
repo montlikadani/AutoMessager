@@ -6,37 +6,42 @@
 # >> These features are NOT supported by PlaceholderAPI! <<
 prefix: '&6&l[&4&lAuto&9&lMessager&6&l]&7&l »'
 
-# Use %prefix%, %newline%, %perm% placeholder.
-no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
+# Use %prefix%, %newline% placeholder.
 reload-config: '%prefix%&a The plugin successfully reloaded!'
+messages-already-disabled: '%prefix%&c You''ve already disabled auto messages.'
+messages-already-enabled: '%prefix%&c You''ve already enabled auto messages.'
+messages-disabled: '%prefix%&c You have disabled auto messages.'
+messages-enabled: '%prefix%&a You have enabled auto messages.'
+warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
+
+# Use %perm% placeholder.
+no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
 
 # Use %subcmd% placeholder.
 unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command% placeholder.
-toggle-cmd-usage: '%prefix%&c Please use "&7/%command% toggle <on/off>&c".'
-messages-already-disabled: '%prefix%&c You''ve already disabled auto messages.'
-messages-already-enabled: '%prefix%&c You''ve already enabled auto messages.'
-messages-disabled: '%prefix%&c You have disabled auto messages.'
-messages-enabled: '%prefix%&a You have enabled auto messages.'
+toggle-cmd-usage: '%prefix%&c Please use "&7/%command% toggle <on;off>&c".'
 
 # Use %args% placeholder.
-broadcast-usage: '%prefix%&c Please use "&7/%command% %args% <message>&c".%newline%&7Use PAPI placeholders, symbols, color codes.'
-no-console: '%prefix%&c This command "&7/%command% %args%&c" can only be used in the game.'
+broadcast-usage: '%prefix%&c Please use "&7/%command% %args% <message>&c".&7 - Use PAPI placeholders, symbols, color codes.'
 
 # Use %message% placeholder.
 broadcast-message: '&a[&cBroadcast&a]&r %message%'
 
 # This feature lists all the chat panel help.
 chat-messages:
-- '&c&m---------&b> &e[&4Auto&9Messager&2 Help&e]&b <&c&m----------'
-- '&8/&a%command% [TAB]&4 -&6 Main plugin info.'
-- '&8/&a%command% disable&4 -&6 Disable the plugin.'
-- '&8/&a%command% help&4 -&6 Help commands.'
-- '&8/&a%command% reload (or rl)&4 -&6 Reload the config files.'
-- '&8/&a%command% toggle <on/off>&4 -&6 Toggle auto messages.'
-- '&8/&a%command% broadcast (or bc)&4 -&6 Broadcast message.'
-- '&8/&a%command% list&4 -&6 List messages.'
-- '&c&m----------------------------------------------'
-#You can add more paragraphs.
-warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
+- '&e&m---------&b> &e[&4Auto&9Messager&2 Help&e]&b <&e&m----------'
+- ''
+- '&7-&c <>&7 -&c required arguments'
+- '&7-&3 ()&7 -&3 command abbreviations'
+- '&7-&2 ;&7 -&2 writes more to one place'
+- ''
+- '&8/&a%command%&b [+TAB]&5 -&6 Main plugin info.'
+- '&8/&a%command% disable&5 -&6 Disable the plugin.'
+- '&8/&a%command% help&5 -&6 Help commands.'
+- '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the config files.'
+- '&8/&a%command% toggle&c <on&2;&coff>&5 -&6 Toggle auto messages.'
+- '&8/&a%command% broadcast&3 (or bc)&c <message>&5 -&6 Broadcast message.'
+- '&8/&a%command% list&5 -&6 List messages.'
+- '&e&m----------------------------------------------'
