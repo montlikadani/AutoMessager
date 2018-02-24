@@ -1,3 +1,8 @@
+# v1.4
+     Fixes:
+        Fixed /am list command did not list the messages. - Reported by: @JDittmerCOM
+     Other:
+        Updated PlaceholderAPI to the latest version.
 # v1.3
      Added:
         Added 30+ symbols.
