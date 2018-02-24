@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                   AutoMessager Configuration File                      #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.3                                   #
+# config.yml file. Plugin version: 1.4                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -98,7 +98,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.3&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.4&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
