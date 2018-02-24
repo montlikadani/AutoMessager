@@ -13,6 +13,7 @@ messages-already-enabled: '%prefix%&c You''ve already enabled auto messages.'
 messages-disabled: '%prefix%&c You have disabled auto messages.'
 messages-enabled: '%prefix%&a You have enabled auto messages.'
 warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
+no-message-to-list: '%prefix%&c There is no message in the file.'
 
 # Use %perm% placeholder.
 no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
