@@ -1,3 +1,10 @@
+# v1.5
+Added:
+    Added /am add command. - Add a message to the file.
+    Added console & player run commands.
+Other:
+    Updated PlaceholderAPI to the latest version.
+
 # v1.4
      Fixes:
         Fixed /am list command did not list the messages. - Reported by: @JDittmerCOM
