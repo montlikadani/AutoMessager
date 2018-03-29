@@ -1,6 +1,6 @@
 name: AutoMessager
 main: hu.montlikadani.AutoMessager.AutoMessager
-version: 1.4
+version: 1.5
 author: montlikadani
 description: Automatic messages always come in handy! :)
 softdepend: [PlaceholderAPI]
@@ -26,7 +26,7 @@ permissions:
     description: Allows the player to use the /am toggle command.
     default: false
   automessager.plugindisable:
-    description: Disable the plugin.
+    description: Allow to player to disable plugin.
     default: op
   automessager.cmd.tabcomplete:
     description: You can use [TAB] in commands.
@@ -42,4 +42,7 @@ permissions:
     default: false
   automessager.list:
     description: Allows the player to use the /am list command.
+    default: false
+  automessager.add:
+    description: Allows the player to use the /am add command.
     default: false
