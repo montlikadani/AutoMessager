@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                   AutoMessager Configuration File                      #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.4                                   #
+# config.yml file. Plugin version: 1.5                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -30,7 +30,7 @@
 # Enables broadcasting.
 enable-broadcast: true
 
-# Enable to use PlaceholderAPI.
+# Enable to use PlaceholderAPI for the plugin.
 placeholderapi: false
 
 # In what worlds do NOT send a message?
@@ -64,6 +64,22 @@ random: false
 # WARNING! It does not show placeholders and symbols in the console.
 broadcast-to-console: false
 
+# Run commands after sending auto messages.
+run-commands:
+  # Player commands.
+  player:
+    enable: false
+    # Use %player%, %player-displayname%, %world% placeholder.
+    commands:
+    - '/baltop'
+  # Console commands.
+  console:
+    enable: false
+    # Use %player%, %player-displayname%, %world% placeholder.
+    commands:
+    - '/kit tools %player%'
+    - '/bal %player%'
+
 # Sound playback when broadcasting.
 # All sounds:
 # 1.9.x, 1.10.x, 1.11.x, 1.12.x: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
@@ -88,7 +104,7 @@ metrics: true
 # Check for updates.
 check-update: true
 
-# Log in to the console with plugin messages.
+# Log plugin messages into console.
 logconsole: true
 
 # Logging to file plugin messages.
@@ -98,7 +114,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.4&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.5&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
@@ -108,8 +124,7 @@ default-can-see-plugin-information: false
 
 # Unknown-command - If more than one word/letter you write to it.
 # Example: /am reload something...
-# Use %newline%, %command%, %prefix% placeholder.
-# %command% - When you type the command (example: /automessager), it writes the command to it.
+# Use %command%, %prefix% placeholder.
 # This feature is NOT enter into the unknown command Minecraft, it's just your own.
 # >> NO supported the PlaceholderAPI! <<
 unknown-command-enable: true
