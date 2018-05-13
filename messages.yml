@@ -28,10 +28,14 @@ toggle:
 
 # Use %args% placeholder.
 broadcast-usage: '%prefix%&c Please use "&7/%command% %args% <message>&c".&7 - Use PAPI placeholders, symbols, color codes.'
+remove-cmd-usage: '%prefix%&c Use: "&7/%command% %args% <file line number>&c".'
 
 # Use %message% placeholder.
 broadcast-message: '&a[&cBroadcast&a]&r %message%'
 success-add-msg: '&aYou have been successfully added message:&r %message%'
+
+# Use %word% placeholder.
+text-removed: '&cThe word successfully removed:&7 %word%'
 
 # This feature lists all the chat panel help.
 chat-messages:
@@ -47,6 +51,7 @@ chat-messages:
 - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the config files.'
 - '&8/&a%command% toggle&c <on&2;&coff>&5 -&6 Toggle auto messages.'
 - '&8/&a%command% add&c <message>&5 -&6 Add message (use placeholders, color codes, symbols).'
+- '&8/&a%command% remove (or rem)&c <file line number>&5 -&6 Remove text for the file.'
 - '&8/&a%command% broadcast&3 (or bc)&c <message>&5 -&6 Broadcast message.'
 - '&8/&a%command% list&5 -&6 List messages.'
-- '&e&m----------------------------------------------'
+- '&e&m--------------------------------------------------------'
