@@ -1,3 +1,17 @@
+# v1.6
+Added:
+    Added %newline% placeholder to the file (again).
+    Added suffix string in configuration.
+    Added /am remove <file line number> command.
+    Added support for automessager.* permission. - To access for all permissions.
+Fixes:
+    Fixed some config loading problems.
+    Fixed the toggle command did not work, so the messages could not be canceled or enabled.
+Other:
+    Updated PlaceholderAPI to the latest version.
+    Minor changes for PAPI registering.
+    Now the configurations successfully creating it when reload the plugin.
+
 # v1.5
 Added:
     Added /am add command. - Add a message to the file.
