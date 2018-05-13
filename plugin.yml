@@ -1,6 +1,6 @@
 name: AutoMessager
 main: hu.montlikadani.AutoMessager.AutoMessager
-version: 1.5
+version: 1.6
 author: montlikadani
 description: Automatic messages always come in handy! :)
 softdepend: [PlaceholderAPI]
@@ -13,36 +13,54 @@ commands:
     aliases: [am]
 
 permissions:
+  automessager.*:
+     description: Gives access to all AutoMessager permissions.
+     children:
+       automessager.seemsg: true
+       automessager.toggle: true
+       automessager.toggle.on: true
+       automessager.toggle.off: true
+       automessager.broadcast: true
+       automessager.add: true
+       automessager.remove: true
+       automessager.list: true
+       automessager.reload: true
+       automessager.plugindisable: true
+       automessager.help: true
+       automessager.cmd.tabcomplete: true
   automessager.seemsg:
     description: Allows you to see the messages broadcasted by AutoMessager.
     default: true
+  automessager.toggle:
+    description: Allows the player to use the /am toggle command.
+    default: false
+  automessager.toggle.on:
+    description: Allows the player to use the /am toggle on command.
+    default: false
+  automessager.toggle.off:
+    description: Allows the player to use the /am toggle off command.
+    default: false
+  automessager.broadcast:
+    description: Allows the player to use the /am broadcast command.
+    default: false
+  automessager.add:
+    description: Allows the player to use the /am add command.
+    default: false
+  automessager.remove:
+    description: Allows the player to use the /am remove command.
+    default: false
+  automessager.list:
+    description: Allows the player to use the /am list command.
+    default: false
   automessager.help:
     description: Help commands for AutoMessager.
     default: false
   automessager.reload:
     description: Reload the config files.
     default: op
-  automessager.toggle:
-    description: Allows the player to use the /am toggle command.
-    default: false
   automessager.plugindisable:
     description: Allow to player to disable plugin.
     default: op
   automessager.cmd.tabcomplete:
     description: You can use [TAB] in commands.
-    default: false
-  automessager.toggle.off:
-    description: Allows the player to use the /am toggle off command.
-    default: false
-  automessager.toggle.on:
-    description: Allows the player to use the /am toggle on command.
-    default: false
-  automessager.broadcast:
-    description: Allows the player to use the /am broadcast command.
-    default: false
-  automessager.list:
-    description: Allows the player to use the /am list command.
-    default: false
-  automessager.add:
-    description: Allows the player to use the /am add command.
     default: false
