@@ -22,8 +22,6 @@
 # https://github.com/montlikadani/AutoMessager/wiki/Symbols              #
 #=================================OOO====================================#
 
-# If these number mark (#) are in the way, you can safely remove it.
-
 #=========================================#
 #         AutoMessage Settings            #
 #=========================================#
@@ -46,9 +44,13 @@ message-file: 'messages.txt'
 # Set to 0 to disable this feature.
 min-players: 1
 
-# The %title% placeholder. You can enter this in the messages.txt file.
+# The %title% placeholder. You can enter this in the file.
 # Use %newline% placeholder.
 title: '&c[&aAuto&9Messager&c] '
+
+# The suffix of the sender. You can enter this in the file.
+# Use %suffix% placeholder in the file.
+suffix: ''
 
 # Time is the time between each message.
 time: 3
@@ -114,7 +116,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.5&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
