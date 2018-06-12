@@ -1,3 +1,15 @@
+# v1.7
+Added:
+    Added version checker to configurations. - If the version number abandoned.
+    Added /am clearall command. - To clear all text from the message file.
+    Added +10 symbols.
+Fixes:
+    Fixed if the enable-broadcast was false, it has not cancel the task.
+    Fixed the toggle command did not work, so the messages could not be canceled.
+Other:
+    Now the configurations successfully creating it when reload the plugin.
+    Now only the .txt file types are accepted. - YAML or other file formats NOT accepted.
+
 # v1.6
 Added:
     Added %newline% placeholder to the file (again).
