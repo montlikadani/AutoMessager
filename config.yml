@@ -4,7 +4,7 @@
 # config.yml file. Plugin version: ${version}                            #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
-# [Default configurations]                                               #
+# [Default configuration]                                                #
 # https://github.com/montlikadani/AutoMessager/blob/master/config.yml    #
 #                                                                        #
 # [Placeholders]                                                         #
@@ -38,7 +38,7 @@ disabled-worlds: []
 # The messages.txt (you have entered here) can use special characters here:
 # https://github.com/montlikadani/AutoMessager/wiki/Symbols
 # The file that will contain the messages to broadcast.
-message-file: 'messages.txt'
+message-file: 'messages.txt' #It is not worth rewriting from .txt because errors may occur.
 
 # The minimal amount of players that has to be online for a message to broadcast.
 # Set to 0 to disable this feature.
@@ -60,6 +60,7 @@ time: 3
 time-setup: min
 
 # Want to broadcast the messages in order or randomly?
+# Minimum 2 message needed!
 random: false
 
 # Broadcast to console.
@@ -126,8 +127,11 @@ default-can-see-plugin-information: false
 
 # Unknown-command - If more than one word/letter you write to it.
 # Example: /am reload something...
-# Use %command%, %prefix% placeholder.
+# Use %command% placeholder.
 # This feature is NOT enter into the unknown command Minecraft, it's just your own.
 # >> NO supported the PlaceholderAPI! <<
 unknown-command-enable: true
 unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
+
+# DO NOT CHANGE THIS!
+config-version: 1

@@ -17,5 +17,6 @@ public class Permissions {
 	public static final Permission SEEMSG = new Permission("automessager.seemsg");
 	public static final Permission ADD = new Permission("automessager.add");
 	public static final Permission REMOVE = new Permission("automessager.remove");
+	public static final Permission CLEARALL = new Permission("automessager.clearall");
 
 }

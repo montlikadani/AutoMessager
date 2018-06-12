@@ -1,6 +1,6 @@
 name: AutoMessager
 main: hu.montlikadani.AutoMessager.AutoMessager
-version: 1.6
+version: 1.7
 author: montlikadani
 description: Automatic messages always come in handy! :)
 softdepend: [PlaceholderAPI]
@@ -23,6 +23,7 @@ permissions:
        automessager.broadcast: true
        automessager.add: true
        automessager.remove: true
+       automessager.clearall: true
        automessager.list: true
        automessager.reload: true
        automessager.plugindisable: true
@@ -48,6 +49,9 @@ permissions:
     default: false
   automessager.remove:
     description: Allows the player to use the /am remove command.
+    default: false
+  automessager.clearall:
+    description: Allows the player to use the /am clearall command.
     default: false
   automessager.list:
     description: Allows the player to use the /am list command.
