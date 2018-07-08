@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                   AutoMessager Configuration File                      #
 #=================================OOO====================================#
-# config.yml file. Plugin version: ${version}                            #
+# config.yml file. Plugin version: ${project.version}                    #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configuration]                                                #
@@ -20,6 +20,7 @@
 # https://github.com/montlikadani/AutoMessager/issues                    #
 # - Use symbols in messages, on this page:                               #
 # https://github.com/montlikadani/AutoMessager/wiki/Symbols              #
+# - If the string is empty does not send the message.                    #
 #=================================OOO====================================#
 
 #=========================================#
@@ -31,8 +32,11 @@ enable-broadcast: true
 # Enable to use PlaceholderAPI for the plugin.
 placeholderapi: false
 
+# Use JSON message in file?
+# Usage: https://github.com/montlikadani/AutoMessager/wiki/File-usage#json-message
+use-json-message: false
+
 # In what worlds do NOT send a message?
-# If you do not want one, use it like this: disabled-worlds: []
 disabled-worlds: []
 
 # The messages.txt (you have entered here) can use special characters here:
@@ -64,7 +68,7 @@ time-setup: min
 random: false
 
 # Broadcast to console.
-# WARNING! It does not show placeholders and symbols in the console.
+# WARNING! It does not show symbols and JSON message in the console.
 broadcast-to-console: false
 
 # Run commands after sending auto messages.
@@ -74,14 +78,14 @@ run-commands:
     enable: false
     # Use %player%, %player-displayname%, %world% placeholder.
     commands:
-    - '/baltop'
+    - 'baltop'
   # Console commands.
   console:
     enable: false
     # Use %player%, %player-displayname%, %world% placeholder.
     commands:
-    - '/kit tools %player%'
-    - '/bal %player%'
+    - 'kit tools %player%'
+    - 'bal %player%'
 
 # Sound playback when broadcasting.
 # All sounds:
@@ -91,7 +95,7 @@ run-commands:
 sound:
   enable: false
   # Example: 1.9.x: ENTITY_EXPERIENCE_ORB_PICKUP; 1.8: ORB_PICKUP
-  sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  type: ENTITY_EXPERIENCE_ORB_PICKUP
   volume: 10
   pitch: 1
 
@@ -116,9 +120,7 @@ log-to-file: true
 # Plugin enable/disable messages in console.
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
-plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
-plugin-disable-message: true
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${project.version}&a!'
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
 # The default is allowed to see the plugin information.
@@ -134,4 +136,4 @@ unknown-command-enable: true
 unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
 
 # DO NOT CHANGE THIS!
-config-version: 1
+config-version: 2

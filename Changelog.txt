@@ -1,3 +1,18 @@
+# v1.8
+Added:
+    Added json message.
+Fixes:
+    Fixed NullPointerException for /am toggle usage message.
+    Fixed when the turned off the messages and reloaded the plugin has removed the toggle task.
+    Fixed when you used the %suffix% placeholder in message does not show in the console.
+    Fixed when used the /am list command does not show the placeholders.
+Removed:
+    Removed op permission for /am reload command.
+    Removed enable-message booleans. If the message is empty not send the message.
+Other:
+    Now you can only use the /am toggle command to not have it on/off but just type it.
+    Updated PlaceholderAPI to the latest version.
+
 # v1.7
 Added:
     Added version checker to configurations. - If the version number abandoned.

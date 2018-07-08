@@ -11,6 +11,9 @@ reload-config: '%prefix%&a The plugin successfully reloaded!'
 no-message-to-list: '%prefix%&c There is no message in the file.'
 all-messages-cleared: '%prefix%&c All message successfully cleared from the file!'
 no-messages-in-file: '%prefix%&c There is no message in the file.'
+toggle:
+  disabled: '%prefix%&c You have disabled auto messages.'
+  enabled: '%prefix%&a You have enabled auto messages.'
 
 # Use %perm% placeholder.
 no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
@@ -20,12 +23,6 @@ unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command% placeholder.
 add-cmd-usage: '%prefix%&c Use: "&7/%command% add <message>&c".&7 - Use placeholders, color codes, symbols.'
-toggle:
-  usage: '%prefix%&c Use: "&7/%command% toggle <on;off>&c".'
-  already-disabled: '%prefix%&c You''ve already disabled auto messages.'
-  already-enabled: '%prefix%&c You''ve already enabled auto messages.'
-  disabled: '%prefix%&c You have disabled auto messages.'
-  enabled: '%prefix%&a You have enabled auto messages.'
 
 # Use %args% placeholder.
 broadcast-usage: '%prefix%&c Please use "&7/%command% %args% <message>&c".&7 - Use PAPI placeholders, symbols, color codes.'
@@ -40,23 +37,29 @@ text-removed: '&cThe message successfully removed:&7 %word%'
 
 # This feature lists all the chat panel help.
 chat-messages:
-- '&e&m---------&b> &e[&4Auto&9Messager&2 Help&e]&b <&e&m----------'
-- ''
-- '&7-&c <>&7 -&c required arguments'
-- '&7-&3 ()&7 -&3 command abbreviations'
-- '&7-&2 ;&7 -&2 writes more to one place'
-- ''
-- '&8/&a%command%&b [+TAB]&5 -&6 Main plugin info.'
-- '&8/&a%command% disable&5 -&6 Disable the plugin.'
-- '&8/&a%command% help&5 -&6 Help commands.'
-- '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin.'
-- '&8/&a%command% toggle&c <on&2;&coff>&5 -&6 Toggle the auto messages.'
-- '&8/&a%command% add&c <message>&5 -&6 Add a message (use placeholders, color codes, symbols) to the file.'
-- '&8/&a%command% remove (or rem)&c <file line number>&5 -&6 Remove text from the the file.'
-- '&8/&a%command% clearall&5 -&6 Clear all message from the file.'
-- '&8/&a%command% broadcast&3 (or bc)&c <message>&5 -&6 Send a broadcast message.'
-- '&8/&a%command% list&5 -&6 List messages.'
-- '&e&m--------------------------------------------------------'
+  1:
+    - '&e&m---------&b> &e[&4Auto&9Messager&2 Help&e]&b <&e&m----------'
+    - ''
+    - '&7-&9 []&7 -&9 optional arguments'
+    - '&7-&c <>&7 -&c required arguments'
+    - '&7-&3 ()&7 -&3 command abbreviations'
+    - '&7-&2 ;&7 -&2 writes more to one place'
+    - ''
+    - '&8/&a%command%&b [+TAB]&5 -&6 Main plugin info.'
+    - '&8/&a%command% disable&5 -&6 Disable the plugin.'
+    - '&8/&a%command% help&9 [2]&5 -&6 Help commands.'
+    - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin.'
+    - '&8/&a%command% toggle&5 -&6 Toggle on/off the auto messages.'
+    - '&e&m-------------------------------'
+  2:
+    - '&e&m---------&b> &e[&4Auto&9Messager&2 Help&c 2&e]&b <&e&m----------'
+    - ''
+    - '&8/&a%command% add&c <message>&5 -&6 Add a message (use placeholders, color codes, symbols) to the file.'
+    - '&8/&a%command% remove (or rem)&c <file line number>&5 -&6 Remove text from the the file.'
+    - '&8/&a%command% clearall&5 -&6 Clear all message from the file.'
+    - '&8/&a%command% broadcast&3 (or bc)&c <message>&5 -&6 Send a broadcast message.'
+    - '&8/&a%command% list&5 -&6 List messages.'
+    - '&e&m-------------------------------------------'
 
 # DO NOT CHANGE THIS!
-config-version: 1
+config-version: 2
