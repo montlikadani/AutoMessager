@@ -4,6 +4,7 @@
 
 ## Link
 * [Spigot](https://www.spigotmc.org/resources/automessager.43875/)
+* [Bukkit](https://dev.bukkit.org/projects/auto-messager-plugin)
 
 ### Other
 If you find a bug, please write here: https://github.com/montlikadani/AutoMessager/issues

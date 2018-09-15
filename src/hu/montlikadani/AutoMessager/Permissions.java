@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager;
+package hu.montlikadani.AutoMessager.bukkit;
 
 import org.bukkit.permissions.Permission;
 
@@ -10,7 +10,6 @@ public class Permissions {
 	public static final Permission PDISABLE = new Permission("automessager.plugindisable");
 	public static final Permission TABCOMP = new Permission("automessager.cmd.tabcomplete");
 	public static final Permission TOGGLE = new Permission("automessager.toggle");
-	public static final Permission TOGGLEALL = new Permission("automessager.toggle.all");
 	public static final Permission BC = new Permission("automessager.broadcast");
 	public static final Permission LIST = new Permission("automessager.list");
 	public static final Permission SEEMSG = new Permission("automessager.seemsg");

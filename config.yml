@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                   AutoMessager Configuration File                      #
 #=================================OOO====================================#
-# config.yml file. Plugin version: ${project.version}                    #
+# config.yml file. Plugin version: ${version}                            #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configuration]                                                #
@@ -16,7 +16,7 @@
 # [Tips]                                                                 #
 # - Use color coding '&' character, on this page:                        #
 # http://minecraft.gamepedia.com/Formatting_codes                        #
-# - In case of an error, write here:                                     #
+# # - If you find a bug, send here:                                      #
 # https://github.com/montlikadani/AutoMessager/issues                    #
 # - Use symbols in messages, on this page:                               #
 # https://github.com/montlikadani/AutoMessager/wiki/Symbols              #
@@ -42,11 +42,15 @@ disabled-worlds: []
 # The messages.txt (you have entered here) can use special characters here:
 # https://github.com/montlikadani/AutoMessager/wiki/Symbols
 # The file that will contain the messages to broadcast.
-message-file: 'messages.txt' #It is not worth rewriting from .txt because errors may occur.
+message-file: 'messages.txt'
 
 # The minimal amount of players that has to be online for a message to broadcast.
 # Set to 0 to disable this feature.
 min-players: 1
+
+# Disable sending auto-messages when the player afk?
+# Required Essentials plugin!
+disable-messages-when-player-afk: false
 
 # The %title% placeholder. You can enter this in the file.
 # Use %newline% placeholder.
@@ -59,7 +63,7 @@ suffix: ''
 # Time is the time between each message.
 time: 3
 # Time settings.
-# Variables: ticks, sec, min, h
+# Variables: ticks, sec, second, min, minute h, hour
 # Example: 20 ticks = 1 second; 1 second = 20 ticks; 1 minute = 60 second; 1 hour = 60 minute
 time-setup: min
 
@@ -89,7 +93,7 @@ run-commands:
 
 # Sound playback when broadcasting.
 # All sounds:
-# 1.9.x, 1.10.x, 1.11.x, 1.12.x: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+# 1.9.x-1.13.x: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 # 1.8.x: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
 # 1.7.x: https://jd.bukkit.org/org/bukkit/Sound.html
 sound:
@@ -120,20 +124,12 @@ log-to-file: true
 # Plugin enable/disable messages in console.
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${project.version}&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
 # The default is allowed to see the plugin information.
 # Permission: automessager.plugininfo
 default-can-see-plugin-information: false
 
-# Unknown-command - If more than one word/letter you write to it.
-# Example: /am reload something...
-# Use %command% placeholder.
-# This feature is NOT enter into the unknown command Minecraft, it's just your own.
-# >> NO supported the PlaceholderAPI! <<
-unknown-command-enable: true
-unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
-
 # DO NOT CHANGE THIS!
-config-version: 2
+config-version: 3

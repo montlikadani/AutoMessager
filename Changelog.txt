@@ -1,3 +1,17 @@
+# v1.9
+Added:
+    Added support for BungeeCord.
+    Added per world support.
+    Added disable-messages-when-player-afk boolean to configuration. - If the player afk not send the auto-messages. (Requires Essentials or EssX)
+Other:
+    Now supports second, minute and hour variables in time setup.
+    Now the message file support all file types. (YAML, TXT etc...)
+    Updated PlaceholderAPI to the latest version.
+    Now the json message works on CraftBukkit versions.
+    Updated to Bukkit/Spigot 1.13 & 1.13.1 version.
+Removed:
+    Removed plugin update permission.
+
 # v1.8
 Added:
     Added json message.
