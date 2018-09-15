@@ -22,6 +22,7 @@ no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
 unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command% placeholder.
+unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
 add-cmd-usage: '%prefix%&c Use: "&7/%command% add <message>&c".&7 - Use placeholders, color codes, symbols.'
 
 # Use %args% placeholder.
