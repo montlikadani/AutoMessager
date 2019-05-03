@@ -4,28 +4,29 @@ about: Create a report to help us improve
 
 ---
 
-### Describe the bug (required)
+**!** required
+
+**If ! mark is not specified then not need to write.**
+
+### Describe the bug (!)
 Understand what the problem is with the plugin.
 
-### Plugin version (required)
-Describe the plugin version you are using now.
+(!) Software (Bukkit/Spigot/Paper) name & version:
 
-### Console error (required)
-> 
-> Send the console error if you have it.
->
+(!) Plugin version:
 
-### Config.yml or other file
+### Console error (!)
+```
+Send the console error if you have it.
+```
+
+
+### Config.yml (!)
 Send the config.yml or other file.
-(required)
+You can send files link e.g. [pastebin.com](https://pastebin.com/) or paste a code block.
 ```
 config.yml
 ```
 
-(optional)
-```
-other file
-```
-
-### Screenshots (optional)
+### Screenshots
 Send a few pictures of the problem if you can.

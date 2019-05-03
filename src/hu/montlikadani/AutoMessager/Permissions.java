@@ -1,20 +1,32 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
-import org.bukkit.permissions.Permission;
-
 public class Permissions {
 
-	public static final Permission PINFO = new Permission("automessager.plugininfo");
-	public static final Permission HELP = new Permission("automessager.help");
-	public static final Permission RELOAD = new Permission("automessager.reload");
-	public static final Permission PDISABLE = new Permission("automessager.plugindisable");
-	public static final Permission TABCOMP = new Permission("automessager.cmd.tabcomplete");
-	public static final Permission TOGGLE = new Permission("automessager.toggle");
-	public static final Permission BC = new Permission("automessager.broadcast");
-	public static final Permission LIST = new Permission("automessager.list");
-	public static final Permission SEEMSG = new Permission("automessager.seemsg");
-	public static final Permission ADD = new Permission("automessager.add");
-	public static final Permission REMOVE = new Permission("automessager.remove");
-	public static final Permission CLEARALL = new Permission("automessager.clearall");
+	public enum Perm {
+		PINFO("automessager.plugininfo"),
+		HELP("automessager.help"),
+		RELOAD("automessager.reload"),
+		PDISABLE("automessager.disable"),
+		TOGGLE("automessager.toggle"),
+		BC("automessager.broadcast"),
+		LIST("automessager.list"),
+		SEEMSG("automessager.seemsg"),
+		ADD("automessager.add"),
+		REMOVE("automessager.remove"),
+		CLEARALL("automessager.clearall"),
+		BANNEDPLAYERS("automessager.bannedplayers"),
+		BPADD("automessager.bannedplayers.add"),
+		BPREMOVE("automessager.bannedplayers.remove"),
+		BPLIST("automessager.bannedplayers.list");
 
+		private String perm;
+
+		Perm(String perm) {
+			this.perm = perm;
+		}
+
+		public String getPerm() {
+			return perm;
+		}
+	}
 }

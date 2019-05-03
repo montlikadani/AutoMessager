@@ -1,7 +1,4 @@
-#=========================================#
-#         AutoMessage Settings            #
-#=========================================#
-# Enables broadcasting.
+# Enables broadcasting
 enable-broadcast: true
 
 # In what servers do NOT send a message?
@@ -10,23 +7,22 @@ disabled-servers: []
 # The messages.txt (you have entered here) can use special characters here:
 # https://github.com/montlikadani/AutoMessager/wiki/Symbols
 # The file that will contain the messages to broadcast.
-message-file: 'messages.txt'
+message-file: "messages.txt"
 
 # The minimal amount of players that has to be online for a message to broadcast.
 # Set 0 to disable this feature.
 min-players: 1
 
-# The %title% placeholder. You can enter this in the file.
+# The %title% placeholder for the message file.
 # Use %newline% placeholder.
-title: '&c[&aAuto&9Messager&c] '
+title: "&c[&aAuto&9Messager&c] "
 
-# The suffix of the sender. You can enter this in the file.
-# Use %suffix% placeholder in the file.
-suffix: ''
+# The %suffix% placeholder for the message file.
+suffix: ""
 
 # Time is the time between each message.
 time: 3
-# Time settings.
+# Time settings
 # Variables: SECONDS, DAYS, MINUTES, HOURS, MILLISECONDS
 time-setup: MINUTES
 
@@ -38,27 +34,29 @@ random: false
 # WARNING! It does not show symbols in the console.
 broadcast-to-console: false
 
-# Used for %time% placeholder.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-time-format: 'dd/MM/yyyy'
+# Used for %time% placeholder.
+time-format: "mm:HH"
+# Used for %date% placeholder.
+date-format: "dd/MM/yyyy"
 
-# Plugin messages.
+# Plugin messages
 messages:
-  reload-config: '&aThe plugin successfully reloaded!'
-  no-permission: '&cYou don''t have permission for this!'
-  plugin-disabled: '&cThe plugin successfully disabled!'
-  no-message-to-list: '&cThere is no message in the file.'
+  reload-config: "&aThe plugin successfully reloaded!"
+  no-permission: "&cYou don't have permission for this!"
+  plugin-disabled: "&cThe plugin successfully disabled!"
+  no-message-to-list: "&cThere is no message in the file."
   toggle:
-    enabled: '&aThe messages successfully turned on!'
-    disabled: '&cThe messages successfully turned off!'
-    no-player: '&cThere is no player available on the server.'
+    enabled: "&aThe messages successfully turned on!"
+    disabled: "&cThe messages successfully turned off!"
+    no-player: "&cThere is no player available on the server."
   chat-messages:
-  - '&8&l-----------'
-  - '&7/&aautomessager reload&7 (or rl)&e -&6 Reloads the plugin and config.'
-  - '&7/&aautomessager toggle&e -&6 Toggle auto message.'
-  - '&7/&aautomessager disable&e -&6 Disable the plugin.'
-  - '&7/&aautomessager list&5 -&6 List messages.'
-  - '&8&l-----------'
+  - "&8&l-----------"
+  - "&7/&aautomessager reload&7 (or rl)&e -&6 Reloads the plugin and config."
+  - "&7/&aautomessager toggle&e -&6 Toggle auto message."
+  - "&7/&aautomessager disable&e -&6 Disable the plugin."
+  - "&7/&aautomessager list&5 -&6 List messages."
+  - "&8&l-----------"
 
 # DO NOT CHANGE THIS!
-config-version: 1
+config-version: 2

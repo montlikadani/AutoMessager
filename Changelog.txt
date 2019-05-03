@@ -1,3 +1,25 @@
+# v2.0
+Added:
+  Added /am bannedplayers command to add/remove/list players. - To not receive the auto-messages for players.
+  Added per-group, per-player and per-permission action messages.
+Added (Bungee/Bukkit):
+  Added %date% placeholder + customizable in configuration.
+  Added +20 symbols.
+Fixes (Bungee):
+  Some fixes related to broadcast messages.
+  Fixed if used player: prefix not send to specified player but also send to all online players.
+Fixes:
+  Fixed tab-complete not work correctly.
+  Fixed when you use the /am add command in console and in the server no players, not added anything to the message file.
+  Fixed when the plugin checked the version, for some reason the scanner was not recognized by any version of Java so it caused a problem.
+Removed:
+  Fully removed 1.7 support. This version is VERY outdated.
+Other:
+  Changed the run commands for simpler. (starts with player or console)
+  Now if any string is empty or not found, it will not send a blank message.
+  Now the /am list command can be paginated. (In console not paginate.)
+  Plugin updated to 1.14.
+
 # v1.9
 Added:
     Added support for BungeeCord.
