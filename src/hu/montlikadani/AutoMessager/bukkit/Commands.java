@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -494,10 +495,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("bannedplayers") || args[0].equalsIgnoreCase("bp")) {
-				for (String bp : new String[] { "add", "remove", "rem", "list" }) {
-					cmds.add(bp);
-				}
-
+				Arrays.asList("add", "remove", "rem", "list").forEach(cmds::add);
 				partOfCommand = args[1];
 			}
 
@@ -538,8 +536,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private List<String> getCmds(CommandSender sender) {
 		List<String> c = new ArrayList<>();
-		for (String cmds : new String[] { "help", "reload", "toggle", "broadcast", "list", "add", "remove", "clearall",
-				"bannedplayers" }) {
+		for (String cmds : Arrays.asList("help", "reload", "toggle", "broadcast", "list", "add", "remove", "clearall",
+				"bannedplayers")) {
 			if (!sender.hasPermission("automessager." + cmds)) {
 				continue;
 			}
