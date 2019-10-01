@@ -1,13 +1,13 @@
 # AutoMessager [![GitHub release](https://img.shields.io/github/release/montlikadani/AutoMessager.svg)](https://github.com/montlikadani/AutoMessager/releases) [![Github All Releases](https://img.shields.io/github/downloads/montlikadani/AutoMessager/total.svg)](https://github.com/montlikadani/AutoMessager/releases) [![GitHub issues](https://img.shields.io/github/issues/montlikadani/AutoMessager.svg)](https://github.com/montlikadani/AutoMessager/issues)
 
-[![bStats](https://img.shields.io/badge/bStats-1.4-brightgreen.svg)](https://bstats.org/plugin/bukkit/AutoMessager)
+[![bStats](https://img.shields.io/badge/bStats-1.5-brightgreen.svg)](https://bstats.org/plugin/bukkit/AutoMessager)
 
 ***
 
 A fully configurable plugin that allows to send messages to all servers or worlds or other.
 
 ## Link
-* [Spigot](https://www.spigotmc.org/resources/automessager.43875/)
+* [Spigot](https://www.spigotmc.org/resources/43875/)
 * [Bukkit](https://dev.bukkit.org/projects/auto-messager-plugin)
 
 ### Other

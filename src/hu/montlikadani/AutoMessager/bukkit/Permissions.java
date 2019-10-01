@@ -3,10 +3,8 @@ package hu.montlikadani.AutoMessager.bukkit;
 public class Permissions {
 
 	public enum Perm {
-		PINFO("automessager.plugininfo"),
 		HELP("automessager.help"),
 		RELOAD("automessager.reload"),
-		PDISABLE("automessager.disable"),
 		TOGGLE("automessager.toggle"),
 		BC("automessager.broadcast"),
 		LIST("automessager.list"),

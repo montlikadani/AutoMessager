@@ -1,64 +1,48 @@
-prefix: "&6&l[&4&lAuto&9&lMessager&6&l]&7&l >"
-
-# Use %prefix%, %newline% placeholder.
-reload-config: "%prefix%&a The plugin successfully reloaded!"
-no-message-to-list: "%prefix%&c There is no message in the file."
-all-messages-cleared: "%prefix%&c All message successfully cleared from the file!"
-no-messages-in-file: "%prefix%&c There is no message in the file."
+reload-config: "&aThe plugin successfully reloaded!"
+no-message-to-list: "&cThere is no message in the file."
+all-messages-cleared: "&cAll message successfully cleared from the file!"
+no-messages-in-file: "&cThere is no message in the file."
 bad-number: "&cNumber must be higher than&7 0&c!"
-toggle:
-  disabled: "%prefix%&c You have disabled auto messages."
-  enabled: "%prefix%&a You have enabled auto messages."
-
-# Use %perm% placeholder.
 no-permission: "&cYou don't have permission for that!&7 (%perm%)"
+unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
+unknown-command: "&cUnknown command.&7 Type '&f/%command% help&7' for help."
+add-cmd-usage: "&c Use: '&7/%command% add <message>&c'.&7 - Use placeholders, color codes, symbols."
+broadcast-usage: "&cPlease use '&7/%command% %args% <message>&c'.&7 - Use PAPI placeholders, symbols, color codes."
+remove-cmd-usage: "&cUse: '&7/%command% %args% <file line number>&c'."
 
-# Use %subcmd% placeholder.
-unknown-sub-command: "%prefix%&c Unknown sub-command&7 %subcmd%&c."
+toggle:
+  console-usage: "&cUse: &7/%command% toggle <player/all>"
+  enabled: "&aYou have enabled now the auto messages!"
+  disabled: "&cYou have disabled now the auto messages!"
+  no-player: "&cThere is no player available on the server."
+  player-not-found: "&cThis player&7 %player%&c not found!"
 
-# Use %command% placeholder.
-unknown-command: "%prefix%&c Unknown command.&7 Type '&f/%command% help&7' for help."
-add-cmd-usage: "%prefix%&c Use: '&7/%command% add <message>&c'.&7 - Use placeholders, color codes, symbols."
 list:
-  usage: "%prefix%&c Use: '&7/%command% list <1-2-3...>&c'"
   page-must-be-number: "&cThe page must be a number!"
   no-page: "&cPage with this number not exists."
-  # Use %page%, %max-page%, %texts% placeholder.
   header: "&7========&e Page: %page%&7/&e%max-page%&7 ========"
   list-texts: "%texts%"
   footer: "&7================"
 
-# Use %args% placeholder.
-broadcast-usage: "%prefix%&c Please use '&7/%command% %args% <message>&c'.&7 - Use PAPI placeholders, symbols, color codes."
-remove-cmd-usage: "%prefix%&c Use: '&7/%command% %args% <file line number>&c'."
 banned-players:
   usage: "&cUse:&7 '/%command% %args% <add/remove/list>'&c."
   add-usage: "&cUse:&7 '/%command% %args% add <playerName>'&c."
-  # Use %args2% placeholder.
   remove-usage: "&cUse:&7 '/%command% %args% %args2% <playerName>'&c."
-  # Use %player% placeholder.
   player-not-found: "&cThis player&7 %player%&c not found."
   success-add: "&aThe player&e %player%&a successfully added to list."
   success-remove: "&cThe player&e %player%&c successfully removed from list."
   player-already-added: "&cThis player&7 %player%&c already added to list."
   player-already-removed: "&cThis player&7 %player%&c already removed from list."
   no-banned-players: "&cNo banned player in the list."
-  # Use %players% placeholder.
+
   list:
   - "&cBanned players:"
   - "&6%players%"
 
-# Use %message% placeholder.
 broadcast-message: "&a[&cBroadcast&a]&r %message%"
 success-add-msg: "&aYou have been successfully added message:&r %message%"
+text-removed: "&cThe message successfully removed in line:&7 %word%"
 
-# Use %word% placeholder.
-text-removed: "&cThe message successfully removed:&7 %word%"
-
-# Use %number% placeholder.
-no-page: "&cPage with this number&7 %number%&c does not exists."
-
-# This feature lists all the chat panel help.
 chat-messages:
   1:
     - "&e&m---------&b> &e[&4Auto&9Messager&2 Help&e]&b <&e&m----------"
@@ -68,10 +52,9 @@ chat-messages:
     - "&7-&3 ()&7 -&3 command abbreviations"
     - ""
     - "&8/&a%command%&b [+TAB]&5 -&6 Main plugin info."
-    - "&8/&a%command% disable&5 -&6 Disable the plugin."
     - "&8/&a%command% help&9 [2-3]&5 -&6 Help commands."
     - "&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin."
-    - "&8/&a%command% toggle&5 -&6 Toggle on/off the auto messages."
+    - "&8/&a%command% toggle&9 [player/all]&5 -&6 Toggle on/off the auto messages."
     - "&e&m-------------------------------"
   2:
     - "&e&m---------&b> &e[&4Auto&9Messager&2 Help&c 2&e]&b <&e&m----------"
@@ -80,7 +63,7 @@ chat-messages:
     - "&8/&a%command% remove&3 (or rem)&c <file line number>&5 -&6 Remove text from the the file."
     - "&8/&a%command% clearall&5 -&6 Clear all message from the file."
     - "&8/&a%command% broadcast&3 (or bc)&c <message>&5 -&6 Send a broadcast message."
-    - "&8/&a%command% list&c <page>&5 -&6 List messages per page."
+    - "&8/&a%command% list&9 [page]&5 -&6 List messages per page."
     - "&e&m-------------------------------------------"
   3:
     - "&e&m---------&b> &e[&4Auto&9Messager&2 Help&c 3&e]&b <&e&m----------"

@@ -1,6 +1,6 @@
 name: AutoMessager
 main: hu.montlikadani.AutoMessager.bukkit.AutoMessager
-version: 2.0
+version: 2.1
 author: montlikadani
 description: Automatic messages always come in handy! :)
 softdepend: [PlaceholderAPI, Vault]
@@ -29,7 +29,6 @@ permissions:
        automessager.bannedplayers.remove: true
        automessager.bannedplayers.list: true
        automessager.reload: true
-       automessager.disable: true
        automessager.help: true
   automessager.seemsg:
     description: Allows you to see the messages broadcasted by AutoMessager.
@@ -70,6 +69,3 @@ permissions:
   automessager.reload:
     description: Reload the config files.
     default: false
-  automessager.disable:
-    description: Allow to player to disable plugin.
-    default: op

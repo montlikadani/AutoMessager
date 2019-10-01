@@ -1,8 +1,6 @@
 #=================================OOO====================================#
 #                   AutoMessager Configuration File                      #
-#=================================OOO====================================#
-# config.yml file. Plugin version: ${version}                            #
-# Author, created by: montlikadani                                       #
+#                  Author, created by: montlikadani                      #
 #=================================OOO====================================#
 # [Default configuration]                                                #
 # https://github.com/montlikadani/AutoMessager/blob/master/config.yml    #
@@ -12,8 +10,8 @@
 #                                                                        #
 # [Tips]                                                                 #
 # - Use color coding '&' character, on this page:                        #
-# http://minecraft.gamepedia.com/Formatting_codes                        #
-# # - If you find a bug, send here:                                      #
+# https://minecraft.gamepedia.com/Formatting_codes                       #
+# - If you find a bug, send here:                                        #
 # https://github.com/montlikadani/AutoMessager/issues                    #
 # - Use symbols in messages, on this page:                               #
 # https://github.com/montlikadani/AutoMessager/wiki/Symbols              #
@@ -34,11 +32,11 @@ use-json-message: false
 show-max-row-in-one-page: 8
 
 # In what worlds do NOT send a message?
-disabled-worlds: []
+disabled-worlds:
+#- hubs
 
-# The messages.txt (you have entered here) can use special characters here:
-# https://github.com/montlikadani/AutoMessager/wiki/Symbols
 # The file that will contain the messages to broadcast.
+# Supports custom file types, such as .yml or .txt
 message-file: "messages.txt"
 
 # The minimal amount of players that has to be online for a message to broadcast.
@@ -49,34 +47,44 @@ min-players: 1
 # Required Essentials plugin!
 disable-messages-when-player-afk: false
 
-# The %title% placeholder. You can enter this in the file.
-# Use %newline% placeholder.
-title: "&c[&aAuto&9Messager&c] "
+# Placeholder formats
+placeholder-format:
+  time:
+    # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
+    time-zone: "GMT0"
 
-# The suffix of the sender. You can enter this in the file.
-# Use %suffix% placeholder in the file.
-suffix: ""
+    # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+    # Used for %server-time% placeholder.
+    time-format:
+      format: "mm:HH"
+    # Used for %date% placeholder.
+    date-format:
+      format: "dd/MM/yyyy"
 
-# Time is the time between each message.
+    # %title% placeholder to show the title in a message.
+    title: "&c[&aAuto&9Messager&c] "
+
+    # %suffix% placeholder to show the suffix in a message.
+    suffix: ""
+
+# Time interval for sending messages.
 time: 3
-# Time settings.
+
+# Time settings
 # Variables: ticks, second (or sec), minute (or min), hour (or h)
 # Example: 20 ticks = 1 second; 1 second = 20 ticks; 1 minute = 60 second; 1 hour = 60 minute
 time-setup: min
 
-# Want to broadcast the messages in order or randomly?
-# Minimum 2 message needed!
+# Want to broadcast the messages in ordered or randomly?
+# Minimum 2 message needed to get a random message!
 random: false
 
-# Broadcast to console.
-# WARNING! It does not show symbols and JSON message in the console.
+# Does the plugin send the sent auto-messages to console?
 broadcast-to-console: false
 
 # Run commands after sending auto messages.
 run-commands:
-  enable: false
-  # Use %player%, %player-displayname%, %world% placeholder.
-  # Use player & console arguments for first.
+  # Usage: <commandSender>: <any command>
   commands:
   - "player: baltop"
   - "console: kit tools %player%"
@@ -88,6 +96,7 @@ run-commands:
 # 1.8.x: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
 sound:
   enable: false
+
   # Example: 1.9+: ENTITY_EXPERIENCE_ORB_PICKUP; 1.8: ORB_PICKUP
   # Usage: SOUND_NAME, volume, pitch
   type: ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1
@@ -95,12 +104,6 @@ sound:
 #=========================================#
 #             Plugin Settings             #
 #=========================================#
-# The AutoMessager plugin is disabled (false) or enabled (true).
-enabled: true
-
-# bStats Metrics.
-metrics: true
-
 # Check for updates.
 check-update: true
 
@@ -111,10 +114,9 @@ logconsole: true
 log-to-file: true
 
 # Plugin enable/disable messages in console.
-# Use %prefix%, %newline% placeholder.
-# >> NO supported the PlaceholderAPI! <<
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
-plugin-disable: '%prefix%&c The plugin successfully disabled!'
+# Use %newline% placeholder.
+plugin-enable: '&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v${version}&a!'
+plugin-disable: '&6[&4Auto&9Messager&6]&7 >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
 config-version: 4
