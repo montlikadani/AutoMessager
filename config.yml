@@ -49,6 +49,13 @@ disable-messages-when-player-afk: false
 
 # Placeholder formats
 placeholder-format:
+  # %title% placeholder to show the title in a message.
+  title: "&c[&aAuto&9Messager&c] "
+
+  # %suffix% placeholder to show the suffix in a message.
+  suffix: ""
+
+  # Time settings
   time:
     # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
     time-zone: "GMT0"
@@ -60,12 +67,6 @@ placeholder-format:
     # Used for %date% placeholder.
     date-format:
       format: "dd/MM/yyyy"
-
-    # %title% placeholder to show the title in a message.
-    title: "&c[&aAuto&9Messager&c] "
-
-    # %suffix% placeholder to show the suffix in a message.
-    suffix: ""
 
 # Time interval for sending messages.
 time: 3
@@ -86,9 +87,8 @@ broadcast-to-console: false
 run-commands:
   # Usage: <commandSender>: <any command>
   commands:
-  - "player: baltop"
-  - "console: kit tools %player%"
-  - "console: bal %player%"
+  #- "player: baltop"
+  #- "console: kit tools %player%"
 
 # Sound playback when broadcasting.
 # All sounds:
@@ -119,4 +119,4 @@ plugin-enable: '&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v
 plugin-disable: '&6[&4Auto&9Messager&6]&7 >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 4
+config-version: 5

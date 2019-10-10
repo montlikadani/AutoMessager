@@ -42,8 +42,7 @@ public class AutoMessager extends Plugin implements Listener {
 	private Announce announce;
 	private File file;
 
-	public int time = 0;
-	private int cver = 2;
+	private int cver = 3;
 
 	@Override
 	public void onEnable() {

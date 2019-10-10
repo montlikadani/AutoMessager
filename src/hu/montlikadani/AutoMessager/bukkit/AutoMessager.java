@@ -56,8 +56,8 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	private boolean papi;
 	private int timer = -1;
-	private int cver = 4;
-	private int msver = 3;
+	private int cver = 5;
+	private int msver = 4;
 
 	@Override
 	public void onEnable() {
@@ -206,7 +206,8 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			return false;
 		}
 
-		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager()
+				.getRegistration(Permission.class);
 		if (rsp == null) {
 			return false;
 		}
