@@ -1,3 +1,18 @@
+# v2.1
+Added:
+  Added argument for /am toggle all to toggle the messages for all online players.
+  Added support for .yml file formats for sending auto messages.
+ Fixes:
+  Some fixes related to generating new files.
+  Fixes for reading custom message files.
+  Fixed issue when used ".txt" files, it does not read the first line, so does not announce that message.
+  Fixed issue for scheduling messages
+  Fixed some issues for deleting a text from .txt files
+Other:
+  Toggled messages are now saved (when plugin disabled) in a file to remain the toggles.
+  Lines starting with "#" will be ignored, so it does not announce it.
+  No more %newline%, use \n
+
 # v2.0
 Added:
   Added /am bannedplayers command to add/remove/list players. - To not receive the auto-messages for players.
