@@ -50,6 +50,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	private Announce announce = null;
 	private Time time = null;
 	private Permission perm = null;
+	private File file;
 
 	private List<String> msgs = new ArrayList<>();
 
@@ -97,10 +98,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			Bukkit.getPluginManager().registerEvents(this, this);
 
 			loadToggledMessages();
-
-			if (checkOnlinePlayers()) {
-				Bukkit.getOnlinePlayers().forEach(announce::schedule);
-			}
+			announce.schedule();
 
 			if (config.getBoolean("check-update")) {
 				logConsole(checkVersion("console"));
@@ -120,7 +118,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			}
 
 			if (!config.getString("plugin-enable", "").equals("")) {
-				getServer().getConsoleSender().sendMessage(defaults(config.getString("plugin-enable")));
+				sendMsg(getServer().getConsoleSender(), colorMsg(config.getString("plugin-enable")));
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -138,7 +136,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			instance = null;
 
 			if (!config.getString("plugin-disable", "").equals("")) {
-				getServer().getConsoleSender().sendMessage(defaults(config.getString("plugin-disable")));
+				sendMsg(getServer().getConsoleSender(), colorMsg(config.getString("plugin-disable")));
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -231,8 +229,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		msgs.clear();
 
+		if (file == null) {
+			file = new File(getFolder(), config.getString("message-file", "messages.txt"));
+		}
+
 		if (fName.endsWith(".yml")) {
-			File file = getMsgFile();
 			FileConfiguration msgC = YamlConfiguration.loadConfiguration(file);
 			if (!file.exists()) {
 				try {
@@ -266,7 +267,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			}
 		} else {
 			try {
-				File file = getMsgFile();
 				if (!file.exists()) {
 					file.createNewFile();
 				}
@@ -291,26 +291,12 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		}
 	}
 
-	File getMsgFile() {
-		return new File(getFolder(), config.getString("message-file", "messages.txt"));
-	}
-
 	@EventHandler
 	public void onPlJoin(PlayerJoinEvent event) {
-		if (announce != null) {
-			if (!config.getBoolean("enable-broadcast")) {
-				announce.cancelTask();
-				return;
-			}
-
-			if (announce.getTask() == -1 && checkOnlinePlayers()) {
-				Bukkit.getOnlinePlayers().forEach(announce::schedule);
-			}
-		} else {
+		if (announce == null) {
 			announce = new Announce(this);
-			if (checkOnlinePlayers() && config.getBoolean("enable-broadcast")) {
-				Bukkit.getOnlinePlayers().forEach(announce::schedule);
-			}
+			announce.load();
+			announce.schedule();
 		}
 
 		Player p = event.getPlayer();
@@ -498,7 +484,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	boolean checkOnlinePlayers() {
-		int conf = config.getInt("min-players");
+		if (config.getInt("min-players") == 0) {
+			return true;
+		}
+
+		int conf = config.getInt("min-players", 1);
 		int online = Bukkit.getOnlinePlayers().size();
 		return online >= conf;
 	}
@@ -509,6 +499,10 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			folder.mkdir();
 		}
 		return folder;
+	}
+
+	File getMsgFile() {
+		return file;
 	}
 
 	private boolean checkJavaVersion() {
@@ -544,17 +538,8 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		return instance;
 	}
 
-	String defaults(String str) {
-		if (str.contains("%newline%")) {
-			str = str.replace("%newline%", "\n");
-		}
-
-		return colorMsg(str);
-	}
-
 	void throwMsg() {
 		logConsole(Level.WARNING, "There was an error. Please report it here:\nhttps://github.com/montlikadani/AutoMessager/issues");
-		return;
 	}
 
 	public String colorMsg(String msg) {
@@ -581,8 +566,15 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	void sendMsg(org.bukkit.command.CommandSender sender, String s) {
-		if (s != null && !s.equals(""))
-			sender.sendMessage(s);
+		if (s != null && !s.equals("")) {
+			if (s.contains("\n")) {
+				for (String msg : s.split("\n")) {
+					sender.sendMessage(msg);
+				}
+			} else {
+				sender.sendMessage(s);
+			}
+		}
 	}
 
 	String replaceVariables(Player pl, String str) {
@@ -616,10 +608,10 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		}
 
 		if (!config.getString(path + "title", "").equals("")) {
-			str = str.replace("%title%", config.getString(path + "title").replace("%newline%", "\n"));
+			str = str.replace("%title%", config.getString(path + "title").replace("\\n", "\n"));
 		}
 		if (!config.getString(path + "suffix", "").equals("")) {
-			str = str.replace("%suffix%", config.getString(path + "suffix"));
+			str = str.replace("%suffix%", config.getString(path + "suffix").replace("\\n", "\n"));
 		}
 
 		str = setPlaceholders(pl, str);
@@ -645,7 +637,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		if (str.contains("%motd%"))
 			str = str.replace("%motd%", Bukkit.getServer().getMotd());
 
-		return defaults(str);
+		return colorMsg(str);
 	}
 
 	@SuppressWarnings("deprecation")

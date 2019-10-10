@@ -38,14 +38,14 @@ public class Announce {
 		lastMessage = cm;
 	}
 
-	public void schedule(final ProxiedPlayer p) {
+	public void schedule() {
+		if (!plugin.config.getBoolean("enable-broadcast")) {
+			return;
+		}
+
 		if (task == null) {
 			task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
 				if (warningCounter <= 4) {
-					if (plugin.getEnabledMessages() != null && (plugin.getEnabledMessages().contains(p.getUniqueId()))) {
-						return;
-					}
-
 					if (plugin.getMessages().size() < 1) {
 						plugin.getLogger().log(Level.WARNING,
 								"There is no message in '" + plugin.config.getString("message-file") + "' file!");
@@ -57,7 +57,19 @@ public class Announce {
 									"Will stop outputing warnings now. Please write a message to the '"
 											+ plugin.config.getString("message-file") + "' file.");
 						}
-					} else {
+
+						return;
+					}
+
+					if (!plugin.checkOnlinePlayers()) {
+						return;
+					}
+
+					for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
+						if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
+							continue;
+						}
+
 						if (isRandom) {
 							onRandom(p);
 						} else {
@@ -65,7 +77,8 @@ public class Announce {
 						}
 					}
 				}
-			}, 0L, plugin.config.getInt("time", 1 * 1000), TimeUnit.valueOf(plugin.config.getString("time-setup").toUpperCase()));
+			}, 0L, plugin.config.getInt("time", 5),
+					TimeUnit.valueOf(plugin.config.getString("time-setup", "minutes").toUpperCase()));
 		}
 	}
 
@@ -82,14 +95,14 @@ public class Announce {
 
 	private void onRandom(ProxiedPlayer p) {
 		int nm = getNextMessage();
-		String message = plugin.getMessages().get(nm < 0 ? 0 : nm);
+		String message = plugin.getMessages().get(nm);
 		lastRandom = nm;
 		send(p, message);
 	}
 
 	private void onInOrder(ProxiedPlayer p) {
 		int nm = getNextMessage();
-		String message = plugin.getMessages().get(nm < 0 ? 0 : nm);
+		String message = plugin.getMessages().get(nm);
 		send(p, message);
 	}
 
@@ -104,17 +117,21 @@ public class Announce {
 		}
 
 		int nm = (messageCounter + 1);
-		if (nm == lastMessage) {
+		if (nm >= lastMessage) {
 			messageCounter = 0;
 			return 0;
 		}
 
-		messageCounter++;
+		++messageCounter;
 		return nm;
 	}
 
 	private void send(ProxiedPlayer p, String message) {
 		String msg = message;
+
+		if (msg.isEmpty()) {
+			return;
+		}
 
 		String path = "placeholder-format.time.";
 		if (!plugin.config.getString(path + "title", "").equals("")) {

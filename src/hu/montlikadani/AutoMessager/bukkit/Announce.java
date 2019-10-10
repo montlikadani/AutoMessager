@@ -47,15 +47,14 @@ public class Announce {
 		lastMessage = cm;
 	}
 
-	public void schedule(final Player p) {
+	public void schedule() {
+		if (!plugin.getConfig().getBoolean("enable-broadcast")) {
+			return;
+		}
+
 		if (task == -1) {
 			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 				if (warningCounter <= 4) {
-					if (Commands.enabled != null
-							&& (Commands.enabled.containsKey(p.getUniqueId()) && !Commands.enabled.get(p.getUniqueId()))) {
-						return;
-					}
-
 					if (plugin.getMessages().size() < 1) {
 						plugin.logConsole(Level.WARNING,
 								"There is no message in '" + plugin.getConfig().getString("message-file") + "' file!");
@@ -67,7 +66,19 @@ public class Announce {
 									"Will stop outputing warnings now. Please write a message to the '"
 											+ plugin.getConfig().getString("message-file") + "' file.");
 						}
-					} else {
+
+						return;
+					}
+
+					if (!plugin.checkOnlinePlayers()) {
+						return;
+					}
+
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						if (Commands.enabled.containsKey(p.getUniqueId()) && !Commands.enabled.get(p.getUniqueId())) {
+							continue;
+						}
+
 						if (isRandom) {
 							onRandom(p);
 						} else {
@@ -112,12 +123,12 @@ public class Announce {
 		}
 
 		int nm = (messageCounter + 1);
-		if (nm == lastMessage) {
+		if (nm >= lastMessage) {
 			messageCounter = 0;
 			return 0;
 		}
 
-		messageCounter++;
+		++messageCounter;
 		return nm;
 	}
 

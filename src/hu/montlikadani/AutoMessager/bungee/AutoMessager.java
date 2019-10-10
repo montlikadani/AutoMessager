@@ -35,10 +35,12 @@ public class AutoMessager extends Plugin implements Listener {
 	private List<UUID> msgEnable = new ArrayList<>();
 	private List<String> msgs = new ArrayList<>();
 
+	private static AutoMessager instance;
 	private boolean enabled;
 
 	public Configuration config;
 	private Announce announce;
+	private File file;
 
 	public int time = 0;
 	private int cver = 2;
@@ -47,6 +49,7 @@ public class AutoMessager extends Plugin implements Listener {
 	public void onEnable() {
 		try {
 			enabled = true;
+			instance = this;
 			createFile();
 
 			registerCommand();
@@ -54,6 +57,7 @@ public class AutoMessager extends Plugin implements Listener {
 
 			announce = new Announce(this);
 			announce.load();
+			announce.schedule();
 		} catch (Throwable e) {
 			e.printStackTrace();
 			getLogger().log(Level.WARNING,
@@ -119,8 +123,11 @@ public class AutoMessager extends Plugin implements Listener {
 
 		msgs.clear();
 
+		if (file == null) {
+			file = new File(getDataFolder(), config.getString("message-file", "messages.txt"));
+		}
+
 		if (fName.endsWith(".yml")) {
-			File file = getMsgFile();
 			ConfigurationProvider msgC = ConfigurationProvider.getProvider(YamlConfiguration.class);
 			if (!file.exists()) {
 				try {
@@ -160,7 +167,6 @@ public class AutoMessager extends Plugin implements Listener {
 			}
 		} else {
 			try {
-				File file = getMsgFile();
 				if (!file.exists()) {
 					file.createNewFile();
 				}
@@ -184,121 +190,19 @@ public class AutoMessager extends Plugin implements Listener {
 		}
 	}
 
-	public File getMsgFile() {
-		return new File(getDataFolder(), config.getString("message-file", "messages.txt"));
-	}
-
 	@EventHandler
 	public void onJoin(LoginEvent event) {
-		if (announce != null) {
-			announce.cancelTask();
-
-			if (!config.getBoolean("enable-broadcast")) {
-				return;
-			}
-
-			if (announce.getTask() == null && checkOnlinePlayers()) {
-				getProxy().getPlayers().forEach(announce::schedule);
-			}
-		} else {
+		if (announce == null) {
 			announce = new Announce(this);
 			announce.load();
-			if (checkOnlinePlayers() && config.getBoolean("enable-broadcast")) {
-				getProxy().getPlayers().forEach(announce::schedule);
-			}
+			announce.schedule();
 		}
 	}
 
 	private void registerCommand() {
 		getProxy().getPluginManager().registerCommand(this, new Command("automessager") {
 			public void execute(CommandSender s, String[] args) {
-				if (args.length >= 1) {
-					if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
-						if (!s.hasPermission("automessager.reload")) {
-							sendMessage(s, "messages.no-permission");
-							return;
-						}
-
-						if (announce != null) {
-							announce.cancelTask();
-							announce.load();
-							if (checkOnlinePlayers() && config.getBoolean("enable-broadcast")) {
-								getProxy().getPlayers().forEach(announce::schedule);
-							}
-						}
-
-						createFile();
-						sendMessage(s, "messages.reload-config");
-					} else if (args[0].equalsIgnoreCase("toggle")) {
-						if (!s.hasPermission("automessager.toggle")) {
-							sendMessage(s, "messages.no-permission");
-							return;
-						}
-
-						if (getProxy().getPlayers().isEmpty()) {
-							sendMessage(s, "messages.toggle.no-player");
-							return;
-						}
-
-						for (ProxiedPlayer pl : getProxy().getPlayers()) {
-							if (!msgEnable.contains(pl.getUniqueId())) {
-								msgEnable.add(pl.getUniqueId());
-								sendMessage(s, "messages.toggle.disabled");
-							} else {
-								msgEnable.remove(pl.getUniqueId());
-								sendMessage(s, "messages.toggle.enabled");
-							}
-						}
-					} else if (args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")) {
-						if (!s.hasPermission("automessager.broadcast")) {
-							sendMessage(s, "messages.no-permission");
-							return;
-						}
-
-						if (args.length < 2) {
-							sendMessage(s, "messages.broadcast-usage");
-							return;
-						}
-
-						StringBuilder builder = new StringBuilder();
-						for (int i = 1; i < args.length; i++) {
-							builder.append(args[i] + " ");
-						}
-
-						String msg = builder.toString();
-						msg = colorMsg(msg);
-						msg = setSymbols(msg);
-						getProxy().broadcast(new ComponentBuilder(
-								colorMsg(config.getString("messages.broadcast-message").replace("%message%", msg)))
-										.create());
-					} else if (args[0].equalsIgnoreCase("list")) {
-						if (!s.hasPermission("automessager.list")) {
-							sendMessage(s, "messages.no-permission");
-							return;
-						}
-
-						if (msgs.size() < 1) {
-							sendMessage(s, "messages.no-message-to-list");
-							return;
-						}
-
-						for (int i = 1; i < msgs.size(); i++) {
-							String msgt = msgs.get(i);
-							String msgto = colorMsg(msgt);
-							if (s instanceof ProxiedPlayer) {
-								ProxiedPlayer p = (ProxiedPlayer) s;
-								msgto = replaceVariables(msgto, p);
-							} else
-								msgto = setSymbols(msgto);
-
-							msgto = msgto.replace("%title%",
-									config.getString("placeholder-format.time.title", "").replace("%newline%", "\n"));
-							msgto = msgto.replace("%suffix%",
-									colorMsg(config.getString("placeholder-format.time.suffix", "")));
-							s.sendMessage(new ComponentBuilder(msgto).create());
-						}
-					}
-				} else {
+				if (args.length == 0) {
 					if (!s.hasPermission("automessager.help")) {
 						sendMessage(s, "messages.no-permission");
 						return;
@@ -306,6 +210,88 @@ public class AutoMessager extends Plugin implements Listener {
 
 					for (String msg : config.getStringList("messages.chat-messages")) {
 						s.sendMessage(new ComponentBuilder(colorMsg(msg)).create());
+					}
+
+					return;
+				}
+
+				if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
+					if (!s.hasPermission("automessager.reload")) {
+						sendMessage(s, "messages.no-permission");
+						return;
+					}
+
+					if (announce != null) {
+						announce.cancelTask();
+					} else {
+						announce = new Announce(instance);
+						announce.load();
+					}
+
+					announce.schedule();
+
+					createFile();
+					sendMessage(s, "messages.reload-config");
+				} else if (args[0].equalsIgnoreCase("toggle")) {
+					if (!s.hasPermission("automessager.toggle")) {
+						sendMessage(s, "messages.no-permission");
+						return;
+					}
+
+					if (getProxy().getPlayers().isEmpty()) {
+						sendMessage(s, "messages.toggle.no-player");
+						return;
+					}
+
+					for (ProxiedPlayer pl : getProxy().getPlayers()) {
+						if (!msgEnable.contains(pl.getUniqueId())) {
+							msgEnable.add(pl.getUniqueId());
+							sendMessage(s, "messages.toggle.disabled");
+						} else {
+							msgEnable.remove(pl.getUniqueId());
+							sendMessage(s, "messages.toggle.enabled");
+						}
+					}
+				} else if (args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")) {
+					if (!s.hasPermission("automessager.broadcast")) {
+						sendMessage(s, "messages.no-permission");
+						return;
+					}
+
+					if (args.length < 2) {
+						sendMessage(s, "messages.broadcast-usage");
+						return;
+					}
+
+					StringBuilder builder = new StringBuilder();
+					for (int i = 1; i < args.length; i++) {
+						builder.append(args[i] + " ");
+					}
+
+					String msg = builder.toString();
+					msg = colorMsg(msg);
+					msg = setSymbols(msg);
+					getProxy().broadcast(new ComponentBuilder(
+							colorMsg(config.getString("messages.broadcast-message").replace("%message%", msg)))
+									.create());
+				} else if (args[0].equalsIgnoreCase("list")) {
+					if (!s.hasPermission("automessager.list")) {
+						sendMessage(s, "messages.no-permission");
+						return;
+					}
+
+					if (msgs.size() < 1) {
+						sendMessage(s, "messages.no-message-to-list");
+						return;
+					}
+
+					for (int i = 0; i < msgs.size(); i++) {
+						String msgt = msgs.get(i);
+						if (msgt.isEmpty()) {
+							continue;
+						}
+
+						s.sendMessage(new ComponentBuilder(msgt).create());
 					}
 				}
 			}
@@ -406,7 +392,11 @@ public class AutoMessager extends Plugin implements Listener {
 	}
 
 	public boolean checkOnlinePlayers() {
-		int conf = config.getInt("min-players");
+		if (config.getInt("min-players") == 0) {
+			return true;
+		}
+
+		int conf = config.getInt("min-players", 1);
 		int online = getProxy().getPlayers().size();
 		return online >= conf;
 	}
@@ -435,8 +425,7 @@ public class AutoMessager extends Plugin implements Listener {
 		return a;
 	}
 
-	@SuppressWarnings("resource")
-	public void deleteMessage(File file, int lines) {
+	void deleteMessage(File file, int lines) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			StringBuffer sb = new StringBuffer("");
@@ -446,17 +435,22 @@ public class AutoMessager extends Plugin implements Listener {
 			while ((line = br.readLine()) != null) {
 				if (linenumber < lines || linenumber >= lines + numlines)
 					sb.append(line + "\n");
+
 				linenumber++;
 			}
+
+			br.close();
 
 			if ((lines + numlines) > linenumber) {
 				getLogger().log(Level.INFO, "End of file reached.");
 				return;
 			}
 
-			br.close();
-			FileWriter fw = new FileWriter(new File(String.valueOf(file)));
-			fw.write(sb.toString());
+			String msg = sb.toString();
+			msgs.remove(msg);
+
+			FileWriter fw = new FileWriter(new File(file.getPath()));
+			fw.write(msg);
 			fw.close();
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -484,6 +478,14 @@ public class AutoMessager extends Plugin implements Listener {
 
 	public List<UUID> getEnabledMessages() {
 		return msgEnable;
+	}
+
+	public File getMsgFile() {
+		return file;
+	}
+
+	public AutoMessager getInstance() {
+		return instance;
 	}
 
 	public String setSymbols(String s) {
