@@ -3,6 +3,7 @@ package hu.montlikadani.AutoMessager.bungee;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import hu.montlikadani.AutoMessager.Global;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -13,7 +14,7 @@ public class Announce {
 
 	private ScheduledTask task = null;
 
-	private boolean isRandom;
+	private boolean random;
 
 	private int messageCounter;
 	private int lastMessage;
@@ -24,15 +25,23 @@ public class Announce {
 		this.plugin = plugin;
 	}
 
+	public boolean isRandom() {
+		return random;
+	}
+
+	public ScheduledTask getTask() {
+		return task;
+	}
+
 	public void load() {
 		// We need to start from -1, due to first line reading
 		messageCounter = -1;
 		warningCounter = 0;
-		isRandom = false;
+		random = false;
 
 		int cm = plugin.getMessages().size();
 		if (plugin.config.getBoolean("random") && cm > 2) {
-			isRandom = true;
+			random = true;
 		}
 
 		lastMessage = cm;
@@ -70,7 +79,7 @@ public class Announce {
 							continue;
 						}
 
-						if (isRandom) {
+						if (random) {
 							onRandom(p);
 						} else {
 							onInOrder(p);
@@ -89,10 +98,6 @@ public class Announce {
 		}
 	}
 
-	public ScheduledTask getTask() {
-		return task;
-	}
-
 	private void onRandom(ProxiedPlayer p) {
 		int nm = getNextMessage();
 		String message = plugin.getMessages().get(nm);
@@ -107,10 +112,10 @@ public class Announce {
 	}
 
 	int getNextMessage() {
-		if (isRandom) {
-			int r = plugin.getRandomInt(lastMessage - 1);
+		if (random) {
+			int r = Global.getRandomInt(lastMessage - 1);
 			while (r == lastRandom) {
-				r = plugin.getRandomInt(lastMessage - 1);
+				r = Global.getRandomInt(lastMessage - 1);
 			}
 
 			return r;
@@ -127,18 +132,18 @@ public class Announce {
 	}
 
 	private void send(ProxiedPlayer p, String message) {
-		String msg = message;
-
-		if (msg.isEmpty()) {
+		if (message.isEmpty()) {
 			return;
 		}
 
+		String msg = message;
+
 		String path = "placeholder-format.time.";
-		if (!plugin.config.getString(path + "title", "").equals("")) {
+		if (!plugin.config.getString(path + "title", "").isEmpty()) {
 			msg = msg.replace("%title%", plugin.config.getString(path + "title").replace("%newline%", "\n"));
 		}
 
-		if (!plugin.config.getString(path + "suffix", "").equals("")) {
+		if (!plugin.config.getString(path + "suffix", "").isEmpty()) {
 			msg = msg.replace("%suffix%", plugin.config.getString(path + "suffix"));
 		}
 

@@ -6,24 +6,26 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.earth2me.essentials.Essentials;
 
-import hu.montlikadani.AutoMessager.bukkit.Permissions.Perm;
+import hu.montlikadani.AutoMessager.Global;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+
+import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
 
 public class Announce {
 
 	private final AutoMessager plugin;
 
 	private List<UUID> msgEnabled = new ArrayList<>();
+
+	private boolean random = false;
 	private int task = -1;
-
-	private boolean isRandom;
-
 	private int messageCounter;
 	private int lastMessage;
 	private int lastRandom;
@@ -33,38 +35,47 @@ public class Announce {
 		this.plugin = plugin;
 	}
 
+	public boolean isRandom() {
+		return random;
+	}
+
+	public int getTask() {
+		return task;
+	}
+
 	public void load() {
 		// We need to start from -1, due to first line reading
 		messageCounter = -1;
 		warningCounter = 0;
-		isRandom = false;
+		random = false;
 
-		int cm = plugin.getMessages().size();
-		if (plugin.getConfig().getBoolean("random") && cm > 2) {
-			isRandom = true;
+		int cm = plugin.getFileHandler().getTexts().size();
+		if (plugin.getConf().getConfig().getBoolean("random") && cm > 2) {
+			random = true;
 		}
 
 		lastMessage = cm;
 	}
 
 	public void schedule() {
-		if (!plugin.getConfig().getBoolean("enable-broadcast")) {
+		final FileConfiguration config = plugin.getConf().getConfig();
+		if (!config.getBoolean("enable-broadcast")) {
 			return;
 		}
 
 		if (task == -1) {
 			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 				if (warningCounter <= 4) {
-					if (plugin.getMessages().size() < 1) {
-						plugin.logConsole(Level.WARNING,
-								"There is no message in '" + plugin.getConfig().getString("message-file") + "' file!");
+					if (plugin.getFileHandler().getTexts().size() < 1) {
+						logConsole(Level.WARNING,
+								"There is no message in '" + config.getString("message-file") + "' file!");
 
 						warningCounter++;
 
 						if (warningCounter == 5) {
-							plugin.logConsole(Level.WARNING,
+							logConsole(Level.WARNING,
 									"Will stop outputing warnings now. Please write a message to the '"
-											+ plugin.getConfig().getString("message-file") + "' file.");
+											+ config.getString("message-file") + "' file.");
 						}
 
 						return;
@@ -79,7 +90,7 @@ public class Announce {
 							continue;
 						}
 
-						if (isRandom) {
+						if (random) {
 							onRandom(p);
 						} else {
 							onInOrder(p);
@@ -95,28 +106,24 @@ public class Announce {
 		task = -1;
 	}
 
-	public int getTask() {
-		return task;
-	}
-
 	private void onRandom(Player p) {
 		int nm = getNextMessage();
-		String message = plugin.getMessages().get(nm);
+		String message = plugin.getFileHandler().getTexts().get(nm);
 		lastRandom = nm;
 		send(p, message);
 	}
 
 	private void onInOrder(Player p) {
 		int nm = getNextMessage();
-		String message = plugin.getMessages().get(nm);
+		String message = plugin.getFileHandler().getTexts().get(nm);
 		send(p, message);
 	}
 
 	int getNextMessage() {
-		if (isRandom) {
-			int r = plugin.getRandomInt(lastMessage - 1);
+		if (random) {
+			int r = Global.getRandomInt(lastMessage - 1);
 			while (r == lastRandom) {
-				r = plugin.getRandomInt(lastMessage - 1);
+				r = Global.getRandomInt(lastMessage - 1);
 			}
 
 			return r;
@@ -132,14 +139,16 @@ public class Announce {
 		return nm;
 	}
 
-	private void send(Player p, String message) {
-		String msg = message;
-
-		if (msg.isEmpty()) {
+	private void send(Player p, final String message) {
+		if (message.isEmpty()) {
 			return;
 		}
 
-		if (plugin.getConfig().getBoolean("disable-messages-when-player-afk")) {
+		String msg = message;
+
+		FileConfiguration config = plugin.getConf().getConfig();
+
+		if (config.getBoolean("disable-messages-when-player-afk", false)) {
 			if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 				if (org.bukkit.plugin.java.JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk()) {
 					if (!msgEnabled.contains(p.getUniqueId())) {
@@ -152,33 +161,32 @@ public class Announce {
 					}
 				}
 			} else {
-				plugin.logConsole(Level.WARNING, "The Essentials plugin is not enabled or loaded, please enable.");
+				logConsole(Level.WARNING, "The Essentials plugin is not enabled or loaded, please enable.");
 			}
 		}
 
-		if (plugin.getConfig().getStringList("disabled-worlds").contains(p.getWorld().getName())) {
+		if (config.getStringList("disabled-worlds").contains(p.getWorld().getName())) {
 			return;
 		}
 
-		if (plugin.bpls_file != null && plugin.bpls_file.exists()
-				&& plugin.bpls.getStringList("banned-players").contains(p.getName()))
+		if (plugin.getConf().isBannedFileExists()
+				&& plugin.getConf().getBpls().getStringList("banned-players").contains(p.getName()))
 			return;
 
-		msg = plugin.replaceVariables(p, msg);
+		msg = Util.replaceVariables(p, msg);
+		msg = msg.replace("\\n", "\n");
 
 		if ((Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")
 				&& PermissionsEx.getPermissionManager().has(p, Perm.SEEMSG.getPerm()))
 				|| p.hasPermission(Perm.SEEMSG.getPerm())) {
-			if (plugin.getConfig().getBoolean("use-json-message") && message.startsWith("json:")) {
+			if (config.getBoolean("use-json-message") && message.startsWith("json:")) {
 				msg = msg.replace("json:", "");
 
 				try {
-					try {
-						Class.forName("org.spigotmc.SpigotConfig");
-
+					if (plugin.isSpigot()) {
 						BaseComponent[] bc = ComponentSerializer.parse(msg);
 						p.spigot().sendMessage(bc);
-					} catch (ClassNotFoundException e) {
+					} else {
 						String ver = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",")
 								.split(",")[3];
 						Object parsedMessage = Class
@@ -193,7 +201,7 @@ public class Announce {
 						Object craftPlayer = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
 								.cast(p);
 						Object craftHandle = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
-								.getMethod("getHandle", new Class[0]).invoke(craftPlayer, new Object[0]);
+								.getMethod("getHandle").invoke(craftPlayer);
 						Object playerConnection = Class.forName("net.minecraft.server." + ver + ".EntityPlayer")
 								.getField("playerConnection").get(craftHandle);
 
@@ -203,7 +211,7 @@ public class Announce {
 								.invoke(playerConnection, new Object[] { packetPlayOutChat });
 					}
 				} catch (Throwable e) {
-					plugin.logConsole(Level.WARNING, "Invalid JSON format: " + msg);
+					logConsole(Level.WARNING, "Invalid JSON format: " + msg);
 					return;
 				}
 			}
@@ -214,37 +222,38 @@ public class Announce {
 				String wName = w.getWorld().getName();
 				String world = msg.split("_")[0].replace("world:", "").replace("_", "");
 
-				if (wName.equals(world)) {
-					msg = msg.replace("world:" + wName + "_", "");
-
-					for (int x = 0; x < w.getWorld().getPlayers().size(); x++) {
-						Bukkit.getWorld(wName).getPlayers().get(x).sendMessage(msg);
-					}
-				} else
+				if (!wName.equals(world)) {
 					return;
+				}
+
+				msg = msg.replace("world:" + wName + "_", "");
+
+				for (int x = 0; x < w.getWorld().getPlayers().size(); x++) {
+					Bukkit.getWorld(wName).getPlayers().get(x).sendMessage(msg);
+				}
 			} else if (message.startsWith("player:")) {
 				String player = msg.split("_")[0].replace("player:", "").replace("_", "");
 
-				if (p.getName().equals(player)) {
-					msg = msg.replace("player:" + Bukkit.getPlayer(player).getName() + "_", "");
-
-					Bukkit.getPlayer(player).sendMessage(msg);
-				} else
+				if (!p.getName().equals(player)) {
 					return;
+				}
+
+				msg = msg.replace("player:" + Bukkit.getPlayer(player).getName() + "_", "");
+
+				Bukkit.getPlayer(player).sendMessage(msg);
 			} else if (message.startsWith("group:")) {
 				if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-					String gr = msg.split("_")[0].replace("group:", "").replace("_", "");
-
-					msg = msg.replace("group:" + gr + "_", "");
-
-					String group = plugin.getVaultPerm().getPrimaryGroup(p);
-					if (group.equals(gr)) {
-						p.sendMessage(msg);
-					}
-				} else {
-					plugin.logConsole(Level.WARNING,
-							"The Vault plugin not found. Without the per-group messages not work.");
+					logConsole(Level.WARNING, "The Vault plugin not found. Without the per-group messages not work.");
 					return;
+				}
+
+				String gr = msg.split("_")[0].replace("group:", "").replace("_", "");
+
+				msg = msg.replace("group:" + gr + "_", "");
+
+				String group = plugin.getVaultPerm().getPrimaryGroup(p);
+				if (group != null && group.equals(gr)) {
+					p.sendMessage(msg);
 				}
 			} else if (message.startsWith("permission:")) {
 				String perm = msg.split("_")[0].replace("permission:", "").replace("_", "");
@@ -265,18 +274,18 @@ public class Announce {
 				p.sendMessage(msg);
 			}
 
-			if (plugin.getConfig().getStringList("run-commands.commands") != null
-					&& !plugin.getConfig().getStringList("run-commands.commands").isEmpty()) {
-				for (String cmd : plugin.getConfig().getStringList("run-commands.commands")) {
+			if (config.getStringList("run-commands.commands") != null
+					&& !config.getStringList("run-commands.commands").isEmpty()) {
+				for (String cmd : config.getStringList("run-commands.commands")) {
 					String[] arg = cmd.split(": ");
 					if (arg.length < 2) {
-						plugin.logConsole(Level.WARNING,
-								"The command " + cmd + " invalid. Please follow the instructions which found in comments.");
+						logConsole(Level.WARNING, "The command " + cmd
+								+ " invalid. Please follow the instructions which found in comments.");
 						continue;
 					}
 
 					String t = arg[1];
-					t = plugin.setPlaceholders(p, t);
+					t = Util.setPlaceholders(p, t);
 
 					if (arg[0].equals("console")) {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), t);
@@ -286,20 +295,19 @@ public class Announce {
 				}
 			}
 
-			if (plugin.getConfig().getBoolean("sound.enable")) {
+			if (config.getBoolean("sound.enable")) {
 				try {
-					String[] split = plugin.getConfig().getString("sound.type").split(", ");
+					String[] split = config.getString("sound.type").split(", ");
 					p.playSound(p.getLocation(), org.bukkit.Sound.valueOf(split[0]),
 							(split.length == 2 ? Float.valueOf(split[1]) : 1f),
 							(split.length == 3 ? Float.valueOf(split[2]) : 1f));
 				} catch (Exception e) {
-					plugin.logConsole(Level.WARNING,
-							"Sound type is invalid: " + plugin.getConfig().getString("sound.type"));
+					logConsole(Level.WARNING, "Sound type is invalid: " + config.getString("sound.type"));
 				}
 			}
 		}
 
-		if (plugin.getConfig().getBoolean("broadcast-to-console")) {
+		if (config.getBoolean("broadcast-to-console")) {
 			if (!(message.startsWith("json:") && message.startsWith("world:") && message.startsWith("player:")
 					&& message.startsWith("group:") && message.startsWith("permission:"))) {
 				Bukkit.getConsoleSender().sendMessage(msg);

@@ -14,31 +14,32 @@ public class Time {
 		}
 	}
 
-	private final void countTimer() {
-		String s = plugin.getConfig().getString("time-setup", "");
-		if (!s.equals("")) {
-			switch (s.toLowerCase()) {
-			case "tick":
-				time *= 1;
-				break;
-			case "sec":
-			case "second":
-				time *= 20;
-				break;
-			case "min":
-			case "minute":
-				time *= 1200;
-				break;
-			case "h":
-			case "hour":
-				time *= 72000;
-				break;
-			default:
-				time *= 20;
-				break;
-			}
-		} else {
+	private void countTimer() {
+		String s = plugin.getConf().getConfig().getString("time-setup", "");
+		if (s.isEmpty()) {
 			time *= 20;
+			return;
+		}
+
+		switch (s.toLowerCase()) {
+		case "tick":
+			time *= 1;
+			break;
+		case "sec":
+		case "second":
+			time *= 20;
+			break;
+		case "min":
+		case "minute":
+			time *= 1200;
+			break;
+		case "h":
+		case "hour":
+			time *= 72000;
+			break;
+		default:
+			time *= 20;
+			break;
 		}
 	}
 
