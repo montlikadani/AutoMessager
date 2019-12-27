@@ -157,35 +157,6 @@ public class MessageFileHandler {
 			return;
 		}
 
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-			StringBuffer sb = new StringBuffer();
-			int linenumber = 1;
-			String line;
-			int numlines = 1;
-			while ((line = br.readLine()) != null) {
-				if (linenumber < lines || linenumber >= lines + numlines) {
-					sb.append(line + "\n");
-				}
-
-				linenumber++;
-			}
-
-			br.close();
-
-			if (lines + numlines > linenumber) {
-				logConsole("End of file reached.");
-				return;
-			}
-
-			String msg = sb.toString();
-			texts.remove(msg);
-
-			FileWriter fw = new FileWriter(file);
-			fw.write(msg);
-			fw.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			Util.sendInfo();
-		}
+		texts.remove(hu.montlikadani.AutoMessager.Global.removeLine(file, lines));
 	}
 }

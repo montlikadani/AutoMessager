@@ -3,7 +3,6 @@ package hu.montlikadani.AutoMessager.bungee;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -49,8 +48,11 @@ public class AutoMessager extends Plugin implements Listener {
 		instance = this;
 		createFile();
 
-		registerCommand();
 		getProxy().getPluginManager().registerListener(this, this);
+
+		loadFile();
+		loadMessages();
+		registerCommand();
 
 		announce = new Announce(this);
 		announce.load();
@@ -84,16 +86,14 @@ public class AutoMessager extends Plugin implements Listener {
 			if (!config.get("config-version").equals(cver))
 				getLogger().log(Level.WARNING, "Found outdated configuration (bungeeconfig.yml)! (Your version: "
 						+ config.getInt("config-version") + " | Newest version: " + cver + ")");
-
-			loadMessages();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			getLogger().log(Level.WARNING,
 					"There was an error. Please report it here:\nhttps://github.com/montlikadani/AutoMessager/issues");
 		}
 	}
 
-	void loadMessages() {
+	void loadFile() {
 		String fName = config.getString("message-file", "");
 		if (fName.isEmpty()) {
 			getLogger().log(Level.WARNING, "The message-file string is empty or not found. Defaulting to messages.txt");
@@ -106,22 +106,25 @@ public class AutoMessager extends Plugin implements Listener {
 			fName = "messages.txt";
 		}
 
+		file = new File(getDataFolder(), fName);
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	void loadMessages() {
 		msgs.clear();
 
 		if (file == null) {
-			file = new File(getDataFolder(), fName);
+			loadFile();
 		}
 
-		if (fName.endsWith(".yml")) {
+		if (file.getName().endsWith(".yml")) {
 			ConfigurationProvider msgC = ConfigurationProvider.getProvider(YamlConfiguration.class);
-			if (!file.exists()) {
-				try {
-					file.createNewFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
 			Configuration c = null;
 			try {
 				c = msgC.load(file);
@@ -147,20 +150,14 @@ public class AutoMessager extends Plugin implements Listener {
 
 			c.getStringList("messages").forEach(msgs::add);
 		} else {
-			try {
-				if (!file.exists()) {
-					file.createNewFile();
-				}
-
-				try (BufferedReader read = new BufferedReader(new FileReader(file))) {
-					String line;
-					while ((line = read.readLine()) != null) {
-						if (line.startsWith("#")) {
-							continue;
-						}
-
-						msgs.add(line);
+			try (BufferedReader read = new BufferedReader(new FileReader(file))) {
+				String line;
+				while ((line = read.readLine()) != null) {
+					if (line.startsWith("#")) {
+						continue;
 					}
+
+					msgs.add(line);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -202,9 +199,9 @@ public class AutoMessager extends Plugin implements Listener {
 						announce.cancelTask();
 					} else {
 						announce = new Announce(instance);
-						announce.load();
 					}
 
+					announce.load();
 					announce.schedule();
 
 					createFile();
@@ -382,37 +379,7 @@ public class AutoMessager extends Plugin implements Listener {
 	}
 
 	void deleteMessage(File file, int lines) {
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-			StringBuffer sb = new StringBuffer();
-			int linenumber = 1;
-			String line;
-			int numlines = 1;
-			while ((line = br.readLine()) != null) {
-				if (linenumber < lines || linenumber >= lines + numlines) {
-					sb.append(line + "\n");
-				}
-
-				linenumber++;
-			}
-
-			br.close();
-
-			if (lines + numlines > linenumber) {
-				getLogger().log(Level.INFO, "End of file reached.");
-				return;
-			}
-
-			String msg = sb.toString();
-			msgs.remove(msg);
-
-			FileWriter fw = new FileWriter(file);
-			fw.write(msg);
-			fw.close();
-		} catch (Throwable e) {
-			e.printStackTrace();
-			getLogger().log(Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/AutoMessager/issues");
-		}
+		msgs.remove(Global.removeLine(file, lines));
 	}
 
 	private void sendMessage(CommandSender s, String path) {

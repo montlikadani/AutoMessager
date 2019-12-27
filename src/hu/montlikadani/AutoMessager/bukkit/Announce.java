@@ -144,8 +144,6 @@ public class Announce {
 			return;
 		}
 
-		String msg = message;
-
 		FileConfiguration config = plugin.getConf().getConfig();
 
 		if (config.getBoolean("disable-messages-when-player-afk", false)) {
@@ -172,6 +170,8 @@ public class Announce {
 		if (plugin.getConf().isBannedFileExists()
 				&& plugin.getConf().getBpls().getStringList("banned-players").contains(p.getName()))
 			return;
+
+		String msg = message;
 
 		msg = Util.replaceVariables(p, msg);
 		msg = msg.replace("\\n", "\n");
@@ -217,9 +217,7 @@ public class Announce {
 			}
 
 			if (message.startsWith("world:")) {
-				Worlds w = new Worlds(p.getWorld());
-
-				String wName = w.getWorld().getName();
+				String wName = p.getWorld().getName();
 				String world = msg.split("_")[0].replace("world:", "").replace("_", "");
 
 				if (!wName.equals(world)) {
@@ -228,8 +226,12 @@ public class Announce {
 
 				msg = msg.replace("world:" + wName + "_", "");
 
-				for (int x = 0; x < w.getWorld().getPlayers().size(); x++) {
+				/*for (int x = 0; x < w.getWorld().getPlayers().size(); x++) {
 					Bukkit.getWorld(wName).getPlayers().get(x).sendMessage(msg);
+				}*/
+
+				for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
+					wp.sendMessage(msg);
 				}
 			} else if (message.startsWith("player:")) {
 				String player = msg.split("_")[0].replace("player:", "").replace("_", "");
