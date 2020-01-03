@@ -13,8 +13,8 @@ public class Configuration {
 
 	private AutoMessager plugin;
 
-	private FileConfiguration config, messages, bpls;
-	private File config_file, messages_file, bpls_file;
+	private FileConfiguration config, messages, bl;
+	private File config_file, messages_file, bl_file;
 
 	public boolean papi = false;
 	public int timer = -1;
@@ -36,8 +36,8 @@ public class Configuration {
 			messages_file = new File(folder, "messages.yml");
 		}
 
-		if (bpls_file == null) {
-			bpls_file = new File(folder, "banned-players.yml");
+		if (bl_file == null) {
+			bl_file = new File(folder, "banned-players.yml");
 		}
 	}
 
@@ -49,7 +49,6 @@ public class Configuration {
 
 			config = YamlConfiguration.loadConfiguration(config_file);
 			config.load(config_file);
-			plugin.reloadConfig();
 
 			if (!config.isSet("config-version") || !config.get("config-version").equals(cver)) {
 				logConsole(Level.WARNING, "Found outdated configuration (config.yml)! (Your version: "
@@ -68,10 +67,10 @@ public class Configuration {
 						+ messages.getInt("config-version") + " | Newest version: " + msver + ")");
 			}
 
-			if (bpls_file.exists()) {
-				bpls = YamlConfiguration.loadConfiguration(bpls_file);
-				bpls.load(bpls_file);
-				bpls.save(bpls_file);
+			if (bl_file.exists()) {
+				bl = YamlConfiguration.loadConfiguration(bl_file);
+				bl.load(bl_file);
+				bl.save(bl_file);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,25 +98,25 @@ public class Configuration {
 		logConsole("The '" + name + "' file successfully created!", false);
 	}
 
-	public void createBannedFile() {
-		if (bpls != null && isBannedFileExists()) {
+	public void createBlacklistFile() {
+		if (bl != null && isBlacklistFileExists()) {
 			return;
 		}
 
 		try {
-			createFile(bpls_file, "banned-players.yml", true);
+			createFile(bl_file, "blacklisted-players.yml", true);
 
-			bpls = YamlConfiguration.loadConfiguration(bpls_file);
-			bpls.load(bpls_file);
-			bpls.save(bpls_file);
+			bl = YamlConfiguration.loadConfiguration(bl_file);
+			bl.load(bl_file);
+			bl.save(bl_file);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Util.sendInfo();
 		}
 	}
 
-	public boolean isBannedFileExists() {
-		return bpls_file != null && bpls_file.exists();
+	public boolean isBlacklistFileExists() {
+		return bl_file != null && bl_file.exists();
 	}
 
 	public FileConfiguration getMessages() {
@@ -132,15 +131,15 @@ public class Configuration {
 		return config;
 	}
 
-	public FileConfiguration getBpls() {
-		return bpls;
+	public FileConfiguration getBlConfig() {
+		return bl;
 	}
 
 	public File getConfigFile() {
 		return config_file;
 	}
 
-	public File getBplsFile() {
-		return bpls_file;
+	public File getBlFile() {
+		return bl_file;
 	}
 }

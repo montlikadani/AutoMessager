@@ -39,7 +39,7 @@ public class Announce {
 		warningCounter = 0;
 		random = false;
 
-		int cm = plugin.getMessages().size();
+		int cm = plugin.getTexts().size();
 		if (plugin.config.getBoolean("random") && cm > 2) {
 			random = true;
 		}
@@ -55,7 +55,7 @@ public class Announce {
 		if (task == null) {
 			task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
 				if (warningCounter <= 4) {
-					if (plugin.getMessages().size() < 1) {
+					if (plugin.getTexts().size() < 1) {
 						plugin.getLogger().log(Level.WARNING,
 								"There is no message in '" + plugin.config.getString("message-file") + "' file!");
 
@@ -100,14 +100,14 @@ public class Announce {
 
 	private void onRandom(ProxiedPlayer p) {
 		int nm = getNextMessage();
-		String message = plugin.getMessages().get(nm);
+		String message = plugin.getTexts().get(nm);
 		lastRandom = nm;
 		send(p, message);
 	}
 
 	private void onInOrder(ProxiedPlayer p) {
 		int nm = getNextMessage();
-		String message = plugin.getMessages().get(nm);
+		String message = plugin.getTexts().get(nm);
 		send(p, message);
 	}
 

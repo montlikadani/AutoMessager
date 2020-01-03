@@ -21,25 +21,23 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import net.md_5.bungee.event.EventHandler;
 
-public class AutoMessager extends Plugin implements Listener {
+public class AutoMessager extends Plugin {
 
 	private List<UUID> msgEnable = new ArrayList<>();
-	private List<String> msgs = new ArrayList<>();
+	private List<String> texts = new ArrayList<>();
 
 	private static AutoMessager instance;
 
 	public Configuration config;
 	private Announce announce;
 	private File file;
+	private boolean isYaml = false;
 
 	private int cver = 3;
 
@@ -47,8 +45,6 @@ public class AutoMessager extends Plugin implements Listener {
 	public void onEnable() {
 		instance = this;
 		createFile();
-
-		getProxy().getPluginManager().registerListener(this, this);
 
 		loadFile();
 		loadMessages();
@@ -63,16 +59,17 @@ public class AutoMessager extends Plugin implements Listener {
 	public void onDisable() {
 		announce.cancelTask();
 		getProxy().getPluginManager().unregisterCommands(this);
-		getProxy().getPluginManager().unregisterListener(this);
 		announce = null;
 	}
 
 	private void createFile() {
 		try {
-			if (!getDataFolder().exists())
-				getDataFolder().mkdir();
+			File folder = getDataFolder();
+			if (!folder.exists()) {
+				folder.mkdir();
+			}
 
-			File file = new File(getDataFolder(), "bungeeconfig.yml");
+			File file = new File(folder, "bungeeconfig.yml");
 			if (!file.exists()) {
 				try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {
 					Files.copy(in, file.toPath());
@@ -83,9 +80,10 @@ public class AutoMessager extends Plugin implements Listener {
 
 			config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
 
-			if (!config.get("config-version").equals(cver))
+			if (!config.get("config-version").equals(cver)) {
 				getLogger().log(Level.WARNING, "Found outdated configuration (bungeeconfig.yml)! (Your version: "
 						+ config.getInt("config-version") + " | Newest version: " + cver + ")");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			getLogger().log(Level.WARNING,
@@ -117,7 +115,7 @@ public class AutoMessager extends Plugin implements Listener {
 	}
 
 	void loadMessages() {
-		msgs.clear();
+		texts.clear();
 
 		if (file == null) {
 			loadFile();
@@ -148,8 +146,12 @@ public class AutoMessager extends Plugin implements Listener {
 				e.printStackTrace();
 			}
 
-			c.getStringList("messages").forEach(msgs::add);
+			isYaml = true;
+
+			c.getStringList("messages").forEach(texts::add);
 		} else {
+			isYaml = false;
+
 			try (BufferedReader read = new BufferedReader(new FileReader(file))) {
 				String line;
 				while ((line = read.readLine()) != null) {
@@ -157,20 +159,11 @@ public class AutoMessager extends Plugin implements Listener {
 						continue;
 					}
 
-					msgs.add(line);
+					texts.add(line);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-	}
-
-	@EventHandler
-	public void onJoin(LoginEvent event) {
-		if (announce == null) {
-			announce = new Announce(this);
-			announce.load();
-			announce.schedule();
 		}
 	}
 
@@ -254,12 +247,12 @@ public class AutoMessager extends Plugin implements Listener {
 						return;
 					}
 
-					if (msgs.size() < 1) {
+					if (texts.size() < 1) {
 						sendMessage(s, "messages.no-message-to-list");
 						return;
 					}
 
-					for (String m : msgs) {
+					for (String m : texts) {
 						if (m.isEmpty()) {
 							continue;
 						}
@@ -284,23 +277,18 @@ public class AutoMessager extends Plugin implements Listener {
 		String dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			String tPath = "placeholder-format.time.";
-			TimeZone zone = TimeZone.getTimeZone(config.getString(tPath + "time-zone"));
-			LocalDateTime now = null;
-			if (zone == null) {
-				now = LocalDateTime.now();
-			} else {
-				now = LocalDateTime.now(zone.toZoneId());
-			}
+			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
+					? DateTimeFormatter.ofPattern(config.getString(tPath + "time-format.format"))
+					: null;
 
-			DateTimeFormatter form = null;
-			if (!config.getString(tPath + "time-format.format", "").isEmpty()) {
-				form = DateTimeFormatter.ofPattern(config.getString(tPath + "time-format.format"));
-			}
+			DateTimeFormatter form2 = !config.getString(tPath + "date-format.format", "").isEmpty()
+					? DateTimeFormatter.ofPattern(config.getString(tPath + "date-format.format"))
+					: null;
 
-			DateTimeFormatter form2 = null;
-			if (!config.getString(tPath + "date-format.format", "").isEmpty()) {
-				form2 = DateTimeFormatter.ofPattern(config.getString(tPath + "date-format.format"));
-			}
+			TimeZone zone = config.getBoolean(tPath + "use-system-zone", false)
+					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+					: TimeZone.getTimeZone(config.getString(tPath + "time-zone", "GMT0"));
+			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
 			Calendar cal = Calendar.getInstance();
 
@@ -369,17 +357,36 @@ public class AutoMessager extends Plugin implements Listener {
 	}
 
 	public boolean checkOnlinePlayers() {
-		if (config.getInt("min-players") == 0) {
-			return true;
+		int min = config.getInt("min-players", 1);
+		if (min < 1) {
+			return false;
 		}
 
-		int conf = config.getInt("min-players", 1);
 		int online = getProxy().getPlayers().size();
-		return online >= conf;
+		return online >= min;
 	}
 
-	void deleteMessage(File file, int lines) {
-		msgs.remove(Global.removeLine(file, lines));
+	public void removeText(int index) {
+		texts.remove(index);
+
+		/*try {
+			if (isYaml) {
+				ConfigurationProvider c = ConfigurationProvider.getProvider(YamlConfiguration.class);
+				Configuration conf = c.load(file);
+				conf.set("messages", null);
+				conf.set("messages", texts);
+				c.save(config, file);
+			} else {
+				FileWriter fw = new FileWriter(file, true);
+				PrintWriter writer = new PrintWriter(fw);
+				writer.print("");
+
+				texts.forEach(t -> writer.println(t));
+				writer.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}*/
 	}
 
 	private void sendMessage(CommandSender s, String path) {
@@ -392,8 +399,12 @@ public class AutoMessager extends Plugin implements Listener {
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 
-	public List<String> getMessages() {
-		return msgs;
+	public boolean isYaml() {
+		return isYaml;
+	}
+
+	public List<String> getTexts() {
+		return texts;
 	}
 
 	public List<UUID> getEnabledMessages() {

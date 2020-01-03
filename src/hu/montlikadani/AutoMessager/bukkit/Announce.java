@@ -1,8 +1,5 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -21,8 +18,6 @@ import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
 public class Announce {
 
 	private final AutoMessager plugin;
-
-	private List<UUID> msgEnabled = new ArrayList<>();
 
 	private boolean random = false;
 	private int task = -1;
@@ -66,7 +61,8 @@ public class Announce {
 		if (task == -1) {
 			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 				if (warningCounter <= 4) {
-					if (plugin.getFileHandler().getTexts().size() < 1) {
+					int size = plugin.getFileHandler().getTexts().size();
+					if (size < 1) {
 						logConsole(Level.WARNING,
 								"There is no message in '" + config.getString("message-file") + "' file!");
 
@@ -83,6 +79,10 @@ public class Announce {
 
 					if (!plugin.checkOnlinePlayers()) {
 						return;
+					}
+
+					if (lastMessage != size) {
+						lastMessage = size;
 					}
 
 					for (Player p : Bukkit.getOnlinePlayers()) {
@@ -147,16 +147,9 @@ public class Announce {
 		FileConfiguration config = plugin.getConf().getConfig();
 
 		if (config.getBoolean("disable-messages-when-player-afk", false)) {
-			if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+			if (plugin.isPluginEnabled("Essentials")) {
 				if (org.bukkit.plugin.java.JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk()) {
-					if (!msgEnabled.contains(p.getUniqueId())) {
-						msgEnabled.add(p.getUniqueId());
-						return;
-					}
-				} else {
-					if (msgEnabled.contains(p.getUniqueId())) {
-						msgEnabled.remove(p.getUniqueId());
-					}
+					return;
 				}
 			} else {
 				logConsole(Level.WARNING, "The Essentials plugin is not enabled or loaded, please enable.");
@@ -167,8 +160,8 @@ public class Announce {
 			return;
 		}
 
-		if (plugin.getConf().isBannedFileExists()
-				&& plugin.getConf().getBpls().getStringList("banned-players").contains(p.getName()))
+		if (plugin.getConf().isBlacklistFileExists()
+				&& plugin.getConf().getBlConfig().getStringList("banned-players").contains(p.getName()))
 			return;
 
 		String msg = message;
@@ -176,7 +169,7 @@ public class Announce {
 		msg = Util.replaceVariables(p, msg);
 		msg = msg.replace("\\n", "\n");
 
-		if ((Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")
+		if ((plugin.isPluginEnabled("PermissionsEx")
 				&& PermissionsEx.getPermissionManager().has(p, Perm.SEEMSG.getPerm()))
 				|| p.hasPermission(Perm.SEEMSG.getPerm())) {
 			if (config.getBoolean("use-json-message") && message.startsWith("json:")) {
@@ -244,30 +237,35 @@ public class Announce {
 
 				Bukkit.getPlayer(player).sendMessage(msg);
 			} else if (message.startsWith("group:")) {
-				if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+				if (!plugin.isPluginEnabled("Vault")) {
 					logConsole(Level.WARNING, "The Vault plugin not found. Without the per-group messages not work.");
 					return;
 				}
 
 				String gr = msg.split("_")[0].replace("group:", "").replace("_", "");
+				String group = plugin.getVaultPerm().getPrimaryGroup(p);
+				if (group == null || !group.equals(gr)) {
+					return;
+				}
 
 				msg = msg.replace("group:" + gr + "_", "");
 
-				String group = plugin.getVaultPerm().getPrimaryGroup(p);
-				if (group != null && group.equals(gr)) {
-					p.sendMessage(msg);
-				}
+				p.sendMessage(msg);
 			} else if (message.startsWith("permission:")) {
 				String perm = msg.split("_")[0].replace("permission:", "").replace("_", "");
 
 				msg = msg.replace("permission:" + perm + "_", "");
 
-				if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
+				if (plugin.isPluginEnabled("PermissionsEx")) {
 					if (PermissionsEx.getPermissionManager().has(p, perm)) {
 						PermissionsEx.getUser(p).getPlayer().sendMessage(msg);
+					} else {
+						return;
 					}
 				} else if (p.hasPermission(perm)) {
 					p.sendMessage(msg);
+				} else {
+					return;
 				}
 			}
 
@@ -289,9 +287,9 @@ public class Announce {
 					String t = arg[1];
 					t = Util.setPlaceholders(p, t);
 
-					if (arg[0].equals("console")) {
+					if (arg[0].equalsIgnoreCase("console")) {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), t);
-					} else if (arg[0].equals("player")) {
+					} else if (arg[0].equalsIgnoreCase("player")) {
 						p.performCommand(t);
 					}
 				}

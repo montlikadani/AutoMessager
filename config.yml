@@ -8,6 +8,10 @@ placeholderapi: false
 # Usage: https://github.com/montlikadani/AutoMessager/wiki/File-usage#json-message
 use-json-message: false
 
+# Save the toggled messages to a file to load after server restart.
+# If this false, if the file is exists, it will be deleted automatically at server restart.
+remember-toggle-to-file: true
+
 # Used for the /am list command.
 show-max-row-in-one-page: 8
 
@@ -17,7 +21,7 @@ disabled-worlds:
 
 # The file that will contain the messages to broadcast.
 # Supports custom file types, such as .yml or .txt
-message-file: "messages.txt"
+message-file: "announces.yml"
 
 # The minimal amount of players that has to be online for a message to broadcast.
 # Set to 0 to disable this feature.
@@ -39,6 +43,9 @@ placeholder-format:
   time:
     # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
     time-zone: "GMT0"
+
+    # Use system default time zone instead of searching for that?
+    use-system-zone: false
 
     # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
     # Used for %server-time% placeholder.

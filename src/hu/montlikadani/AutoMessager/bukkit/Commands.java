@@ -16,7 +16,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
@@ -259,21 +258,21 @@ public class Commands implements CommandExecutor, TabCompleter {
 						return true;
 					}
 
-					int line = 0;
+					int index = 0;
 					try {
-						line = Integer.parseInt(args[1]);
+						index = Integer.parseInt(args[1]);
 					} catch (NumberFormatException e) {
 						sendMsg(sender, getMsg("bad-number"));
 						return true;
 					}
 
-					if (line < 1) {
+					if (index < 0) {
 						sendMsg(sender, getMsg("bad-number"));
 						return true;
 					}
 
-					plugin.getFileHandler().removeText(line);
-					sendMsg(sender, getMsg("text-removed", "%word%", line));
+					plugin.getFileHandler().removeText(index);
+					sendMsg(sender, getMsg("text-removed", "%index%", index));
 				} else if (args[0].equalsIgnoreCase("clearall")) {
 					if (sender instanceof Player && !sender.hasPermission(Perm.CLEARALL.getPerm())) {
 						sendMsg(sender, getMsg("no-permission", "%perm%", Perm.CLEARALL.getPerm()));
@@ -290,9 +289,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 					File file = handler.getFile();
 					if (handler.isYaml()) {
-						FileConfiguration msgC = YamlConfiguration.loadConfiguration(file);
-						msgC.set("messages", null);
-						msgC.save(file);
+						handler.getFileConfig().set("messages", null);
+						handler.getFileConfig().save(file);
 					} else {
 						PrintWriter writer = new PrintWriter(file);
 						writer.print("");
@@ -300,22 +298,22 @@ public class Commands implements CommandExecutor, TabCompleter {
 					}
 
 					sendMsg(sender, getMsg("all-messages-cleared"));
-				} else if (args[0].equalsIgnoreCase("bannedplayers") || args[0].equalsIgnoreCase("bp")) {
-					if (sender instanceof Player && !sender.hasPermission(Perm.BANNEDPLAYERS.getPerm())) {
-						sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BANNEDPLAYERS.getPerm()));
+				} else if (args[0].equalsIgnoreCase("blacklist") || args[0].equalsIgnoreCase("bl")) {
+					if (sender instanceof Player && !sender.hasPermission(Perm.BLACKLISTEDPLAYERS.getPerm())) {
+						sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BLACKLISTEDPLAYERS.getPerm()));
 						return true;
 					}
 
 					if (args.length < 2) {
-						sendMsg(sender, getMsg("banned-players.usage", "%command%", commandLabel, "%args%", args[0]));
+						sendMsg(sender, getMsg("blacklist.usage", "%command%", commandLabel, "%args%", args[0]));
 						return true;
 					}
 
-					if (!plugin.getConf().isBannedFileExists()) {
-						plugin.getConf().createBannedFile();
+					if (!plugin.getConf().isBlacklistFileExists()) {
+						plugin.getConf().createBlacklistFile();
 					}
 
-					FileConfiguration bpls = plugin.getConf().getBpls();
+					FileConfiguration bpls = plugin.getConf().getBlConfig();
 
 					if (args[1].equalsIgnoreCase("add")) {
 						if (sender instanceof Player && !sender.hasPermission(Perm.BPADD.getPerm())) {
@@ -325,28 +323,28 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 						if (args.length < 3) {
 							sendMsg(sender,
-									getMsg("banned-players.add-usage", "%command%", commandLabel, "%args%", args[0]));
+									getMsg("blacklist.add-usage", "%command%", commandLabel, "%args%", args[0]));
 							return true;
 						}
 
 						Player target = Bukkit.getPlayer(args[2]);
 						if (target == null) {
-							sendMsg(sender, getMsg("banned-players.player-not-found", "%player%", args[2]));
+							sendMsg(sender, getMsg("blacklist.player-not-found", "%player%", args[2]));
 							return true;
 						}
 
-						List<String> banpls = bpls.getStringList("banned-players");
-						if (banpls.contains(target.getName())) {
-							sendMsg(sender,
-									getMsg("banned-players.player-already-added", "%player%", target.getName()));
+						String name = target.getName();
+						List<String> banpls = bpls.getStringList("blacklisted-players");
+						if (banpls.contains(name)) {
+							sendMsg(sender, getMsg("blacklist.player-already-added", "%player%", name));
 							return true;
 						}
 
-						banpls.add(target.getName());
-						bpls.set("banned-players", banpls);
-						bpls.save(plugin.getConf().getBplsFile());
+						banpls.add(name);
+						bpls.set("blacklisted-players", banpls);
+						bpls.save(plugin.getConf().getBlFile());
 
-						sendMsg(sender, getMsg("banned-players.success-add", "%player%", target.getName()));
+						sendMsg(sender, getMsg("blacklist.success-add", "%player%", name));
 					} else if (args[1].equalsIgnoreCase("remove")) {
 						if (sender instanceof Player && !sender.hasPermission(Perm.BPREMOVE.getPerm())) {
 							sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BPREMOVE.getPerm()));
@@ -354,54 +352,48 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 
 						if (args.length < 3) {
-							sendMsg(sender, getMsg("banned-players.remove-usage", "%command%", commandLabel, "%args%",
+							sendMsg(sender, getMsg("blacklist.remove-usage", "%command%", commandLabel, "%args%",
 									args[0], "%args2%", args[1]));
 							return true;
 						}
 
-						Player target = Bukkit.getPlayer(args[2]);
-						if (target == null) {
-							sendMsg(sender, getMsg("banned-players.player-not-found", "%player%", args[2]));
+						String name = args[2];
+						List<String> banpls = bpls.getStringList("blacklisted-players");
+						if (!banpls.contains(name)) {
+							sendMsg(sender, getMsg("blacklist.player-already-removed", "%player%", name));
 							return true;
 						}
 
-						List<String> banpls = bpls.getStringList("banned-players");
-						if (!banpls.contains(target.getName())) {
-							sendMsg(sender,
-									getMsg("banned-players.player-already-removed", "%player%", target.getName()));
-							return true;
-						}
+						banpls.remove(name);
+						bpls.set("blacklisted-players", banpls);
+						bpls.save(plugin.getConf().getBlFile());
 
-						banpls.remove(target.getName());
-						bpls.set("banned-players", banpls);
-						bpls.save(plugin.getConf().getBplsFile());
-
-						sendMsg(sender, getMsg("banned-players.success-remove", "%player%", target.getName()));
+						sendMsg(sender, getMsg("blacklist.success-remove", "%player%", name));
 					} else if (args[1].equalsIgnoreCase("list")) {
 						if (sender instanceof Player && !sender.hasPermission(Perm.BPLIST.getPerm())) {
 							sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BPLIST.getPerm()));
 							return true;
 						}
 
-						List<String> listPlayers = bpls.getStringList("banned-players");
+						List<String> listPlayers = bpls.getStringList("blacklisted-players");
 						if (listPlayers == null || listPlayers.isEmpty()) {
-							sendMsg(sender, getMsg("banned-players.no-banned-players"));
+							sendMsg(sender, getMsg("blacklist.no-player-added"));
 							return true;
 						}
 
-						for (String bp : plugin.getConf().getMessages().getStringList("banned-players.list")) {
-							Collections.sort(listPlayers);
+						Collections.sort(listPlayers);
 
-							String msg = "";
-							for (String fpl : listPlayers) {
-								if (!msg.isEmpty()) {
-									msg += "&r, ";
-								}
-
-								msg += fpl;
+						String msg = "";
+						for (String fpl : listPlayers) {
+							if (!msg.isEmpty()) {
+								msg += "&r, ";
 							}
 
-							sendMsg(sender, bp.replace("%players%", msg));
+							msg += fpl;
+						}
+
+						for (String bp : plugin.getConf().getMessages().getStringList("blacklist.list")) {
+							sendMsg(sender, colorMsg(bp.replace("%players%", msg)));
 						}
 					}
 				} else {
@@ -433,7 +425,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 2) {
-			if (args[0].equalsIgnoreCase("bannedplayers") || args[0].equalsIgnoreCase("bp")) {
+			if (args[0].equalsIgnoreCase("blacklist") || args[0].equalsIgnoreCase("bl")) {
 				Arrays.asList("add", "remove", "list").forEach(cmds::add);
 				partOfCommand = args[1];
 			}
@@ -444,10 +436,14 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 3) {
-			if (args[0].equalsIgnoreCase("bannedplayers") || args[0].equalsIgnoreCase("bp")) {
+			if (args[0].equalsIgnoreCase("blacklist") || args[0].equalsIgnoreCase("bl")) {
 				if (args[1].equalsIgnoreCase("remove")) {
-					plugin.getConf().getBpls().getStringList("banned-players").forEach(cmds::add);
+					plugin.getConf().getBlConfig().getStringList("blacklisted-players").forEach(cmds::add);
 					partOfCommand = args[2];
+				}
+
+				if (partOfCommand.isEmpty() || cmds.isEmpty()) {
+					return null;
 				}
 
 				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
@@ -465,11 +461,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		List<String> contents = new ArrayList<>();
 		for (int i = (page - 1) * size; i < page * size; i++) {
-			if (list.get(i) == null || list.get(i).isEmpty()) {
+			String p = list.get(i);
+			if (p == null || p.isEmpty()) {
 				continue;
 			}
 
-			contents.add(list.get(i));
+			contents.add(p);
 
 			if (list.size() == (i + 1)) {
 				break;
@@ -482,7 +479,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	private List<String> getCmds(CommandSender sender) {
 		List<String> c = new ArrayList<>();
 		for (String cmds : Arrays.asList("help", "reload", "toggle", "broadcast", "list", "add", "remove", "clearall",
-				"bannedplayers")) {
+				"blacklist")) {
 			if (!sender.hasPermission("automessager." + cmds)) {
 				continue;
 			}

@@ -81,7 +81,7 @@ public class Util {
 		sendMsg(sender, s, false);
 	}
 
-	static void sendMsg(org.bukkit.command.CommandSender sender, String s, boolean broadcast) {
+	static void sendMsg(CommandSender sender, String s, boolean broadcast) {
 		if (s != null && !s.isEmpty()) {
 			if (s.contains("\n")) {
 				for (String msg : s.split("\n")) {
@@ -109,23 +109,18 @@ public class Util {
 		String dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			String tPath = path + "time.";
-			TimeZone zone = TimeZone.getTimeZone(config.getString(tPath + "time-zone"));
-			LocalDateTime now = null;
-			if (zone == null) {
-				now = LocalDateTime.now();
-			} else {
-				now = LocalDateTime.now(zone.toZoneId());
-			}
+			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
+					? DateTimeFormatter.ofPattern(config.getString(tPath + "time-format.format"))
+					: null;
 
-			DateTimeFormatter form = null;
-			if (!config.getString(tPath + "time-format.format", "").isEmpty()) {
-				form = DateTimeFormatter.ofPattern(config.getString(tPath + "time-format.format"));
-			}
+			DateTimeFormatter form2 = !config.getString(tPath + "date-format.format", "").isEmpty()
+					? DateTimeFormatter.ofPattern(config.getString(tPath + "date-format.format"))
+					: null;
 
-			DateTimeFormatter form2 = null;
-			if (!config.getString(tPath + "date-format.format", "").isEmpty()) {
-				form2 = DateTimeFormatter.ofPattern(config.getString(tPath + "date-format.format"));
-			}
+			TimeZone zone = config.getBoolean(tPath + "use-system-zone", false)
+					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+					: TimeZone.getTimeZone(config.getString(tPath + "time-zone", "GMT0"));
+			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
 			Calendar cal = Calendar.getInstance();
 

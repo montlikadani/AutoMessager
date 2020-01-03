@@ -19,6 +19,9 @@ placeholder-format:
     # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
     time-zone: "GMT0"
 
+    # Use system default time zone instead of searching for that?
+    use-system-zone: false
+
     # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
     # Used for %server-time% placeholder.
     time-format:

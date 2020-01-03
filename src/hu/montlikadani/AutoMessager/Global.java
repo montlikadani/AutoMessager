@@ -1,10 +1,5 @@
 package hu.montlikadani.AutoMessager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-
 import io.netty.util.internal.ThreadLocalRandom;
 
 public class Global {
@@ -36,40 +31,6 @@ public class Global {
 		}
 
 		return a;
-	}
-
-	public static String removeLine(File file, int lines) {
-		String text = "";
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-			StringBuffer sb = new StringBuffer();
-			int linenumber = 1;
-			String line;
-			int numlines = 1;
-			while ((line = br.readLine()) != null) {
-				if (linenumber < lines || linenumber >= lines + numlines) {
-					sb.append(line + "\n");
-				}
-
-				linenumber++;
-			}
-
-			br.close();
-
-			if (lines + numlines > linenumber) {
-				System.out.println("End of file reached.");
-				return "";
-			}
-
-			text = sb.toString();
-
-			FileWriter fw = new FileWriter(file);
-			fw.write(text);
-			fw.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return text;
 	}
 
 	public static String setSymbols(String s) {

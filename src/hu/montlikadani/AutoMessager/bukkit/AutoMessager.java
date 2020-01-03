@@ -59,7 +59,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			startUp();
 
 			if (conf.papi) {
-				if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+				if (isPluginEnabled("PlaceholderAPI")) {
 					logConsole("Hooked PlaceholderAPI version: "
 							+ PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
 				} else {
@@ -98,6 +98,8 @@ public class AutoMessager extends JavaPlugin implements Listener {
 				metrics.addCustomChart(new Metrics.SimplePie("time_type", () -> config.getString("time-setup")));
 				metrics.addCustomChart(
 						new Metrics.SimplePie("use_json_message", () -> config.getString("use-json-message")));
+				metrics.addCustomChart(
+						new Metrics.SingleLineChart("amount_of_texts", () -> fileHandler.getTexts().size()));
 				logConsole("Metrics enabled.");
 			}
 
@@ -162,7 +164,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	private boolean setupVaultPerm() {
-		if (!getServer().getPluginManager().isPluginEnabled("Vault")) {
+		if (!isPluginEnabled("Vault")) {
 			return false;
 		}
 
@@ -237,6 +239,10 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	private void loadToggledMessages() {
+		if (!conf.getConfig().getBoolean("remember-toggle-to-file", true)) {
+			return;
+		}
+
 		Commands.enabled.clear();
 
 		File f = new File(getFolder(), "toggledmessages.yml");
@@ -254,11 +260,19 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	private void saveToggledMessages() {
+		File f = new File(getFolder(), "toggledmessages.yml");
+		if (!conf.getConfig().getBoolean("remember-toggle-to-file", true)) {
+			if (f.exists()) {
+				f.delete();
+			}
+
+			return;
+		}
+
 		if (Commands.enabled.isEmpty()) {
 			return;
 		}
 
-		File f = new File(getFolder(), "toggledmessages.yml");
 		if (!f.exists()) {
 			try {
 				f.createNewFile();
@@ -289,11 +303,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	boolean checkOnlinePlayers() {
-		if (conf.getConfig().getInt("min-players") == 0) {
-			return true;
+		int min = conf.getConfig().getInt("min-players", 1);
+		if (min < 1) {
+			return false;
 		}
 
-		int min = conf.getConfig().getInt("min-players", 1);
 		int online = Bukkit.getOnlinePlayers().size();
 		return online >= min;
 	}
@@ -320,6 +334,10 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		}
 
 		return true;
+	}
+
+	boolean isPluginEnabled(String name) {
+		return Bukkit.getPluginManager().getPlugin(name) != null && Bukkit.getPluginManager().isPluginEnabled(name);
 	}
 
 	public Configuration getConf() {

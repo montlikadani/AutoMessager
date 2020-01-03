@@ -2,12 +2,12 @@ reload-config: "&aThe plugin successfully reloaded!"
 no-message-to-list: "&cThere is no message in the file."
 all-messages-cleared: "&cAll message successfully cleared from the file!"
 no-messages-in-file: "&cThere is no message in the file."
-bad-number: "&cNumber must be higher than&7 0&c!"
+bad-number: "&cNumber must be higher than&7 -1&c!"
 no-permission: "&cYou don't have permission for that!&7 (%perm%)"
 unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
 add-cmd-usage: "&c Use: '&7/%command% add <message>&c'.&7 - Use placeholders, color codes, symbols."
 broadcast-usage: "&cPlease use '&7/%command% %args% <message>&c'.&7 - Use PAPI placeholders, symbols, color codes."
-remove-cmd-usage: "&cUse: '&7/%command% %args% <file line number>&c'."
+remove-cmd-usage: "&cUse: '&7/%command% %args% <index>&c'."
 
 toggle:
   console-usage: "&cUse: &7/%command% toggle <player/all>"
@@ -23,7 +23,7 @@ list:
   list-texts: "%texts%"
   footer: "&7================"
 
-banned-players:
+blacklist:
   usage: "&cUse:&7 '/%command% %args% <add/remove/list>'&c."
   add-usage: "&cUse:&7 '/%command% %args% add <playerName>'&c."
   remove-usage: "&cUse:&7 '/%command% %args% %args2% <playerName>'&c."
@@ -32,15 +32,15 @@ banned-players:
   success-remove: "&cThe player&e %player%&c successfully removed from list."
   player-already-added: "&cThis player&7 %player%&c already added to list."
   player-already-removed: "&cThis player&7 %player%&c already removed from list."
-  no-banned-players: "&cNo banned player in the list."
+  no-player-added: "&cNo banned player in the list."
 
   list:
-  - "&cBanned players:"
-  - "&6%players%"
+  - "&cBlacklisted players:"
+  - "%players%"
 
 broadcast-message: "&a[&cBroadcast&a]&r %message%"
 success-add-msg: "&aYou have been successfully added message:&r %message%"
-text-removed: "&cThe message successfully removed in line:&7 %word%"
+text-removed: "&cThe message successfully removed with index:&7 %index%"
 
 chat-messages:
   1:
@@ -59,7 +59,7 @@ chat-messages:
     - "&e&m---------&b> &e[&4Auto&9Messager&2 Help&c 2&e]&b <&e&m----------"
     - ""
     - "&8/&a%command% add&c <message>&5 -&6 Add a message (use placeholders, color codes, symbols) to the file."
-    - "&8/&a%command% remove&3 (or rem)&c <file line number>&5 -&6 Remove text from the the file."
+    - "&8/&a%command% remove&c <index>&5 -&6 Remove text from the the file by list index."
     - "&8/&a%command% clearall&5 -&6 Clear all message from the file."
     - "&8/&a%command% broadcast&3 (or bc)&c <message>&5 -&6 Send a broadcast message."
     - "&8/&a%command% list&9 [page]&5 -&6 List messages per page."
@@ -67,9 +67,9 @@ chat-messages:
   3:
     - "&e&m---------&b> &e[&4Auto&9Messager&2 Help&c 3&e]&b <&e&m----------"
     - ""
-    - "&8/&a%command% bannedplayers&3 (or bp)&c add&c <playerName>&5 -&6 Adds a player to the list to not receive the auto-messages."
-    - "&8/&a%command% bp&c remove&c <playerName>&5 -&6 Removes the player from the list."
-    - "&8/&a%command% bp&c list&5 -&6 List the added players that is in the blacklist."
+    - "&8/&a%command% blacklist&3 (or bl)&c add&c <playerName>&5 -&6 Adds a player to the list to not receive any auto-messages."
+    - "&8/&a%command% bl&c remove&c <playerName>&5 -&6 Removes the player from the list."
+    - "&8/&a%command% bl&c list&5 -&6 List the added players that is in the blacklist."
     - "&e&m-------------------------------------------"
 
 # DO NOT CHANGE THIS!

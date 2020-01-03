@@ -10,7 +10,7 @@ public enum Perm {
 	ADD("automessager.add"),
 	REMOVE("automessager.remove"),
 	CLEARALL("automessager.clearall"),
-	BANNEDPLAYERS("automessager.bannedplayers"),
+	BLACKLISTEDPLAYERS("automessager.blacklistedplayers"),
 	BPADD("automessager.bannedplayers.add"),
 	BPREMOVE("automessager.bannedplayers.remove"),
 	BPLIST("automessager.bannedplayers.list");

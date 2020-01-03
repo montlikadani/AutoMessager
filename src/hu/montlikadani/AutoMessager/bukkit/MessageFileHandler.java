@@ -23,6 +23,7 @@ public class MessageFileHandler {
 
 	private boolean isYaml = false;
 	private File file = null;
+	private FileConfiguration yaml = null;
 
 	private List<String> texts = new ArrayList<>();
 
@@ -32,6 +33,10 @@ public class MessageFileHandler {
 
 	public File getFile() {
 		return file;
+	}
+
+	public FileConfiguration getFileConfig() {
+		return yaml;
 	}
 
 	public List<String> getTexts() {
@@ -75,7 +80,7 @@ public class MessageFileHandler {
 	}
 
 	public void loadMessages() {
-		texts.clear();
+		clearTexts();
 
 		if (file == null) {
 			loadFile();
@@ -83,7 +88,7 @@ public class MessageFileHandler {
 
 		String fileName = file.getName();
 		if (fileName.endsWith(".yml")) {
-			FileConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+			yaml = YamlConfiguration.loadConfiguration(file);
 
 			try {
 				yaml.load(file);
@@ -134,11 +139,9 @@ public class MessageFileHandler {
 
 		try {
 			if (isYaml) {
-				FileConfiguration msgC = YamlConfiguration.loadConfiguration(file);
-				msgC.set("messages", null);
-
-				msgC.set("messages", texts);
-				msgC.save(file);
+				yaml.set("messages", null);
+				yaml.set("messages", texts);
+				yaml.save(file);
 			} else {
 				FileWriter fw = new FileWriter(file, true);
 				PrintWriter pw = new PrintWriter(fw);
@@ -151,12 +154,30 @@ public class MessageFileHandler {
 		}
 	}
 
-	public void removeText(int lines) {
+	public void removeText(int index) {
 		if (!isFileExists()) {
 			loadFile();
 			return;
 		}
 
-		texts.remove(hu.montlikadani.AutoMessager.Global.removeLine(file, lines));
+		texts.remove(index);
+
+		try {
+			if (isYaml) {
+				yaml.set("messages", null);
+				yaml.set("messages", texts);
+				yaml.save(file);
+			} else {
+				FileWriter fw = new FileWriter(file, true);
+				PrintWriter writer = new PrintWriter(fw);
+				writer.print("");
+
+				texts.forEach(t -> writer.println(t));
+				writer.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			Util.sendInfo();
+		}
 	}
 }
