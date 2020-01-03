@@ -1,11 +1,8 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,8 +11,6 @@ import java.util.logging.Level;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-
-import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
 
 public class MessageFileHandler {
 

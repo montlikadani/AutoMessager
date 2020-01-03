@@ -1,27 +1,18 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
+import static hu.montlikadani.AutoMessager.bukkit.Util.colorMsg;
+import static hu.montlikadani.AutoMessager.bukkit.Util.getMsg;
+import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
+
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
-
-import static hu.montlikadani.AutoMessager.bukkit.Util.getMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.colorMsg;
 
 public class Commands implements CommandExecutor, TabCompleter {
 

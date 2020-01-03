@@ -1,13 +1,13 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
+import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-
-import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
 
 public class Configuration {
 

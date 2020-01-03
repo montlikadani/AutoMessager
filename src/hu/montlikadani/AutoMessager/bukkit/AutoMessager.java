@@ -1,12 +1,16 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
+import static hu.montlikadani.AutoMessager.bukkit.Util.colorMsg;
+import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
+import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -22,10 +26,6 @@ import com.google.common.base.StandardSystemProperty;
 
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.milkbowl.vault.permission.Permission;
-
-import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
-import static hu.montlikadani.AutoMessager.bukkit.Util.colorMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
 
 public class AutoMessager extends JavaPlugin implements Listener {
 

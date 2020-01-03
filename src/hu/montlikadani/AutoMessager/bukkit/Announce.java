@@ -1,5 +1,7 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
+import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
+
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -12,8 +14,6 @@ import hu.montlikadani.AutoMessager.Global;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-
-import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
 
 public class Announce {
 

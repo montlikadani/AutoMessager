@@ -2,7 +2,7 @@ reload-config: "&aThe plugin successfully reloaded!"
 no-message-to-list: "&cThere is no message in the file."
 all-messages-cleared: "&cAll message successfully cleared from the file!"
 no-messages-in-file: "&cThere is no message in the file."
-bad-number: "&cNumber must be higher than&7 -1&c!"
+bad-number: "&cNumber must be 0 or higher!"
 no-permission: "&cYou don't have permission for that!&7 (%perm%)"
 unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
 add-cmd-usage: "&c Use: '&7/%command% add <message>&c'.&7 - Use placeholders, color codes, symbols."
@@ -32,7 +32,7 @@ blacklist:
   success-remove: "&cThe player&e %player%&c successfully removed from list."
   player-already-added: "&cThis player&7 %player%&c already added to list."
   player-already-removed: "&cThis player&7 %player%&c already removed from list."
-  no-player-added: "&cNo banned player in the list."
+  no-player-added: "&cThere are no players in the blacklist."
 
   list:
   - "&cBlacklisted players:"
