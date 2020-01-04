@@ -1,3 +1,19 @@
+# v2.2
+Added:
+  Re-added \n support to insert new line.
+  Added option to use the system default time zone for time placeholders.
+  Added option to remember toggled messages to file.
+Fixes:
+  Fixed message file handling issues.
+  Fixed issue when the per-world, per-player & per-group not work correctly.
+  Some fixes related to removing and adding texts to file.
+Other:
+  Added support for 1.15+ servers.
+  Now the Vault missing error will not show on plugin startup, when there is vault installed.
+  Optimized the plugin when starting and loading.
+  Better reloading for plugin when typed the /am rl command.
+  Renamed the bannedplayers argument to blacklisted, to not to be confused with banned players.
+
 # v2.1
 Added:
   Added argument for /am toggle all to toggle the messages for all online players.
