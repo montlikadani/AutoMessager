@@ -68,7 +68,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 				}
 			}
 
-			setupVaultPerm();
+			// This should need to register to prevent issues when using perm
+			// I don't know why Vault need this
+			if (setupVaultPerm()) {
+				Bukkit.getPluginManager().registerEvents(this, this);
+			}
 
 			time = new Time(this, conf.timer);
 			announce = new Announce(this);
@@ -78,7 +82,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			getCommand("automessager").setExecutor(cmds);
 			getCommand("automessager").setTabCompleter(cmds);
 
-			Bukkit.getPluginManager().registerEvents(this, this);
+			Bukkit.getPluginManager().registerEvents(new Listeners(), this);
 
 			loadToggledMessages();
 			announce.schedule();
@@ -176,14 +180,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		perm = rsp.getProvider();
 		return perm != null;
-	}
-
-	@EventHandler
-	public void onPlJoin(PlayerJoinEvent event) {
-		Player p = event.getPlayer();
-		if (conf.getConfig().getBoolean("check-update") && p.isOp()) {
-			p.sendMessage(checkVersion("player"));
-		}
 	}
 
 	private String checkVersion(String sender) {
@@ -360,5 +356,17 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	public static AutoMessager getInstance() {
 		return instance;
+	}
+
+	// To fix issue when Vault not found
+	private class Listeners implements Listener {
+
+		@EventHandler
+		public void onPlJoin(PlayerJoinEvent event) {
+			Player p = event.getPlayer();
+			if (conf.getConfig().getBoolean("check-update") && p.isOp()) {
+				p.sendMessage(checkVersion("player"));
+			}
+		}
 	}
 }
