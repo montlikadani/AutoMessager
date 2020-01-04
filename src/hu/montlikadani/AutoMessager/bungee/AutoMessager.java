@@ -34,7 +34,7 @@ public class AutoMessager extends Plugin {
 	private File file;
 	private boolean isYaml = false;
 
-	private int cver = 3;
+	private int cver = 4;
 
 	@Override
 	public void onEnable() {

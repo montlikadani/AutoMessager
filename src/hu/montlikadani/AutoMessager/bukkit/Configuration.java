@@ -19,8 +19,8 @@ public class Configuration {
 	public boolean papi = false;
 	public int timer = -1;
 
-	private int cver = 5;
-	private int msver = 4;
+	private int cver = 6;
+	private int msver = 5;
 
 	public Configuration(AutoMessager plugin) {
 		this.plugin = plugin;

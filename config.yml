@@ -103,4 +103,4 @@ plugin-enable: '&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v
 plugin-disable: '&6[&4Auto&9Messager&6]&7 >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 5
+config-version: 6
