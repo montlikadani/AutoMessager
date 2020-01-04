@@ -24,10 +24,10 @@ permissions:
        automessager.remove: true
        automessager.clearall: true
        automessager.list: true
-       automessager.bannedplayers: true
-       automessager.bannedplayers.add: true
-       automessager.bannedplayers.remove: true
-       automessager.bannedplayers.list: true
+       automessager.blacklistedplayers: true
+       automessager.blacklistedplayers.add: true
+       automessager.blacklistedplayers.remove: true
+       automessager.blacklistedplayers.list: true
        automessager.reload: true
        automessager.help: true
   automessager.seemsg:
@@ -51,17 +51,17 @@ permissions:
   automessager.list:
     description: Allows the player to use the /am list command.
     default: false
-  automessager.bannedplayers:
-    description: Allows the player to use the /am bp command.
+  automessager.blacklistedplayers:
+    description: Allows the player to use the /am bl command.
     default: false
-  automessager.bannedplayers.add:
-    description: Allows the player to use the /am bp add command.
+  automessager.blacklistedplayers.add:
+    description: Allows the player to use the /am bl add command.
     default: false
-  automessager.bannedplayers.remove:
-    description: Allows the player to use the /am bp rem command.
+  automessager.blacklistedplayers.remove:
+    description: Allows the player to use the /am bl remove command.
     default: false
-  automessager.bannedplayers.list:
-    description: Allows the player to use the /am bp list command.
+  automessager.blacklistedplayers.list:
+    description: Allows the player to use the /am bl list command.
     default: false
   automessager.help:
     description: Help commands for AutoMessager.

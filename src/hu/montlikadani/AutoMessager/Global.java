@@ -4,33 +4,12 @@ import io.netty.util.internal.ThreadLocalRandom;
 
 public class Global {
 
-	public static int getRandomInt(int maxAmount) {
-		int qwe = 0;
-		int a;
-
-		ThreadLocalRandom r = ThreadLocalRandom.current();
-
-		if (maxAmount < 3 || qwe == 0) {
-			int num = 0;
-			for (int count = 1; count <= 2; count++) {
-				num = 1 + r.nextInt(maxAmount);
-			}
-
-			a = num;
-		} else {
-			int num = 0;
-			for (int count = 1; count <= 2; count++) {
-				num = 1 + r.nextInt(maxAmount);
-			}
-
-			a = num;
-
-			if (qwe == a) {
-				getRandomInt(maxAmount);
-			}
+	public static int getRandomInt(int min, int max) {
+		if (min > max) {
+			throw new IllegalArgumentException("Min " + min + " greater than max " + max);
 		}
 
-		return a;
+		return ThreadLocalRandom.current().nextInt(min, max + 1);
 	}
 
 	public static String setSymbols(String s) {

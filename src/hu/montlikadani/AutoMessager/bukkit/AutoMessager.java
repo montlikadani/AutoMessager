@@ -157,6 +157,13 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		fileHandler.loadFile();
 		fileHandler.loadMessages();
 
+		if (time == null) {
+			time = new Time(this, conf.timer);
+		} else {
+			time.setTime(conf.timer);
+			time.countTimer();
+		}
+
 		if (announce != null) {
 			announce.cancelTask();
 		} else {

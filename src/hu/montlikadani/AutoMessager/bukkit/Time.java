@@ -14,7 +14,15 @@ public class Time {
 		}
 	}
 
-	private void countTimer() {
+	public void setTime(int time) {
+		this.time = time;
+	}
+
+	public int getTime() {
+		return time;
+	}
+
+	public void countTimer() {
 		String s = plugin.getConf().getConfig().getString("time-setup", "");
 		if (s.isEmpty()) {
 			time *= 20;
@@ -41,9 +49,5 @@ public class Time {
 			time *= 20;
 			break;
 		}
-	}
-
-	public int getTime() {
-		return time;
 	}
 }

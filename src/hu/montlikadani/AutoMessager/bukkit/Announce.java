@@ -58,47 +58,48 @@ public class Announce {
 			return;
 		}
 
-		if (task == -1) {
-			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-				if (warningCounter <= 4) {
-					int size = plugin.getFileHandler().getTexts().size();
-					if (size < 1) {
-						logConsole(Level.WARNING,
-								"There is no message in '" + config.getString("message-file") + "' file!");
+		if (task != -1) {
+			return;
+		}
 
-						warningCounter++;
+		task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+			if (warningCounter <= 4) {
+				int size = plugin.getFileHandler().getTexts().size();
+				if (size < 1) {
+					logConsole(Level.WARNING,
+							"There is no message in '" + config.getString("message-file") + "' file!");
 
-						if (warningCounter == 5) {
-							logConsole(Level.WARNING,
-									"Will stop outputing warnings now. Please write a message to the '"
-											+ config.getString("message-file") + "' file.");
-						}
+					warningCounter++;
 
-						return;
+					if (warningCounter == 5) {
+						logConsole(Level.WARNING, "Will stop outputing warnings now. Please write a message to the '"
+								+ config.getString("message-file") + "' file.");
 					}
 
-					if (!plugin.checkOnlinePlayers()) {
-						return;
+					return;
+				}
+
+				if (!plugin.checkOnlinePlayers()) {
+					return;
+				}
+
+				if (lastMessage != size) {
+					lastMessage = size;
+				}
+
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if (Commands.enabled.containsKey(p.getUniqueId()) && !Commands.enabled.get(p.getUniqueId())) {
+						continue;
 					}
 
-					if (lastMessage != size) {
-						lastMessage = size;
-					}
-
-					for (Player p : Bukkit.getOnlinePlayers()) {
-						if (Commands.enabled.containsKey(p.getUniqueId()) && !Commands.enabled.get(p.getUniqueId())) {
-							continue;
-						}
-
-						if (random) {
-							onRandom(p);
-						} else {
-							onInOrder(p);
-						}
+					if (random) {
+						onRandom(p);
+					} else {
+						onInOrder(p);
 					}
 				}
-			}, plugin.getTimeC().getTime(), plugin.getTimeC().getTime());
-		}
+			}
+		}, plugin.getTimeC().getTime(), plugin.getTimeC().getTime());
 	}
 
 	public void cancelTask() {
@@ -121,9 +122,9 @@ public class Announce {
 
 	int getNextMessage() {
 		if (random) {
-			int r = Global.getRandomInt(lastMessage - 1);
+			int r = Global.getRandomInt(0, lastMessage - 1);
 			while (r == lastRandom) {
-				r = Global.getRandomInt(lastMessage - 1);
+				r = Global.getRandomInt(0, lastMessage - 1);
 			}
 
 			return r;

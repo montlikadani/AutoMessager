@@ -52,43 +52,45 @@ public class Announce {
 			return;
 		}
 
-		if (task == null) {
-			task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
-				if (warningCounter <= 4) {
-					if (plugin.getTexts().size() < 1) {
+		if (task != null) {
+			return;
+		}
+
+		task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
+			if (warningCounter <= 4) {
+				if (plugin.getTexts().size() < 1) {
+					plugin.getLogger().log(Level.WARNING,
+							"There is no message in '" + plugin.config.getString("message-file") + "' file!");
+
+					warningCounter++;
+
+					if (warningCounter == 5) {
 						plugin.getLogger().log(Level.WARNING,
-								"There is no message in '" + plugin.config.getString("message-file") + "' file!");
-
-						warningCounter++;
-
-						if (warningCounter == 5) {
-							plugin.getLogger().log(Level.WARNING,
-									"Will stop outputing warnings now. Please write a message to the '"
-											+ plugin.config.getString("message-file") + "' file.");
-						}
-
-						return;
+								"Will stop outputing warnings now. Please write a message to the '"
+										+ plugin.config.getString("message-file") + "' file.");
 					}
 
-					if (!plugin.checkOnlinePlayers()) {
-						return;
+					return;
+				}
+
+				if (!plugin.checkOnlinePlayers()) {
+					return;
+				}
+
+				for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
+					if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
+						continue;
 					}
 
-					for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
-						if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
-							continue;
-						}
-
-						if (random) {
-							onRandom(p);
-						} else {
-							onInOrder(p);
-						}
+					if (random) {
+						onRandom(p);
+					} else {
+						onInOrder(p);
 					}
 				}
-			}, 0L, plugin.config.getInt("time", 5),
-					TimeUnit.valueOf(plugin.config.getString("time-setup", "minutes").toUpperCase()));
-		}
+			}
+		}, 0L, plugin.config.getInt("time", 5),
+				TimeUnit.valueOf(plugin.config.getString("time-setup", "minutes").toUpperCase()));
 	}
 
 	public void cancelTask() {
@@ -113,9 +115,9 @@ public class Announce {
 
 	int getNextMessage() {
 		if (random) {
-			int r = Global.getRandomInt(lastMessage - 1);
+			int r = Global.getRandomInt(0, lastMessage - 1);
 			while (r == lastRandom) {
-				r = Global.getRandomInt(lastMessage - 1);
+				r = Global.getRandomInt(0, lastMessage - 1);
 			}
 
 			return r;

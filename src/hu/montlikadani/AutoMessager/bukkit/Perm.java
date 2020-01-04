@@ -11,9 +11,9 @@ public enum Perm {
 	REMOVE("automessager.remove"),
 	CLEARALL("automessager.clearall"),
 	BLACKLISTEDPLAYERS("automessager.blacklistedplayers"),
-	BPADD("automessager.bannedplayers.add"),
-	BPREMOVE("automessager.bannedplayers.remove"),
-	BPLIST("automessager.bannedplayers.list");
+	BLADD("automessager.blacklistedplayers.add"),
+	BLREMOVE("automessager.blacklistedplayers.remove"),
+	BLLIST("automessager.blacklistedplayers.list");
 
 	private String perm;
 

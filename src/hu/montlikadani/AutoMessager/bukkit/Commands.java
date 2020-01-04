@@ -307,8 +307,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 					FileConfiguration bpls = plugin.getConf().getBlConfig();
 
 					if (args[1].equalsIgnoreCase("add")) {
-						if (sender instanceof Player && !sender.hasPermission(Perm.BPADD.getPerm())) {
-							sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BPADD.getPerm()));
+						if (sender instanceof Player && !sender.hasPermission(Perm.BLADD.getPerm())) {
+							sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BLADD.getPerm()));
 							return true;
 						}
 
@@ -337,8 +337,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 						sendMsg(sender, getMsg("blacklist.success-add", "%player%", name));
 					} else if (args[1].equalsIgnoreCase("remove")) {
-						if (sender instanceof Player && !sender.hasPermission(Perm.BPREMOVE.getPerm())) {
-							sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BPREMOVE.getPerm()));
+						if (sender instanceof Player && !sender.hasPermission(Perm.BLREMOVE.getPerm())) {
+							sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BLREMOVE.getPerm()));
 							return true;
 						}
 
@@ -361,8 +361,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 						sendMsg(sender, getMsg("blacklist.success-remove", "%player%", name));
 					} else if (args[1].equalsIgnoreCase("list")) {
-						if (sender instanceof Player && !sender.hasPermission(Perm.BPLIST.getPerm())) {
-							sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BPLIST.getPerm()));
+						if (sender instanceof Player && !sender.hasPermission(Perm.BLLIST.getPerm())) {
+							sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BLLIST.getPerm()));
 							return true;
 						}
 
