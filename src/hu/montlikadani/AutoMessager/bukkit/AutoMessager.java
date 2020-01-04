@@ -180,12 +180,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	@EventHandler
 	public void onPlJoin(PlayerJoinEvent event) {
-		if (announce == null) {
-			announce = new Announce(this);
-			announce.load();
-			announce.schedule();
-		}
-
 		Player p = event.getPlayer();
 		if (conf.getConfig().getBoolean("check-update") && p.isOp()) {
 			p.sendMessage(checkVersion("player"));

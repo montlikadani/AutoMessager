@@ -255,6 +255,7 @@ public class AutoMessager extends Plugin {
 						s.sendMessage(new ComponentBuilder(m).create());
 					}
 				}
+				// TODO: implement remove/add command to modify messages
 			}
 		});
 	}
@@ -361,27 +362,9 @@ public class AutoMessager extends Plugin {
 		return online >= min;
 	}
 
+	// TODO: Complete this
 	public void removeText(int index) {
 		texts.remove(index);
-
-		/*try {
-			if (isYaml) {
-				ConfigurationProvider c = ConfigurationProvider.getProvider(YamlConfiguration.class);
-				Configuration conf = c.load(file);
-				conf.set("messages", null);
-				conf.set("messages", texts);
-				c.save(config, file);
-			} else {
-				FileWriter fw = new FileWriter(file, true);
-				PrintWriter writer = new PrintWriter(fw);
-				writer.print("");
-
-				texts.forEach(t -> writer.println(t));
-				writer.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
 	}
 
 	private void sendMessage(CommandSender s, String path) {
