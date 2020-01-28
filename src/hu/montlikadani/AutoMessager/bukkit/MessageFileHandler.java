@@ -167,7 +167,7 @@ public class MessageFileHandler {
 				PrintWriter writer = new PrintWriter(fw);
 				writer.print("");
 
-				texts.forEach(t -> writer.println(t));
+				texts.forEach(writer::println);
 				writer.close();
 			}
 		} catch (Exception e) {

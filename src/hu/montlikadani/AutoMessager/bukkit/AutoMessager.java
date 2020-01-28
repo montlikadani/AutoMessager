@@ -92,7 +92,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 				logConsole(checkVersion("console"));
 			}
 
-			Metrics metrics = new Metrics(this);
+			Metrics metrics = new Metrics(this, 1594);
 			if (metrics.isEnabled()) {
 				metrics.addCustomChart(
 						new Metrics.SimplePie("using_placeholderapi", () -> config.getString("placeholderapi")));

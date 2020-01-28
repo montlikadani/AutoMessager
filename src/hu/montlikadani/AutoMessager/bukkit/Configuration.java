@@ -81,7 +81,6 @@ public class Configuration {
 	public void loadValues() {
 		this.papi = this.config.getBoolean("placeholderapi", false);
 		this.timer = this.config.getInt("time", 3);
-		// Do we need to load the full config?
 	}
 
 	void createFile(File file, String name, boolean newFile) {

@@ -60,14 +60,12 @@ public class Util {
 
 		msg = colorMsg(AutoMessager.getInstance().getConf().getMessages().getString(key));
 
-		if (placeholders.length > 0) {
-			for (int i = 0; i < placeholders.length; i++) {
-				if (placeholders.length >= i + 2) {
-					msg = msg.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
-				}
-
-				i++;
+		for (int i = 0; i < placeholders.length; i++) {
+			if (placeholders.length >= i + 2) {
+				msg = msg.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
 			}
+
+			i++;
 		}
 
 		return msg;
