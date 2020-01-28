@@ -4,12 +4,17 @@ about: Create a bug report to help us improve
 
 ---
 
-### Describe your problem to what is
-Understand what the problem is with the plugin.
+<!-- These comments will not show just read it and you don't need to delete them.-->
+
+### Problem
+<!--Understand what the problem is with the plugin.-->
 
 ### Details
 Plugin version: 
-Software (Spigot/Bukkit etc.. `/version`) version: 
+
+Software <!--(Spigot/Bukkit etc.. `/version`) -->version: 
+
+Relevant plugins<!-- (optional)-->: 
 
 ### Console error
 ```
@@ -17,10 +22,8 @@ Send the console error if you have it.
 ```
 
 ### Configuration file(s)
-Send the configuration file(s).
-```
-configuration file
-```
+<!--Send the configuration file(s) to [pastebin.com](pastebin.com) or [hastebin.com](hastebin.com) or to other sites.-->
+config.yml: 
 
 ### Screenshots (optional)
-Send a few pictures about the problem if you can.
+<!--Send a few pictures about the problem if you can.-->
