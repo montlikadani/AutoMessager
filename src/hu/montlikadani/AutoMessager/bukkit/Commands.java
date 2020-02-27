@@ -374,7 +374,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 
 						List<String> listPlayers = bpls.getStringList("blacklisted-players");
-						if (listPlayers == null || listPlayers.isEmpty()) {
+						if (listPlayers.isEmpty()) {
 							sendMsg(sender, getMsg("blacklist.no-player-added"));
 							return true;
 						}

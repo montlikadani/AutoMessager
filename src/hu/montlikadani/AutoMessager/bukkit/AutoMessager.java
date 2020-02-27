@@ -174,11 +174,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager()
 				.getRegistration(Permission.class);
-		if (rsp == null) {
-			return false;
-		}
-
-		perm = rsp.getProvider();
+		perm = rsp == null ? null : rsp.getProvider();
 		return perm != null;
 	}
 

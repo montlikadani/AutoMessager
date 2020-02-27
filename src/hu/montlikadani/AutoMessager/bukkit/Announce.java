@@ -246,15 +246,11 @@ public class Announce {
 				} else {
 					return;
 				}
-			}
-
-			if (!(message.startsWith("json:") || message.startsWith("world:") || message.startsWith("player:")
-					|| message.startsWith("group:") || message.startsWith("permission:"))) {
+			} else {
 				p.sendMessage(msg);
 			}
 
-			if (config.getStringList("run-commands.commands") != null
-					&& !config.getStringList("run-commands.commands").isEmpty()) {
+			if (!config.getStringList("run-commands.commands").isEmpty()) {
 				for (String cmd : config.getStringList("run-commands.commands")) {
 					String[] arg = cmd.split(": ");
 					if (arg.length < 2) {

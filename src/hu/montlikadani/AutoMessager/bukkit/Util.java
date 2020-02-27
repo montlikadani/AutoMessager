@@ -156,7 +156,7 @@ public class Util {
 
 	@SuppressWarnings("deprecation")
 	static String setPlaceholders(Player p, String s) {
-		if (AutoMessager.getInstance().getConf().papi && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
+		if (AutoMessager.getInstance().getConf().papi && AutoMessager.getInstance().isPluginEnabled("PlaceholderAPI")
 				&& PlaceholderAPI.containsPlaceholders(s)) {
 			s = PlaceholderAPI.setPlaceholders(p, s);
 		}
