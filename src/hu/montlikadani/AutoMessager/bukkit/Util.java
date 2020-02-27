@@ -31,12 +31,7 @@ public class Util {
 	}
 
 	static void logConsole(Level level, String error, boolean loaded) {
-		if (!loaded) {
-			Bukkit.getLogger().log(level, "[AutoMessager] " + error);
-			return;
-		}
-
-		if (AutoMessager.getInstance().getConf().getConfig().getBoolean("logconsole")) {
+		if (!loaded || AutoMessager.getInstance().getConf().getConfig().getBoolean("logconsole")) {
 			Bukkit.getLogger().log(level, "[AutoMessager] " + error);
 		}
 	}

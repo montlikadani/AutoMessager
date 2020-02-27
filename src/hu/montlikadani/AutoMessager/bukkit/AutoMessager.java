@@ -22,8 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.base.StandardSystemProperty;
-
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.milkbowl.vault.permission.Permission;
 
@@ -44,11 +42,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		instance = this;
 
 		try {
-			if (!checkJavaVersion()) {
-				getServer().getPluginManager().disablePlugin(this);
-				return;
-			}
-
 			try {
 				Class.forName("org.spigotmc.SpigotConfig");
 				isSpigot = true;
@@ -316,21 +309,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		}
 
 		return folder;
-	}
-
-	private boolean checkJavaVersion() {
-		try {
-			if (Float.parseFloat(StandardSystemProperty.JAVA_CLASS_VERSION.value()) < 52.0) {
-				logConsole(Level.WARNING,
-						"You are using an older Java that is not supported. Please use 1.8 or higher versions!", false);
-				return false;
-			}
-		} catch (NumberFormatException e) {
-			logConsole(Level.WARNING, "Failed to detect Java version.", false);
-			return false;
-		}
-
-		return true;
 	}
 
 	boolean isPluginEnabled(String name) {

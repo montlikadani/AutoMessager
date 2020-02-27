@@ -5,6 +5,7 @@ import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -176,36 +177,7 @@ public class Announce {
 			if (config.getBoolean("use-json-message") && message.startsWith("json:")) {
 				msg = msg.replace("json:", "");
 
-				try {
-					if (plugin.isSpigot()) {
-						BaseComponent[] bc = ComponentSerializer.parse(msg);
-						p.spigot().sendMessage(bc);
-					} else {
-						String ver = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",")
-								.split(",")[3];
-						Object parsedMessage = Class
-								.forName("net.minecraft.server." + ver + ".IChatBaseComponent$ChatSerializer")
-								.getMethod("a", new Class[] { String.class }).invoke(null, new Object[] {
-										org.bukkit.ChatColor.translateAlternateColorCodes("&".charAt(0), msg) });
-						Object packetPlayOutChat = Class.forName("net.minecraft.server." + ver + ".PacketPlayOutChat")
-								.getConstructor(new Class[] {
-										Class.forName("net.minecraft.server." + ver + ".IChatBaseComponent") })
-								.newInstance(new Object[] { parsedMessage });
-
-						Object craftPlayer = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
-								.cast(p);
-						Object craftHandle = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
-								.getMethod("getHandle").invoke(craftPlayer);
-						Object playerConnection = Class.forName("net.minecraft.server." + ver + ".EntityPlayer")
-								.getField("playerConnection").get(craftHandle);
-
-						Class.forName("net.minecraft.server." + ver + ".PlayerConnection")
-								.getMethod("sendPacket",
-										new Class[] { Class.forName("net.minecraft.server." + ver + ".Packet") })
-								.invoke(playerConnection, new Object[] { packetPlayOutChat });
-					}
-				} catch (Throwable e) {
-					logConsole(Level.WARNING, "Invalid JSON format: " + msg);
+				if (!sendJSON(p, msg)) {
 					return;
 				}
 			}
@@ -220,12 +192,17 @@ public class Announce {
 
 				msg = msg.replace("world:" + wName + "_", "");
 
-				/*for (int x = 0; x < w.getWorld().getPlayers().size(); x++) {
-					Bukkit.getWorld(wName).getPlayers().get(x).sendMessage(msg);
-				}*/
-
-				for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
-					wp.sendMessage(msg);
+				if (config.getBoolean("use-json-message") && msg.contains("json:")) {
+					msg = msg.replace("json:", "");
+					for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
+						if (!sendJSON(wp, msg)) {
+							return;
+						}
+					}
+				} else {
+					for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
+						wp.sendMessage(msg);
+					}
 				}
 			} else if (message.startsWith("player:")) {
 				String player = msg.split("_")[0].replace("player:", "").replace("_", "");
@@ -244,14 +221,15 @@ public class Announce {
 				}
 
 				String gr = msg.split("_")[0].replace("group:", "").replace("_", "");
-				String group = plugin.getVaultPerm().getPrimaryGroup(p);
-				if (group == null || !group.equals(gr)) {
-					return;
+				for (String group : plugin.getVaultPerm().getPlayerGroups(p)) {
+					if (group == null || !group.equals(gr)) {
+						continue;
+					}
+
+					msg = msg.replace("group:" + gr + "_", "");
+
+					p.sendMessage(msg);
 				}
-
-				msg = msg.replace("group:" + gr + "_", "");
-
-				p.sendMessage(msg);
 			} else if (message.startsWith("permission:")) {
 				String perm = msg.split("_")[0].replace("permission:", "").replace("_", "");
 
@@ -297,14 +275,20 @@ public class Announce {
 			}
 
 			if (config.getBoolean("sound.enable")) {
+				String[] split = config.getString("sound.type").split(", ");
+
+				Sound sound = null;
 				try {
-					String[] split = config.getString("sound.type").split(", ");
-					p.playSound(p.getLocation(), org.bukkit.Sound.valueOf(split[0]),
-							(split.length == 2 ? Float.valueOf(split[1]) : 1f),
-							(split.length == 3 ? Float.valueOf(split[2]) : 1f));
-				} catch (Exception e) {
-					logConsole(Level.WARNING, "Sound type is invalid: " + config.getString("sound.type"));
+					sound = Sound.valueOf(split[0].toUpperCase());
+				} catch (IllegalArgumentException e) {
+					logConsole(Level.WARNING, "Sound by this name not found: " + split[0]);
+					return;
 				}
+
+				float volume = split.length > 1 ? Float.parseFloat(split[1]) : 1f;
+				float pitch = split.length > 2 ? Float.parseFloat(split[2]) : 1f;
+
+				p.playSound(p.getLocation(), sound, volume, pitch);
 			}
 		}
 
@@ -314,5 +298,42 @@ public class Announce {
 				Bukkit.getConsoleSender().sendMessage(msg);
 			}
 		}
+	}
+
+	private boolean sendJSON(Player p, String msg) {
+		try {
+			if (plugin.isSpigot()) {
+				BaseComponent[] bc = ComponentSerializer.parse(msg);
+				p.spigot().sendMessage(bc);
+			} else {
+				String ver = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",")
+						.split(",")[3];
+				Object parsedMessage = Class
+						.forName("net.minecraft.server." + ver + ".IChatBaseComponent$ChatSerializer")
+						.getMethod("a", new Class[] { String.class }).invoke(null, new Object[] {
+								org.bukkit.ChatColor.translateAlternateColorCodes("&".charAt(0), msg) });
+				Object packetPlayOutChat = Class.forName("net.minecraft.server." + ver + ".PacketPlayOutChat")
+						.getConstructor(new Class[] {
+								Class.forName("net.minecraft.server." + ver + ".IChatBaseComponent") })
+						.newInstance(new Object[] { parsedMessage });
+
+				Object craftPlayer = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
+						.cast(p);
+				Object craftHandle = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
+						.getMethod("getHandle").invoke(craftPlayer);
+				Object playerConnection = Class.forName("net.minecraft.server." + ver + ".EntityPlayer")
+						.getField("playerConnection").get(craftHandle);
+
+				Class.forName("net.minecraft.server." + ver + ".PlayerConnection")
+						.getMethod("sendPacket",
+								new Class[] { Class.forName("net.minecraft.server." + ver + ".Packet") })
+						.invoke(playerConnection, new Object[] { packetPlayOutChat });
+			}
+		} catch (Throwable e) {
+			logConsole(Level.WARNING, "Invalid JSON format: " + msg);
+			return false;
+		}
+
+		return true;
 	}
 }

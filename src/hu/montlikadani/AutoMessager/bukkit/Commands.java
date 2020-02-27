@@ -88,18 +88,25 @@ public class Commands implements CommandExecutor, TabCompleter {
 					UUID uuid = null;
 					if (args.length == 2) {
 						if (args[1].equalsIgnoreCase("all")) {
+							boolean changed = false;
 							for (Player pl : Bukkit.getOnlinePlayers()) {
 								uuid = pl.getUniqueId();
 
 								if (!enabled.containsKey(uuid)) {
 									enabled.put(uuid, false);
-									plugin.getAnnounce().cancelTask();
-									sendMsg(sender, getMsg("toggle.disabled"));
+									changed = true;
 								} else {
 									enabled.remove(uuid);
-									plugin.getAnnounce().schedule();
-									sendMsg(sender, getMsg("toggle.enabled"));
+									changed = false;
 								}
+							}
+
+							if (changed) {
+								plugin.getAnnounce().cancelTask();
+								sendMsg(sender, getMsg("toggle.disabled"));
+							} else {
+								plugin.getAnnounce().schedule();
+								sendMsg(sender, getMsg("toggle.enabled"));
 							}
 
 							return true;
@@ -172,52 +179,52 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 					if (!(sender instanceof Player)) {
 						for (String t : texts) {
-							if (t == null || t.isEmpty()) {
-								continue;
+							if (t != null && !t.isEmpty()) {
+								sendMsg(sender, t);
 							}
-
-							sendMsg(sender, t);
-						}
-					} else {
-						Player p = (Player) sender;
-						int maxRow = plugin.getConf().getConfig().getInt("show-max-row-in-one-page");
-
-						if (args.length == 1) {
-							List<String> page = makePage(texts, 1, maxRow);
-							if (page == null) {
-								sendMsg(p, getMsg("list.no-page"));
-								return true;
-							}
-
-							sendMsg(p, getMsg("list.header", "%page%", 1, "%max-page%",
-									Integer.toString((int) ((Math.ceil(size / (double) maxRow))))));
-
-							page.forEach(t -> sendMsg(p, getMsg("list.list-texts", "%texts%", t)));
-
-							sendMsg(p, getMsg("list.footer", "%page%", 1, "%max-page%",
-									Integer.toString((int) ((Math.ceil(size / (double) maxRow))))));
-							return true;
 						}
 
-						if (!args[1].matches("[0-9]+")) {
-							sendMsg(p, getMsg("list.page-must-be-number"));
-							return true;
-						}
+						return true;
+					}
 
-						List<String> page = makePage(texts, Integer.parseInt(args[1]), maxRow);
+					Player p = (Player) sender;
+					int maxRow = plugin.getConf().getConfig().getInt("show-max-row-in-one-page");
+
+					if (args.length == 1) {
+						List<String> page = makePage(texts, 1, maxRow);
 						if (page == null) {
 							sendMsg(p, getMsg("list.no-page"));
 							return true;
 						}
 
-						sendMsg(p, getMsg("list.header", "%page%", args[1], "%max-page%",
+						sendMsg(p, getMsg("list.header", "%page%", 1, "%max-page%",
 								Integer.toString((int) ((Math.ceil(size / (double) maxRow))))));
 
 						page.forEach(t -> sendMsg(p, getMsg("list.list-texts", "%texts%", t)));
 
-						sendMsg(p, getMsg("list.footer", "%page%", args[1], "%max-page%",
+						sendMsg(p, getMsg("list.footer", "%page%", 1, "%max-page%",
 								Integer.toString((int) ((Math.ceil(size / (double) maxRow))))));
+						return true;
 					}
+
+					if (!args[1].matches("[0-9]+")) {
+						sendMsg(p, getMsg("list.page-must-be-number"));
+						return true;
+					}
+
+					List<String> page = makePage(texts, Integer.parseInt(args[1]), maxRow);
+					if (page == null) {
+						sendMsg(p, getMsg("list.no-page"));
+						return true;
+					}
+
+					sendMsg(p, getMsg("list.header", "%page%", args[1], "%max-page%",
+							Integer.toString((int) ((Math.ceil(size / (double) maxRow))))));
+
+					page.forEach(t -> sendMsg(p, getMsg("list.list-texts", "%texts%", t)));
+
+					sendMsg(p, getMsg("list.footer", "%page%", args[1], "%max-page%",
+							Integer.toString((int) ((Math.ceil(size / (double) maxRow))))));
 				} else if (args[0].equalsIgnoreCase("add")) {
 					if (sender instanceof Player && !sender.hasPermission(Perm.ADD.getPerm())) {
 						sendMsg(sender, getMsg("no-permission", "%perm%", Perm.ADD.getPerm()));
@@ -453,11 +460,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 		List<String> contents = new ArrayList<>();
 		for (int i = (page - 1) * size; i < page * size; i++) {
 			String p = list.get(i);
-			if (p == null || p.isEmpty()) {
-				continue;
+			if (p != null && !p.isEmpty()) {
+				contents.add(p);
 			}
-
-			contents.add(p);
 
 			if (list.size() == (i + 1)) {
 				break;
