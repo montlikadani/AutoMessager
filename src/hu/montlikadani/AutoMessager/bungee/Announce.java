@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import hu.montlikadani.AutoMessager.Global;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
@@ -152,11 +151,11 @@ public class Announce {
 		msg = plugin.replaceVariables(msg, p);
 
 		if (!plugin.getConfig().getStringList("disabled-servers").contains(p.getServer().getInfo().getName())) {
-			p.sendMessage(new ComponentBuilder(msg).create());
+			plugin.sendMessage(p, msg);
 		}
 
 		if (plugin.getConfig().getBoolean("broadcast-to-console")) {
-			plugin.getProxy().getConsole().sendMessage(new ComponentBuilder(msg).create());
+			plugin.sendMessage(plugin.getProxy().getConsole(), msg);
 		}
 	}
 }

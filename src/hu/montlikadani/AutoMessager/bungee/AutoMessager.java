@@ -178,7 +178,7 @@ public class AutoMessager extends Plugin {
 			@Override
 			public void execute(CommandSender s, String[] args) {
 				if (args.length == 0) {
-					if (!hasPermission(s)) {
+					if (s instanceof ProxiedPlayer && !hasPermission(s)) {
 						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
@@ -188,7 +188,7 @@ public class AutoMessager extends Plugin {
 				}
 
 				if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
-					if (!s.hasPermission("automessager.reload")) {
+					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.reload")) {
 						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
@@ -205,25 +205,61 @@ public class AutoMessager extends Plugin {
 					createFile();
 					sendMessage(s, config.getString("messages.reload-config"));
 				} else if (args[0].equalsIgnoreCase("toggle")) {
-					if (!s.hasPermission("automessager.toggle")) {
+					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.toggle")) {
 						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
 
-					if (getProxy().getPlayers().isEmpty()) {
-						sendMessage(s, config.getString("messages.toggle.no-player"));
+					if (!(s instanceof ProxiedPlayer) && args.length < 2) {
+						sendMessage(s, config.getString("messages.toggle.console-usage"));
 						return;
 					}
 
-					for (ProxiedPlayer pl : getProxy().getPlayers()) {
-						if (!msgEnable.contains(pl.getUniqueId())) {
-							msgEnable.add(pl.getUniqueId());
-						} else {
-							msgEnable.remove(pl.getUniqueId());
+					if (args.length == 2) {
+						if (args[1].equalsIgnoreCase("all")) {
+							if (getProxy().getPlayers().isEmpty()) {
+								sendMessage(s, config.getString("messages.toggle.no-players-available"));
+								return;
+							}
+
+							for (ProxiedPlayer pl : getProxy().getPlayers()) {
+								if (!msgEnable.contains(pl.getUniqueId())) {
+									msgEnable.add(pl.getUniqueId());
+								} else {
+									msgEnable.remove(pl.getUniqueId());
+								}
+							}
+
+							return;
 						}
+
+						ProxiedPlayer target = getProxy().getPlayer(args[1]);
+						if (target == null) {
+							sendMessage(s, config.getString("messages.toggle.no-player"));
+							return;
+						}
+
+						if (!msgEnable.contains(target.getUniqueId())) {
+							msgEnable.add(target.getUniqueId());
+							sendMessage(s, config.getString("messages.toggle.disabled"));
+						} else {
+							msgEnable.remove(target.getUniqueId());
+							sendMessage(s, config.getString("messages.toggle.enabled"));
+						}
+
+						return;
+					}
+
+					ProxiedPlayer player = (ProxiedPlayer) s;
+					if (!msgEnable.contains(player.getUniqueId())) {
+						msgEnable.add(player.getUniqueId());
+						sendMessage(player, config.getString("messages.toggle.disabled"));
+					} else {
+						msgEnable.remove(player.getUniqueId());
+						sendMessage(player, config.getString("messages.toggle.enabled"));
 					}
 				} else if (args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")) {
-					if (!s.hasPermission("automessager.broadcast")) {
+					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.broadcast")) {
 						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
@@ -245,7 +281,7 @@ public class AutoMessager extends Plugin {
 							colorMsg(config.getString("messages.broadcast-message").replace("%message%", msg)))
 									.create());
 				} else if (args[0].equalsIgnoreCase("list")) {
-					if (!s.hasPermission("automessager.list")) {
+					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.list")) {
 						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
@@ -300,7 +336,7 @@ public class AutoMessager extends Plugin {
 
 		str = Global.setSymbols(str);
 		if (t != null)
-			str = str.replace("%time%", t);
+			str = str.replace("%server-time%", t);
 
 		if (dt != null)
 			str = str.replace("%date%", dt);
@@ -383,7 +419,7 @@ public class AutoMessager extends Plugin {
 		texts.remove(index);
 	}
 
-	private void sendMessage(CommandSender s, String msg) {
+	void sendMessage(CommandSender s, String msg) {
 		if (msg != null && !msg.trim().isEmpty()) {
 			s.sendMessage(new ComponentBuilder(colorMsg(msg)).create());
 		}
