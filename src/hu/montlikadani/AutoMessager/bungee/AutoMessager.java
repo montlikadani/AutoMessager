@@ -42,7 +42,7 @@ public class AutoMessager extends Plugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		createFile();
+		loadConfig();
 
 		loadFile();
 		loadMessages();
@@ -66,7 +66,7 @@ public class AutoMessager extends Plugin {
 		instance = null;
 	}
 
-	private void createFile() {
+	private void loadConfig() {
 		try {
 			File folder = getDataFolder();
 			if (!folder.exists()) {
@@ -202,7 +202,7 @@ public class AutoMessager extends Plugin {
 					announce.load();
 					announce.schedule();
 
-					createFile();
+					loadConfig();
 					sendMessage(s, config.getString("messages.reload-config"));
 				} else if (args[0].equalsIgnoreCase("toggle")) {
 					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.toggle")) {

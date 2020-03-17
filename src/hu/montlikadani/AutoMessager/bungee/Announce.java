@@ -139,6 +139,16 @@ public class Announce {
 
 		String msg = message;
 
+		String server = "";
+		if (message.startsWith("server:")) {
+			msg = msg.replace("server:", "");
+
+			String[] split = msg.split("_");
+
+			server = split[0];
+			msg = split[1];
+		}
+
 		String path = "placeholder-format.time.";
 		if (!plugin.getConfig().getString(path + "title", "").isEmpty()) {
 			msg = msg.replace("%title%", plugin.getConfig().getString(path + "title").replace("%newline%", "\n"));
@@ -150,7 +160,12 @@ public class Announce {
 
 		msg = plugin.replaceVariables(msg, p);
 
-		if (!plugin.getConfig().getStringList("disabled-servers").contains(p.getServer().getInfo().getName())) {
+		String plServer = p.getServer().getInfo().getName();
+
+		if (server.isEmpty() && !plugin.getConfig().getStringList("disabled-servers").contains(plServer)) {
+			plugin.sendMessage(p, msg);
+		} else if ((server.equalsIgnoreCase(plServer)
+				&& !plugin.getConfig().getStringList("disabled-servers").contains(server))) {
 			plugin.sendMessage(p, msg);
 		}
 
