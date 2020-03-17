@@ -260,6 +260,7 @@ public class Announce {
 					}
 
 					String t = arg[1];
+
 					t = Util.setPlaceholders(p, t);
 
 					if (arg[0].equalsIgnoreCase("console")) {
@@ -288,11 +289,10 @@ public class Announce {
 			}
 		}
 
-		if (config.getBoolean("broadcast-to-console")) {
-			if (!(message.startsWith("json:") && message.startsWith("world:") && message.startsWith("player:")
-					&& message.startsWith("group:") && message.startsWith("permission:"))) {
-				Bukkit.getConsoleSender().sendMessage(msg);
-			}
+		if (config.getBoolean("broadcast-to-console")
+				&& !(message.startsWith("json:") && message.startsWith("world:") && message.startsWith("player:")
+						&& message.startsWith("group:") && message.startsWith("permission:"))) {
+			Bukkit.getConsoleSender().sendMessage(msg);
 		}
 	}
 
@@ -302,19 +302,17 @@ public class Announce {
 				BaseComponent[] bc = ComponentSerializer.parse(msg);
 				p.spigot().sendMessage(bc);
 			} else {
-				String ver = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",")
-						.split(",")[3];
+				String ver = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 				Object parsedMessage = Class
 						.forName("net.minecraft.server." + ver + ".IChatBaseComponent$ChatSerializer")
-						.getMethod("a", new Class[] { String.class }).invoke(null, new Object[] {
-								org.bukkit.ChatColor.translateAlternateColorCodes("&".charAt(0), msg) });
+						.getMethod("a", new Class[] { String.class }).invoke(null,
+								new Object[] { org.bukkit.ChatColor.translateAlternateColorCodes("&".charAt(0), msg) });
 				Object packetPlayOutChat = Class.forName("net.minecraft.server." + ver + ".PacketPlayOutChat")
-						.getConstructor(new Class[] {
-								Class.forName("net.minecraft.server." + ver + ".IChatBaseComponent") })
+						.getConstructor(
+								new Class[] { Class.forName("net.minecraft.server." + ver + ".IChatBaseComponent") })
 						.newInstance(new Object[] { parsedMessage });
 
-				Object craftPlayer = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
-						.cast(p);
+				Object craftPlayer = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer").cast(p);
 				Object craftHandle = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
 						.getMethod("getHandle").invoke(craftPlayer);
 				Object playerConnection = Class.forName("net.minecraft.server." + ver + ".EntityPlayer")

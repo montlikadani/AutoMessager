@@ -20,7 +20,6 @@ public class Configuration {
 	public int timer = -1;
 
 	private int cver = 6;
-	private int msver = 5;
 
 	public Configuration(AutoMessager plugin) {
 		this.plugin = plugin;
@@ -61,11 +60,6 @@ public class Configuration {
 
 			messages = YamlConfiguration.loadConfiguration(messages_file);
 			messages.load(messages_file);
-
-			if (!messages.isSet("config-version") || !messages.get("config-version").equals(msver)) {
-				logConsole(Level.WARNING, "Found outdated configuration (messages.yml)! (Your version: "
-						+ messages.getInt("config-version") + " | Newest version: " + msver + ")");
-			}
 
 			if (bl_file.exists()) {
 				bl = YamlConfiguration.loadConfiguration(bl_file);

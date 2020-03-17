@@ -1,6 +1,6 @@
 # AutoMessager [![GitHub release](https://img.shields.io/github/release/montlikadani/AutoMessager.svg)](https://github.com/montlikadani/AutoMessager/releases) [![Github All Releases](https://img.shields.io/github/downloads/montlikadani/AutoMessager/total.svg)](https://github.com/montlikadani/AutoMessager/releases) [![GitHub issues](https://img.shields.io/github/issues/montlikadani/AutoMessager.svg)](https://github.com/montlikadani/AutoMessager/issues)
 
-[![bStats](https://img.shields.io/badge/bStats-1.5-brightgreen.svg)](https://bstats.org/plugin/bukkit/AutoMessager)
+[![bStats](https://img.shields.io/badge/bStats-1.7-brightgreen)](https://bstats.org/plugin/bukkit/AutoMessager)
 
 ***
 

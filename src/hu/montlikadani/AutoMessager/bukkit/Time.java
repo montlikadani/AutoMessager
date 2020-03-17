@@ -24,7 +24,7 @@ public class Time {
 
 	public void countTimer() {
 		String s = plugin.getConf().getConfig().getString("time-setup", "");
-		if (s.isEmpty()) {
+		if (s.trim().isEmpty()) {
 			time *= 20;
 			return;
 		}

@@ -1,7 +1,5 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
-import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +18,7 @@ public class MessageFileHandler {
 	private File file = null;
 	private FileConfiguration yaml = null;
 
-	private List<String> texts = new ArrayList<>();
+	private final List<String> texts = new ArrayList<>();
 
 	public MessageFileHandler(AutoMessager plugin) {
 		this.plugin = plugin;
@@ -51,16 +49,22 @@ public class MessageFileHandler {
 	}
 
 	public void loadFile() {
+		String msg = "";
+
 		FileConfiguration config = plugin.getConf().getConfig();
 		String fName = config.getString("message-file", "");
-		if (fName.isEmpty()) {
-			logConsole(Level.WARNING, "The message-file string is empty or not found. Defaulting to messages.txt");
-			fName = "messages.txt";
+		if (fName.trim().isEmpty()) {
+			msg = "The message-file string is empty or not found.";
+		} else if (fName.equals("messages.yml")) {
+			msg = "The message file cannot be an existing message file!";
 		}
 
-		if (fName.equals("messages.yml")) {
-			logConsole(Level.WARNING,
-					"The message file cannot be an existing message file! Defaulting to messages.txt");
+		if (!fName.contains(".")) {
+			msg = "The message file does not have any file type to create.";
+		}
+
+		if (!msg.isEmpty()) {
+			Util.logConsole(Level.WARNING, msg + " Defaulting to messages.txt");
 			fName = "messages.txt";
 		}
 
@@ -111,11 +115,9 @@ public class MessageFileHandler {
 			try (BufferedReader read = new BufferedReader(new FileReader(file))) {
 				String line;
 				while ((line = read.readLine()) != null) {
-					if (line.startsWith("#")) {
-						continue;
+					if (!line.startsWith("#")) {
+						texts.add(line);
 					}
-
-					texts.add(line);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
