@@ -40,7 +40,7 @@ public class Announce {
 		random = false;
 
 		int cm = plugin.getTexts().size();
-		if (plugin.config.getBoolean("random") && cm > 2) {
+		if (plugin.getConfig().getBoolean("random") && cm > 2) {
 			random = true;
 		}
 
@@ -48,7 +48,7 @@ public class Announce {
 	}
 
 	public void schedule() {
-		if (!plugin.config.getBoolean("enable-broadcast")) {
+		if (!plugin.getConfig().getBoolean("enable-broadcast")) {
 			return;
 		}
 
@@ -60,14 +60,14 @@ public class Announce {
 			if (warningCounter <= 4) {
 				if (plugin.getTexts().size() < 1) {
 					plugin.getLogger().log(Level.WARNING,
-							"There is no message in '" + plugin.config.getString("message-file") + "' file!");
+							"There is no message in '" + plugin.getConfig().getString("message-file") + "' file!");
 
 					warningCounter++;
 
 					if (warningCounter == 5) {
 						plugin.getLogger().log(Level.WARNING,
 								"Will stop outputing warnings now. Please write a message to the '"
-										+ plugin.config.getString("message-file") + "' file.");
+										+ plugin.getConfig().getString("message-file") + "' file.");
 					}
 
 					return;
@@ -89,8 +89,8 @@ public class Announce {
 					}
 				}
 			}
-		}, 0L, plugin.config.getInt("time", 5),
-				TimeUnit.valueOf(plugin.config.getString("time-setup", "minutes").toUpperCase()));
+		}, 0L, plugin.getConfig().getInt("time", 5),
+				TimeUnit.valueOf(plugin.getConfig().getString("time-setup", "minutes").toUpperCase()));
 	}
 
 	public void cancelTask() {
@@ -141,21 +141,21 @@ public class Announce {
 		String msg = message;
 
 		String path = "placeholder-format.time.";
-		if (!plugin.config.getString(path + "title", "").isEmpty()) {
-			msg = msg.replace("%title%", plugin.config.getString(path + "title").replace("%newline%", "\n"));
+		if (!plugin.getConfig().getString(path + "title", "").isEmpty()) {
+			msg = msg.replace("%title%", plugin.getConfig().getString(path + "title").replace("%newline%", "\n"));
 		}
 
-		if (!plugin.config.getString(path + "suffix", "").isEmpty()) {
-			msg = msg.replace("%suffix%", plugin.config.getString(path + "suffix"));
+		if (!plugin.getConfig().getString(path + "suffix", "").isEmpty()) {
+			msg = msg.replace("%suffix%", plugin.getConfig().getString(path + "suffix"));
 		}
 
 		msg = plugin.replaceVariables(msg, p);
 
-		if (!plugin.config.getStringList("disabled-servers").contains(p.getServer().getInfo().getName())) {
+		if (!plugin.getConfig().getStringList("disabled-servers").contains(p.getServer().getInfo().getName())) {
 			p.sendMessage(new ComponentBuilder(msg).create());
 		}
 
-		if (plugin.config.getBoolean("broadcast-to-console")) {
+		if (plugin.getConfig().getBoolean("broadcast-to-console")) {
 			plugin.getProxy().getConsole().sendMessage(new ComponentBuilder(msg).create());
 		}
 	}

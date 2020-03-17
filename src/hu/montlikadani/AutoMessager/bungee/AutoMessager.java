@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,12 +26,13 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 public class AutoMessager extends Plugin {
 
-	private List<UUID> msgEnable = new ArrayList<>();
-	private List<String> texts = new ArrayList<>();
+	private final List<UUID> msgEnable = new ArrayList<>();
+	private final List<String> texts = new ArrayList<>();
 
 	private static AutoMessager instance;
 
-	public Configuration config;
+	private Configuration config;
+
 	private Announce announce;
 	private File file;
 	private boolean isYaml = false;
@@ -52,9 +55,15 @@ public class AutoMessager extends Plugin {
 
 	@Override
 	public void onDisable() {
+		if (instance == null) {
+			return;
+		}
+
 		announce.cancelTask();
+
 		getProxy().getPluginManager().unregisterCommands(this);
-		announce = null;
+
+		instance = null;
 	}
 
 	private void createFile() {
@@ -66,11 +75,9 @@ public class AutoMessager extends Plugin {
 
 			File file = new File(folder, "bungeeconfig.yml");
 			if (!file.exists()) {
-				try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {
-					Files.copy(in, file.toPath());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				InputStream in = getResourceAsStream("bungeeconfig.yml");
+				Files.copy(in, file.toPath());
+				in.close();
 			}
 
 			config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
@@ -87,15 +94,21 @@ public class AutoMessager extends Plugin {
 	}
 
 	void loadFile() {
+		String msg = "";
+
 		String fName = config.getString("message-file", "");
-		if (fName.isEmpty()) {
-			getLogger().log(Level.WARNING, "The message-file string is empty or not found. Defaulting to messages.txt");
-			fName = "messages.txt";
+		if (fName.trim().isEmpty()) {
+			msg = "The message-file string is empty or not found.";
+		} else if (fName.equals("messages.yml")) {
+			msg = "The message file cannot be an existing message file!";
 		}
 
-		if (fName.equals("messages.yml")) {
-			getLogger().log(Level.WARNING,
-					"The message file cannot be an existing message file! Defaulting to messages.txt");
+		if (!fName.contains(".")) {
+			msg = "The message file does not have any file type to create.";
+		}
+
+		if (!msg.isEmpty()) {
+			getLogger().log(Level.WARNING, msg + " Defaulting to messages.txt");
 			fName = "messages.txt";
 		}
 
@@ -150,11 +163,9 @@ public class AutoMessager extends Plugin {
 			try (BufferedReader read = new BufferedReader(new FileReader(file))) {
 				String line;
 				while ((line = read.readLine()) != null) {
-					if (line.startsWith("#")) {
-						continue;
+					if (!line.startsWith("#")) {
+						texts.add(line);
 					}
-
-					texts.add(line);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -163,23 +174,22 @@ public class AutoMessager extends Plugin {
 	}
 
 	private void registerCommand() {
-		getProxy().getPluginManager().registerCommand(this, new Command("automessager") {
+		getProxy().getPluginManager().registerCommand(this, new Command("automessager", "automesager.help", "am") {
 			@Override
 			public void execute(CommandSender s, String[] args) {
 				if (args.length == 0) {
-					if (!s.hasPermission("automessager.help")) {
-						sendMessage(s, "messages.no-permission");
+					if (!hasPermission(s)) {
+						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
 
-					config.getStringList("messages.chat-messages")
-							.forEach(msg -> s.sendMessage(new ComponentBuilder(colorMsg(msg)).create()));
+					config.getStringList("messages.chat-messages").forEach(msg -> sendMessage(s, msg));
 					return;
 				}
 
 				if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
 					if (!s.hasPermission("automessager.reload")) {
-						sendMessage(s, "messages.no-permission");
+						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
 
@@ -193,35 +203,33 @@ public class AutoMessager extends Plugin {
 					announce.schedule();
 
 					createFile();
-					sendMessage(s, "messages.reload-config");
+					sendMessage(s, config.getString("messages.reload-config"));
 				} else if (args[0].equalsIgnoreCase("toggle")) {
 					if (!s.hasPermission("automessager.toggle")) {
-						sendMessage(s, "messages.no-permission");
+						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
 
 					if (getProxy().getPlayers().isEmpty()) {
-						sendMessage(s, "messages.toggle.no-player");
+						sendMessage(s, config.getString("messages.toggle.no-player"));
 						return;
 					}
 
 					for (ProxiedPlayer pl : getProxy().getPlayers()) {
 						if (!msgEnable.contains(pl.getUniqueId())) {
 							msgEnable.add(pl.getUniqueId());
-							sendMessage(s, "messages.toggle.disabled");
 						} else {
 							msgEnable.remove(pl.getUniqueId());
-							sendMessage(s, "messages.toggle.enabled");
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")) {
 					if (!s.hasPermission("automessager.broadcast")) {
-						sendMessage(s, "messages.no-permission");
+						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
 
 					if (args.length < 2) {
-						sendMessage(s, "messages.broadcast-usage");
+						sendMessage(s, config.getString("messages.broadcast-usage"));
 						return;
 					}
 
@@ -238,21 +246,19 @@ public class AutoMessager extends Plugin {
 									.create());
 				} else if (args[0].equalsIgnoreCase("list")) {
 					if (!s.hasPermission("automessager.list")) {
-						sendMessage(s, "messages.no-permission");
+						sendMessage(s, config.getString("messages.no-permission"));
 						return;
 					}
 
 					if (texts.size() < 1) {
-						sendMessage(s, "messages.no-message-to-list");
+						sendMessage(s, config.getString("messages.no-message-to-list"));
 						return;
 					}
 
 					for (String m : texts) {
-						if (m.isEmpty()) {
-							continue;
+						if (!m.isEmpty()) {
+							sendMessage(s, m);
 						}
-
-						s.sendMessage(new ComponentBuilder(m).create());
 					}
 				}
 				// TODO: implement remove/add command to modify messages
@@ -309,8 +315,18 @@ public class AutoMessager extends Plugin {
 			str = str.replace("%max-players%", Integer
 					.toString(getProxy().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()));
 
-		if (str.contains("%ip%"))
-			str = str.replace("%ip%", p.getAddress().getAddress().getHostAddress());
+		if (str.contains("%ip%")) {
+			InetSocketAddress address = null;
+			SocketAddress sAddress = null;
+			try {
+				address = p.getAddress();
+			} catch (Exception e) {
+				sAddress = p.getSocketAddress();
+			}
+
+			str = str.replace("%ip%", address != null ? address.getAddress().getHostAddress()
+					: sAddress != null ? sAddress.toString() : "");
+		}
 
 		if (str.contains("%player-language%"))
 			str = str.replace("%player-language%", String.valueOf(p.getLocale()));
@@ -367,14 +383,18 @@ public class AutoMessager extends Plugin {
 		texts.remove(index);
 	}
 
-	private void sendMessage(CommandSender s, String path) {
-		if (!config.getString(path, "").isEmpty()) {
-			s.sendMessage(new ComponentBuilder(colorMsg(config.getString(path))).create());
+	private void sendMessage(CommandSender s, String msg) {
+		if (msg != null && !msg.trim().isEmpty()) {
+			s.sendMessage(new ComponentBuilder(colorMsg(msg)).create());
 		}
 	}
 
 	public String colorMsg(String s) {
 		return ChatColor.translateAlternateColorCodes('&', s);
+	}
+
+	public Configuration getConfig() {
+		return config;
 	}
 
 	public boolean isYaml() {
