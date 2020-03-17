@@ -51,8 +51,7 @@ public class MessageFileHandler {
 	public void loadFile() {
 		String msg = "";
 
-		FileConfiguration config = plugin.getConf().getConfig();
-		String fName = config.getString("message-file", "");
+		String fName = plugin.getConf().getConfig().getString("message-file", "");
 		if (fName.trim().isEmpty()) {
 			msg = "The message-file string is empty or not found.";
 		} else if (fName.equals("messages.yml")) {

@@ -71,6 +71,3 @@ chat-messages:
     - "&8/&a%command% bl&c remove&c <playerName>&5 -&6 Removes the player from the list."
     - "&8/&a%command% bl&c list&5 -&6 List the added players that is in the blacklist."
     - "&e&m-------------------------------------------"
-
-# DO NOT CHANGE THIS!
-config-version: 5
