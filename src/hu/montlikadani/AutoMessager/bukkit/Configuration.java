@@ -60,6 +60,7 @@ public class Configuration {
 
 			messages = YamlConfiguration.loadConfiguration(messages_file);
 			messages.load(messages_file);
+			messages.save(messages_file);
 
 			if (bl_file.exists()) {
 				bl = YamlConfiguration.loadConfiguration(bl_file);
