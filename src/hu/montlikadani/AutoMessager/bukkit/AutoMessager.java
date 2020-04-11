@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -61,7 +60,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			// This should need to register to prevent issues when using perm
 			// I don't know why Vault need this
 			if (setupVaultPerm()) {
-				Bukkit.getPluginManager().registerEvents(this, this);
+				getServer().getPluginManager().registerEvents(this, this);
 			}
 
 			time = new Time(this, conf.timer);
@@ -72,7 +71,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			getCommand("automessager").setExecutor(cmds);
 			getCommand("automessager").setTabCompleter(cmds);
 
-			Bukkit.getPluginManager().registerEvents(new Listeners(), this);
+			getServer().getPluginManager().registerEvents(new Listeners(), this);
 
 			loadToggledMessages();
 			announce.schedule();
@@ -95,9 +94,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 				logConsole("Metrics enabled.");
 			}
 
-			if (!config.getString("plugin-enable", "").isEmpty()) {
-				sendMsg(getServer().getConsoleSender(), colorMsg(config.getString("plugin-enable")));
-			}
+			sendMsg(getServer().getConsoleSender(), colorMsg(config.getString("plugin-enable")));
 		} catch (Throwable e) {
 			e.printStackTrace();
 			logConsole(Level.WARNING,
@@ -113,9 +110,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		saveToggledMessages();
 		getServer().getScheduler().cancelTasks(this);
 
-		if (!conf.getConfig().getString("plugin-disable", "").isEmpty()) {
-			sendMsg(getServer().getConsoleSender(), colorMsg(conf.getConfig().getString("plugin-disable")));
-		}
+		sendMsg(getServer().getConsoleSender(), colorMsg(conf.getConfig().getString("plugin-disable")));
 
 		instance = null;
 	}
@@ -150,7 +145,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			time = new Time(this, conf.timer);
 		} else {
 			time.setTime(conf.timer);
-			time.countTimer();
 		}
 
 		if (announce != null) {
@@ -242,7 +236,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			return false;
 		}
 
-		int online = Bukkit.getOnlinePlayers().size();
+		int online = getServer().getOnlinePlayers().size();
 		return online >= min;
 	}
 
@@ -256,7 +250,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	boolean isPluginEnabled(String name) {
-		return Bukkit.getPluginManager().getPlugin(name) != null && Bukkit.getPluginManager().isPluginEnabled(name);
+		return getServer().getPluginManager().getPlugin(name) != null && getServer().getPluginManager().isPluginEnabled(name);
 	}
 
 	public Configuration getConf() {
@@ -293,8 +287,8 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		@EventHandler
 		public void onPlJoin(PlayerJoinEvent event) {
 			Player p = event.getPlayer();
-			if (conf.getConfig().getBoolean("check-update") && p.isOp()) {
-				p.sendMessage(UpdateDownloader.checkFromGithub("player"));
+			if (p.isOp()) {
+				sendMsg(p, UpdateDownloader.checkFromGithub("player"));
 			}
 		}
 	}

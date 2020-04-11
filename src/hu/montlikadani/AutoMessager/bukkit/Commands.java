@@ -84,11 +84,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			UUID uuid = null;
 			if (args.length == 2) {
 				if (args[1].equalsIgnoreCase("all")) {
 					for (Player pl : Bukkit.getOnlinePlayers()) {
-						uuid = pl.getUniqueId();
+						UUID uuid = pl.getUniqueId();
 
 						if (!enabled.containsKey(uuid)) {
 							enabled.put(uuid, false);
@@ -106,7 +105,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 					return true;
 				}
 
-				uuid = target.getUniqueId();
+				UUID uuid = target.getUniqueId();
 				if (!enabled.containsKey(uuid)) {
 					enabled.put(uuid, false);
 					sendMsg(sender, getMsg("toggle.disabled"));
@@ -119,7 +118,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			Player p = (Player) sender;
-			uuid = p.getUniqueId();
+			UUID uuid = p.getUniqueId();
 			if (!enabled.containsKey(uuid)) {
 				enabled.put(uuid, false);
 				sendMsg(sender, getMsg("toggle.disabled"));
@@ -167,7 +166,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 			if (!(sender instanceof Player)) {
 				for (String t : texts) {
-					if (t != null && !t.isEmpty()) {
+					if (t != null && !t.trim().isEmpty()) {
 						sendMsg(sender, t);
 					}
 				}

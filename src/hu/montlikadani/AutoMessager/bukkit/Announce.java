@@ -25,7 +25,6 @@ public class Announce {
 	private int messageCounter;
 	private int lastMessage;
 	private int lastRandom;
-	private int warningCounter;
 
 	public Announce(AutoMessager plugin) {
 		this.plugin = plugin;
@@ -42,7 +41,6 @@ public class Announce {
 	public void load() {
 		// We need to start from -1, due to first line reading
 		messageCounter = -1;
-		warningCounter = 0;
 		random = false;
 
 		int cm = plugin.getFileHandler().getTexts().size();
@@ -54,8 +52,7 @@ public class Announce {
 	}
 
 	public void schedule() {
-		final FileConfiguration config = plugin.getConf().getConfig();
-		if (!config.getBoolean("enable-broadcast")) {
+		if (!plugin.getConf().getConfig().getBoolean("enable-broadcast")) {
 			return;
 		}
 
@@ -64,43 +61,27 @@ public class Announce {
 		}
 
 		task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-			if (warningCounter <= 4) {
-				int size = plugin.getFileHandler().getTexts().size();
-				if (size < 1) {
-					logConsole(Level.WARNING,
-							"There is no message in '" + config.getString("message-file") + "' file!");
+			if (!plugin.checkOnlinePlayers()) {
+				return;
+			}
 
-					warningCounter++;
+			int size = plugin.getFileHandler().getTexts().size();
+			if (lastMessage != size) {
+				lastMessage = size;
+			}
 
-					if (warningCounter == 5) {
-						logConsole(Level.WARNING, "Will stop outputing warnings now. Please write a message to the '"
-								+ config.getString("message-file") + "' file.");
-					}
-
-					return;
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (Commands.enabled.containsKey(p.getUniqueId()) && !Commands.enabled.get(p.getUniqueId())) {
+					continue;
 				}
 
-				if (!plugin.checkOnlinePlayers()) {
-					return;
-				}
-
-				if (lastMessage != size) {
-					lastMessage = size;
-				}
-
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					if (Commands.enabled.containsKey(p.getUniqueId()) && !Commands.enabled.get(p.getUniqueId())) {
-						continue;
-					}
-
-					if (random) {
-						onRandom(p);
-					} else {
-						onInOrder(p);
-					}
+				if (random) {
+					onRandom(p);
+				} else {
+					onInOrder(p);
 				}
 			}
-		}, plugin.getTimeC().getTime(), plugin.getTimeC().getTime());
+		}, 0L, plugin.getTimeC().countTimer());
 	}
 
 	public void cancelTask() {
@@ -174,15 +155,17 @@ public class Announce {
 		if ((plugin.isPluginEnabled("PermissionsEx")
 				&& PermissionsEx.getPermissionManager().has(p, Perm.SEEMSG.getPerm()))
 				|| p.hasPermission(Perm.SEEMSG.getPerm())) {
-			if (config.getBoolean("use-json-message") && message.startsWith("json:")) {
+			if (message.startsWith("json:")) {
+				if (!config.getBoolean("use-json-message")) {
+					return;
+				}
+
 				msg = msg.replace("json:", "");
 
 				if (!sendJSON(p, msg)) {
 					return;
 				}
-			}
-
-			if (message.startsWith("world:")) {
+			} else if (message.startsWith("world:")) {
 				String wName = p.getWorld().getName();
 				String world = msg.split("_")[0].replace("world:", "").replace("_", "");
 
@@ -222,7 +205,7 @@ public class Announce {
 
 				String gr = msg.split("_")[0].replace("group:", "").replace("_", "");
 				for (String group : plugin.getVaultPerm().getPlayerGroups(p)) {
-					if (group == null || !group.equals(gr)) {
+					if (!gr.equals(group)) {
 						continue;
 					}
 
@@ -252,6 +235,10 @@ public class Announce {
 
 			if (!config.getStringList("run-commands.commands").isEmpty()) {
 				for (String cmd : config.getStringList("run-commands.commands")) {
+					if (!cmd.contains(":")) {
+						continue;
+					}
+
 					String[] arg = cmd.split(": ");
 					if (arg.length < 2) {
 						logConsole(Level.WARNING, "The command " + cmd
@@ -272,7 +259,21 @@ public class Announce {
 			}
 
 			if (config.getBoolean("sound.enable")) {
-				String[] split = config.getString("sound.type").split(", ");
+				String type = config.getString("sound.type");
+				if (!type.contains(",")) {
+					Sound sound = null;
+					try {
+						sound = Sound.valueOf(type.toUpperCase());
+					} catch (IllegalArgumentException e) {
+						logConsole(Level.WARNING, "Sound by this name not found: " + type);
+						return;
+					}
+
+					p.playSound(p.getLocation(), sound, 1f, 1f);
+					return;
+				}
+
+				String[] split = type.split(", ");
 
 				Sound sound = null;
 				try {

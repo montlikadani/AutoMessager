@@ -48,6 +48,10 @@ public class MessageFileHandler {
 		return file != null && file.exists();
 	}
 
+	public String getFileName() {
+		return isFileExists() ? file.getName() : plugin.getConf().getConfig().getString("message-file", "");
+	}
+
 	public void loadFile() {
 		String msg = "";
 

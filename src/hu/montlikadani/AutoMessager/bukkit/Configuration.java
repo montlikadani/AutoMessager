@@ -17,7 +17,7 @@ public class Configuration {
 	private File config_file, messages_file, bl_file;
 
 	public boolean papi = false;
-	public int timer = -1;
+	public String timer = "-1";
 
 	private int cver = 6;
 
@@ -75,7 +75,7 @@ public class Configuration {
 
 	public void loadValues() {
 		this.papi = this.config.getBoolean("placeholderapi", false);
-		this.timer = this.config.getInt("time", 3);
+		this.timer = this.config.getString("time", "3");
 	}
 
 	void createFile(File file, String name, boolean newFile) {
