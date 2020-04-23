@@ -45,19 +45,19 @@ public class Time {
 			int second = split.length > 2 ? Integer.parseInt(split[2]) : 0;
 
 			// hehe
-			if (hour == 0 && minute == 0) {
+			if ((hour == 0) && (minute == 0)) {
 				t = second * 20; // including default
-			} else if (hour == 0 && minute != 0 && second != 0) {
+			} else if ((hour == 0) && (minute != 0) && (second != 0)) {
 				t = minute * 1200 + second * 20;
-			} else if (hour != 0 && minute == 0 && second != 0) {
+			} else if ((hour != 0) && (minute == 0) && (second != 0)) {
 				t = hour * 72000 + second * 20;
-			} else if (hour != 0 && minute == 0 && second == 0) {
+			} else if ((hour != 0) && (minute == 0) && (second == 0)) {
 				t = hour * 72000;
-			} else if (hour == 0 && minute != 0 && second == 0) {
+			} else if ((hour == 0) && (minute != 0) && (second == 0)) {
 				t = minute * 1200;
-			} else if (hour != 0 && minute != 0 && second == 0) {
+			} else if ((hour != 0) && (minute != 0) && (second == 0)) {
 				t = hour * 72000 + minute * 1200;
-			} else if (hour != 0 && minute != 0 && second != 0) {
+			} else if ((hour != 0) && (minute != 0) && (second != 0)) {
 				t = hour * 72000 + minute * 1200 + second * 20;
 			}
 

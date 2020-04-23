@@ -139,13 +139,11 @@ public class Announce {
 			}
 		}
 
-		if (config.getStringList("disabled-worlds").contains(p.getWorld().getName())) {
+		if (config.getStringList("disabled-worlds").contains(p.getWorld().getName())
+				|| (plugin.getConf().isBlacklistFileExists()
+						&& plugin.getConf().getBlConfig().getStringList("banned-players").contains(p.getName()))) {
 			return;
 		}
-
-		if (plugin.getConf().isBlacklistFileExists()
-				&& plugin.getConf().getBlConfig().getStringList("banned-players").contains(p.getName()))
-			return;
 
 		String msg = message;
 
@@ -177,6 +175,7 @@ public class Announce {
 
 				if (config.getBoolean("use-json-message") && msg.contains("json:")) {
 					msg = msg.replace("json:", "");
+
 					for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
 						if (!sendJSON(wp, msg)) {
 							return;
@@ -210,24 +209,17 @@ public class Announce {
 					}
 
 					msg = msg.replace("group:" + gr + "_", "");
-
 					p.sendMessage(msg);
+					break;
 				}
 			} else if (message.startsWith("permission:")) {
 				String perm = msg.split("_")[0].replace("permission:", "").replace("_", "");
 
 				msg = msg.replace("permission:" + perm + "_", "");
 
-				if (plugin.isPluginEnabled("PermissionsEx")) {
-					if (PermissionsEx.getPermissionManager().has(p, perm)) {
-						PermissionsEx.getUser(p).getPlayer().sendMessage(msg);
-					} else {
-						return;
-					}
-				} else if (p.hasPermission(perm)) {
+				if ((plugin.isPluginEnabled("PermissionsEx") && PermissionsEx.getPermissionManager().has(p, perm))
+						|| p.hasPermission(perm)) {
 					p.sendMessage(msg);
-				} else {
-					return;
 				}
 			} else {
 				p.sendMessage(msg);
@@ -259,7 +251,11 @@ public class Announce {
 			}
 
 			if (config.getBoolean("sound.enable")) {
-				String type = config.getString("sound.type");
+				String type = config.getString("sound.type", "");
+				if (type.isEmpty()) {
+					return;
+				}
+
 				if (!type.contains(",")) {
 					Sound sound = null;
 					try {

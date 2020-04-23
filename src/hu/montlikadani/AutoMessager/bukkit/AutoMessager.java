@@ -94,7 +94,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 				logConsole("Metrics enabled.");
 			}
 
-			sendMsg(getServer().getConsoleSender(), colorMsg(config.getString("plugin-enable")));
+			if (config.getBoolean("logconsole")) {
+				String msg = "&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v"
+						+ getDescription().getVersion() + "&a!";
+				sendMsg(getServer().getConsoleSender(), colorMsg(msg));
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 			logConsole(Level.WARNING,
@@ -108,9 +112,13 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		if (instance == null) return;
 
 		saveToggledMessages();
+
 		getServer().getScheduler().cancelTasks(this);
 
-		sendMsg(getServer().getConsoleSender(), colorMsg(conf.getConfig().getString("plugin-disable")));
+		if (conf.getConfig().getBoolean("logconsole")) {
+			String msg = "&6[&4Auto&9Messager&6]&7 >&c The plugin successfully disabled!";
+			Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
+		}
 
 		instance = null;
 	}

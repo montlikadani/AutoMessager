@@ -1,15 +1,14 @@
-# Enables broadcasting.
+# Enables broadcasting messages
 enable-broadcast: true
 
 # Enable to use PlaceholderAPI for the plugin.
 placeholderapi: false
 
-# Use JSON message in file?
+# Use JSON text to show in messages?
 # Usage: https://github.com/montlikadani/AutoMessager/wiki/File-usage#json-message
 use-json-message: false
 
 # Save the toggled messages to a file to load after server restart.
-# If this false, if the file is exists, it will be deleted automatically at server restart.
 remember-toggle-to-file: true
 
 # Used for the /am list command.
@@ -59,8 +58,9 @@ placeholder-format:
 time: 3
 
 # Time settings
-# Variables: ticks, second (or sec), minute (or min), hour (or h)
+# Variables: ticks, second (or sec), minute (or min), hour (or h), custom
 # Example: 20 ticks = 1 second; 1 second = 20 ticks; 1 minute = 60 second; 1 hour = 60 minute
+# custom usage: "00:01:00" - this counts 1 minute and after it's taken then sending the message
 time-setup: min
 
 # Want to broadcast the messages in ordered or randomly?
@@ -100,11 +100,6 @@ download-updates: true
 
 # Log plugin messages into console.
 logconsole: true
-
-# Plugin enable/disable messages in console.
-# Use %newline% placeholder.
-plugin-enable: '&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v${version}&a!'
-plugin-disable: '&6[&4Auto&9Messager&6]&7 >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
 config-version: 6

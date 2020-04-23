@@ -298,9 +298,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (!plugin.getConf().isBlacklistFileExists()) {
-				plugin.getConf().createBlacklistFile();
-			}
+			plugin.getConf().createBlacklistFile();
 
 			FileConfiguration bpls = plugin.getConf().getBlConfig();
 

@@ -27,12 +27,13 @@ public class Configuration {
 
 	public void loadFiles() {
 		File folder = plugin.getFolder();
+
 		if (config_file == null) {
 			config_file = new File(folder, "config.yml");
 		}
 
 		if (messages_file == null) {
-			messages_file = new File(folder, "messages.yml");
+			messages_file = new File(folder, "plugin-messages.yml");
 		}
 
 		if (bl_file == null) {
@@ -62,7 +63,7 @@ public class Configuration {
 			messages.load(messages_file);
 			messages.save(messages_file);
 
-			if (bl_file.exists()) {
+			if (isBlacklistFileExists()) {
 				bl = YamlConfiguration.loadConfiguration(bl_file);
 				bl.load(bl_file);
 				bl.save(bl_file);

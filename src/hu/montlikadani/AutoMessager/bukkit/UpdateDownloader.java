@@ -75,31 +75,30 @@ public class UpdateDownloader {
 				return msg;
 			}
 
-			Util.logConsole("Downloading new version of AutoMessager...");
-
 			final String name = "AutoMessager-" + newVersion;
-			final URL download = new URL(
-					"https://github.com/montlikadani/AutoMessager/releases/latest/download/AutoMessager.jar");
+
+			String updatesFolder = AutoMessager.getInstance().getFolder() + File.separator + "releases";
+			File temp = new File(updatesFolder);
+			if (!temp.exists()) {
+				temp.mkdir();
+			}
+
+			// Do not attempt to download the file again, when it is already downloaded
+			final File jar = new File(updatesFolder + File.separator + name + ".jar");
+			if (jar.exists()) {
+				return msg;
+			}
+
+			Util.logConsole("Downloading new version of AutoMessager...");
 
 			new BukkitRunnable() {
 				@Override
 				public void run() {
 					try {
+						final URL download = new URL(
+								"https://github.com/montlikadani/AutoMessager/releases/latest/download/AutoMessager.jar");
+
 						InputStream in = download.openStream();
-						String per = File.separator;
-						String updatesFolder = AutoMessager.getInstance().getFolder() + per + "releases";
-						File temp = new File(updatesFolder);
-						if (!temp.exists()) {
-							temp.mkdir();
-						}
-
-						File jar = new File(updatesFolder + per + name + ".jar");
-						if (jar.exists()) {
-							in.close();
-							cancel();
-							return;
-						}
-
 						Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 						in.close();
