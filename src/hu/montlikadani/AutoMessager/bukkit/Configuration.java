@@ -56,7 +56,7 @@ public class Configuration {
 			}
 
 			if (!messages_file.exists()) {
-				createFile(messages_file, "messages.yml", false);
+				createFile(messages_file, "plugin-messages.yml", false);
 			}
 
 			messages = YamlConfiguration.loadConfiguration(messages_file);

@@ -23,7 +23,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		this.plugin = plugin;
 	}
 
-	static Map<UUID, Boolean> enabled = new HashMap<>();
+	public static final Map<UUID, Boolean> ENABLED = new HashMap<>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -88,11 +88,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 				if (args[1].equalsIgnoreCase("all")) {
 					for (Player pl : Bukkit.getOnlinePlayers()) {
 						UUID uuid = pl.getUniqueId();
-
-						if (!enabled.containsKey(uuid)) {
-							enabled.put(uuid, false);
+						if (!ENABLED.containsKey(uuid)) {
+							ENABLED.put(uuid, false);
 						} else {
-							enabled.remove(uuid);
+							ENABLED.remove(uuid);
 						}
 					}
 
@@ -106,11 +105,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 				}
 
 				UUID uuid = target.getUniqueId();
-				if (!enabled.containsKey(uuid)) {
-					enabled.put(uuid, false);
+				if (!ENABLED.containsKey(uuid)) {
+					ENABLED.put(uuid, false);
 					sendMsg(sender, getMsg("toggle.disabled"));
 				} else {
-					enabled.remove(uuid);
+					ENABLED.remove(uuid);
 					sendMsg(sender, getMsg("toggle.enabled"));
 				}
 
@@ -119,11 +118,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 			Player p = (Player) sender;
 			UUID uuid = p.getUniqueId();
-			if (!enabled.containsKey(uuid)) {
-				enabled.put(uuid, false);
+			if (!ENABLED.containsKey(uuid)) {
+				ENABLED.put(uuid, false);
 				sendMsg(sender, getMsg("toggle.disabled"));
 			} else {
-				enabled.remove(uuid);
+				ENABLED.remove(uuid);
 				sendMsg(sender, getMsg("toggle.enabled"));
 			}
 		} else if (args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")) {

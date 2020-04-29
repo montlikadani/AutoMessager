@@ -35,6 +35,8 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
+		long load = System.currentTimeMillis();
+
 		instance = this;
 
 		try {
@@ -76,7 +78,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			loadToggledMessages();
 			announce.schedule();
 
-			logConsole(UpdateDownloader.checkFromGithub("console"));
+			UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
 
 			FileConfiguration config = conf.getConfig();
 			Metrics metrics = new Metrics(this, 1594);
@@ -96,7 +98,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 			if (config.getBoolean("logconsole")) {
 				String msg = "&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v"
-						+ getDescription().getVersion() + "&a!";
+						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				sendMsg(getServer().getConsoleSender(), colorMsg(msg));
 			}
 		} catch (Throwable e) {
@@ -181,7 +183,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			return;
 		}
 
-		Commands.enabled.clear();
+		Commands.ENABLED.clear();
 
 		File f = new File(getFolder(), "toggledmessages.yml");
 		if (!f.exists()) {
@@ -192,7 +194,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		if (config.contains("players")) {
 			for (String uuid : config.getConfigurationSection("players").getKeys(false)) {
-				Commands.enabled.put(UUID.fromString(uuid), config.getConfigurationSection("players").getBoolean(uuid));
+				Commands.ENABLED.put(UUID.fromString(uuid), config.getConfigurationSection("players").getBoolean(uuid));
 			}
 		}
 	}
@@ -207,7 +209,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			return;
 		}
 
-		if (Commands.enabled.isEmpty()) {
+		if (Commands.ENABLED.isEmpty()) {
 			return;
 		}
 
@@ -223,7 +225,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		config.set("players", null);
 
-		for (Entry<UUID, Boolean> list : Commands.enabled.entrySet()) {
+		for (Entry<UUID, Boolean> list : Commands.ENABLED.entrySet()) {
 			if (!list.getValue()) {
 				config.set("players." + list.getKey(), list.getValue());
 			}
@@ -235,7 +237,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			e.printStackTrace();
 		}
 
-		Commands.enabled.clear();
+		Commands.ENABLED.clear();
 	}
 
 	boolean checkOnlinePlayers() {
@@ -296,7 +298,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		public void onPlJoin(PlayerJoinEvent event) {
 			Player p = event.getPlayer();
 			if (p.isOp()) {
-				sendMsg(p, UpdateDownloader.checkFromGithub("player"));
+				UpdateDownloader.checkFromGithub(p);
 			}
 		}
 	}

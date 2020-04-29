@@ -35,6 +35,10 @@ public class Time {
 
 		switch (s.toLowerCase()) {
 		case "custom":
+			if (!time.contains(":")) {
+				return t *= 20;
+			}
+
 			String[] split = time.split(":");
 			if (split.length < 1) {
 				return t *= 20;

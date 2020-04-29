@@ -71,7 +71,7 @@ public class Announce {
 			}
 
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				if (Commands.enabled.containsKey(p.getUniqueId()) && !Commands.enabled.get(p.getUniqueId())) {
+				if (Commands.ENABLED.containsKey(p.getUniqueId()) && !Commands.ENABLED.get(p.getUniqueId())) {
 					continue;
 				}
 
@@ -81,7 +81,7 @@ public class Announce {
 					onInOrder(p);
 				}
 			}
-		}, 0L, plugin.getTimeC().countTimer());
+		}, plugin.getTimeC().countTimer(), plugin.getTimeC().countTimer());
 	}
 
 	public void cancelTask() {

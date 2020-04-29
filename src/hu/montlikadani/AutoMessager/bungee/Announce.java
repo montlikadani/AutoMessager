@@ -88,7 +88,7 @@ public class Announce {
 					}
 				}
 			}
-		}, 0L, plugin.getConfig().getInt("time", 5),
+		}, plugin.getConfig().getInt("time", 5), plugin.getConfig().getInt("time", 5),
 				TimeUnit.valueOf(plugin.getConfig().getString("time-setup", "minutes").toUpperCase()));
 	}
 
