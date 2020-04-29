@@ -99,8 +99,6 @@ public class AutoMessager extends Plugin {
 		String fName = config.getString("message-file", "");
 		if (fName.trim().isEmpty()) {
 			msg = "The message-file string is empty or not found.";
-		} else if (fName.equals("messages.yml")) {
-			msg = "The message file cannot be an existing message file!";
 		}
 
 		if (!fName.contains(".")) {
@@ -203,6 +201,8 @@ public class AutoMessager extends Plugin {
 					announce.schedule();
 
 					loadConfig();
+					loadMessages();
+
 					sendMessage(s, config.getString("messages.reload-config"));
 				} else if (args[0].equalsIgnoreCase("toggle")) {
 					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.toggle")) {

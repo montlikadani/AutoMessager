@@ -57,6 +57,11 @@ public class Announce {
 				return;
 			}
 
+			int size = plugin.getTexts().size();
+			if (lastMessage != size) {
+				lastMessage = size;
+			}
+
 			for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
 				if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
 					continue;
