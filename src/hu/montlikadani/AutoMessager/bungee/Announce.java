@@ -1,7 +1,6 @@
 package hu.montlikadani.AutoMessager.bungee;
 
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 import hu.montlikadani.AutoMessager.Global;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -18,7 +17,6 @@ public class Announce {
 	private int messageCounter;
 	private int lastMessage;
 	private int lastRandom;
-	private int warningCounter;
 
 	public Announce(AutoMessager plugin) {
 		this.plugin = plugin;
@@ -35,7 +33,6 @@ public class Announce {
 	public void load() {
 		// We need to start from -1, due to first line reading
 		messageCounter = -1;
-		warningCounter = 0;
 		random = false;
 
 		int cm = plugin.getTexts().size();
@@ -56,36 +53,19 @@ public class Announce {
 		}
 
 		task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
-			if (warningCounter <= 4) {
-				if (plugin.getTexts().size() < 1) {
-					plugin.getLogger().log(Level.WARNING,
-							"There is no message in '" + plugin.getConfig().getString("message-file") + "' file!");
+			if (!plugin.checkOnlinePlayers()) {
+				return;
+			}
 
-					warningCounter++;
-
-					if (warningCounter == 5) {
-						plugin.getLogger().log(Level.WARNING,
-								"Will stop outputing warnings now. Please write a message to the '"
-										+ plugin.getConfig().getString("message-file") + "' file.");
-					}
-
-					return;
+			for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
+				if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
+					continue;
 				}
 
-				if (!plugin.checkOnlinePlayers()) {
-					return;
-				}
-
-				for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
-					if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
-						continue;
-					}
-
-					if (random) {
-						onRandom(p);
-					} else {
-						onInOrder(p);
-					}
+				if (random) {
+					onRandom(p);
+				} else {
+					onInOrder(p);
 				}
 			}
 		}, plugin.getConfig().getInt("time", 5), plugin.getConfig().getInt("time", 5),

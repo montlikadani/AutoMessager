@@ -26,7 +26,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 public class AutoMessager extends Plugin {
 
-	private final List<UUID> msgEnable = new ArrayList<>();
+	private final Set<UUID> msgEnable = new HashSet<>();
 	private final List<String> texts = new ArrayList<>();
 
 	private static AutoMessager instance;
@@ -441,7 +441,7 @@ public class AutoMessager extends Plugin {
 		return texts;
 	}
 
-	public List<UUID> getEnabledMessages() {
+	public Set<UUID> getEnabledMessages() {
 		return msgEnable;
 	}
 
