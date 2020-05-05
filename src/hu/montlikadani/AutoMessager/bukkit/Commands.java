@@ -132,7 +132,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			if (args.length < 2) {
-				sendMsg(sender, getMsg("broadcast-usage", "%command%", commandLabel, "%args%", args[0]));
+				if (sender instanceof Player) {
+					((Player) sender).performCommand("am help 2");
+				} else {
+					Bukkit.dispatchCommand(sender, "am help");
+				}
+
 				return true;
 			}
 
@@ -157,8 +162,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			List<String> texts = plugin.getFileHandler().getTexts();
-			int size = texts.size();
-			if (size < 1) {
+			if (texts.isEmpty()) {
 				sendMsg(sender, getMsg("no-message-to-list"));
 				return true;
 			}
@@ -174,7 +178,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			Player p = (Player) sender;
+
 			int maxRow = plugin.getConf().getConfig().getInt("show-max-row-in-one-page");
+			int size = texts.size();
 
 			if (args.length == 1) {
 				List<String> page = makePage(texts, 1, maxRow);
@@ -218,6 +224,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			if (args.length < 2) {
+				if (sender instanceof Player) {
+					((Player) sender).performCommand("am add 2");
+				} else {
+					Bukkit.dispatchCommand(sender, "am add");
+				}
+
 				sendMsg(sender, getMsg("add-cmd-usage", "%command%", commandLabel));
 				return true;
 			}
@@ -238,7 +250,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			if (args.length < 2) {
-				sendMsg(sender, getMsg("remove-cmd-usage", "%command%", commandLabel, "%args%", args[0]));
+				if (sender instanceof Player) {
+					((Player) sender).performCommand("am help 2");
+				} else {
+					Bukkit.dispatchCommand(sender, "am help");
+				}
+
 				return true;
 			}
 
@@ -252,6 +269,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 			if (index < 0) {
 				sendMsg(sender, getMsg("bad-number"));
+				return true;
+			}
+
+			if (index > plugin.getFileHandler().getTexts().size() - 1) {
+				sendMsg(sender, getMsg("index-start"));
 				return true;
 			}
 
@@ -293,7 +315,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			if (args.length < 2) {
-				sendMsg(sender, getMsg("blacklist.usage", "%command%", commandLabel, "%args%", args[0]));
+				if (sender instanceof Player) {
+					((Player) sender).performCommand("am help 3");
+				} else {
+					Bukkit.dispatchCommand(sender, "am help");
+				}
+
 				return true;
 			}
 
@@ -308,7 +335,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 				}
 
 				if (args.length < 3) {
-					sendMsg(sender, getMsg("blacklist.add-usage", "%command%", commandLabel, "%args%", args[0]));
+					if (sender instanceof Player) {
+						((Player) sender).performCommand("am help 3");
+					} else {
+						Bukkit.dispatchCommand(sender, "am help");
+					}
+
 					return true;
 				}
 
@@ -341,8 +373,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 				}
 
 				if (args.length < 3) {
-					sendMsg(sender, getMsg("blacklist.remove-usage", "%command%", commandLabel, "%args%", args[0],
-							"%args2%", args[1]));
+					if (sender instanceof Player) {
+						((Player) sender).performCommand("am help 3");
+					} else {
+						Bukkit.dispatchCommand(sender, "am help");
+					}
+
 					return true;
 				}
 

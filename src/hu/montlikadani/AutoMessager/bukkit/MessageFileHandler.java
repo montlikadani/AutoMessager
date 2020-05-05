@@ -84,7 +84,7 @@ public class MessageFileHandler {
 	public void loadMessages() {
 		clearTexts();
 
-		if (file == null) {
+		if (file == null || !file.exists()) {
 			loadFile();
 		}
 
@@ -124,7 +124,6 @@ public class MessageFileHandler {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				Util.sendInfo();
 			}
 		}
 	}
@@ -150,7 +149,6 @@ public class MessageFileHandler {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			Util.sendInfo();
 		}
 	}
 
@@ -177,7 +175,6 @@ public class MessageFileHandler {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			Util.sendInfo();
 		}
 	}
 }

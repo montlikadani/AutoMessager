@@ -91,8 +91,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 				metrics.addCustomChart(new Metrics.SimplePie("time_type", () -> config.getString("time-setup")));
 				metrics.addCustomChart(
 						new Metrics.SimplePie("use_json_message", () -> config.getString("use-json-message")));
-				metrics.addCustomChart(
-						new Metrics.SingleLineChart("amount_of_texts", () -> fileHandler.getTexts().size()));
+				metrics.addCustomChart(new Metrics.SingleLineChart("amount_of_texts", fileHandler.getTexts()::size));
 				logConsole("Metrics enabled.");
 			}
 
@@ -260,7 +259,8 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	boolean isPluginEnabled(String name) {
-		return getServer().getPluginManager().getPlugin(name) != null && getServer().getPluginManager().isPluginEnabled(name);
+		return getServer().getPluginManager().getPlugin(name) != null
+				&& getServer().getPluginManager().isPluginEnabled(name);
 	}
 
 	public Configuration getConf() {

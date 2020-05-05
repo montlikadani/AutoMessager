@@ -37,12 +37,6 @@ public class Util {
 		}
 	}
 
-	static void sendInfo() {
-		logConsole(Level.WARNING,
-				"There was an error. Please report it here:\\nhttps://github.com/montlikadani/AutoMessager/issues",
-				false);
-	}
-
 	public static String colorMsg(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}

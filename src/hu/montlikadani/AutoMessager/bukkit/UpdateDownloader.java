@@ -20,7 +20,7 @@ public class UpdateDownloader {
 
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
 		FileConfiguration conf = AutoMessager.getInstance().getConf().getConfig();
-		if (!conf.getBoolean("check-update")) {
+		if (!conf.getBoolean("check-update", false)) {
 			return;
 		}
 
@@ -53,33 +53,29 @@ public class UpdateDownloader {
 					String cVersion = AutoMessager.getInstance().getDescription().getVersion().replaceAll("[^0-9]", "");
 					currentVersion = Integer.parseInt(cVersion);
 
+					if (newVersion <= currentVersion || currentVersion >= newVersion) {
+						return;
+					}
+
 					String msg = "";
-					if (newVersion > currentVersion) {
-						if (sender instanceof Player) {
-							msg = Util.colorMsg("&8&m&l--------------------------------------------------\n"
-									+ "&aA new update for AutoMessager is available!&4 Version:&7 " + versionString
-									+ (conf.getBoolean("download-updates") ? ""
-											: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/43875/")
-									+ "\n&8&m&l--------------------------------------------------");
-						} else {
-							msg = "New version (" + versionString
-									+ ") is available at https://www.spigotmc.org/resources/43875/";
-						}
-					} else if (!(sender instanceof Player)) {
-						msg = "You're running the latest version.";
+					if (sender instanceof Player) {
+						msg = Util.colorMsg("&8&m&l--------------------------------------------------\n"
+								+ "&aA new update for AutoMessager is available!&4 Version:&7 " + versionString
+								+ (conf.getBoolean("download-updates") ? ""
+										: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/43875/")
+								+ "\n&8&m&l--------------------------------------------------");
+					} else {
+						msg = "New version (" + versionString
+								+ ") is available at https://www.spigotmc.org/resources/43875/";
 					}
 
 					sender.sendMessage(msg);
 
-					if (newVersion <= currentVersion) {
+					if (!conf.getBoolean("download-updates", false)) {
 						return;
 					}
 
-					if (!conf.getBoolean("download-updates")) {
-						return;
-					}
-
-					final String name = "AutoMessager-" + newVersion;
+					final String name = "AutoMessager-v" + newVersion;
 
 					String updatesFolder = AutoMessager.getInstance().getFolder() + File.separator + "releases";
 					File temp = new File(updatesFolder);

@@ -35,7 +35,7 @@ public class Announce {
 		messageCounter = -1;
 		random = false;
 
-		int cm = plugin.getTexts().size();
+		int cm = plugin.getMessageFileHandler().getTexts().size();
 		if (plugin.getConfig().getBoolean("random") && cm > 2) {
 			random = true;
 		}
@@ -57,7 +57,7 @@ public class Announce {
 				return;
 			}
 
-			int size = plugin.getTexts().size();
+			int size = plugin.getMessageFileHandler().getTexts().size();
 			if (lastMessage != size) {
 				lastMessage = size;
 			}
@@ -86,14 +86,14 @@ public class Announce {
 
 	private void onRandom(ProxiedPlayer p) {
 		int nm = getNextMessage();
-		String message = plugin.getTexts().get(nm);
+		String message = plugin.getMessageFileHandler().getTexts().get(nm);
 		lastRandom = nm;
 		send(p, message);
 	}
 
 	private void onInOrder(ProxiedPlayer p) {
 		int nm = getNextMessage();
-		String message = plugin.getTexts().get(nm);
+		String message = plugin.getMessageFileHandler().getTexts().get(nm);
 		send(p, message);
 	}
 

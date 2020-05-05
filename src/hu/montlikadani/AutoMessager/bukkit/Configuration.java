@@ -70,7 +70,6 @@ public class Configuration {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			Util.sendInfo();
 		}
 	}
 
@@ -106,7 +105,6 @@ public class Configuration {
 			bl.save(bl_file);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Util.sendInfo();
 		}
 	}
 
