@@ -52,8 +52,11 @@ public class Announce {
 			return;
 		}
 
+		final int time = plugin.getConfig().getInt("time", 5);
+		final String timeSetup = plugin.getConfig().getString("time-setup", "minutes").toUpperCase();
+
 		task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
-			if (!plugin.checkOnlinePlayers()) {
+			if (!plugin.checkOnlinePlayers() || plugin.getMessageFileHandler().getTexts().isEmpty()) {
 				return;
 			}
 
@@ -62,19 +65,9 @@ public class Announce {
 				lastMessage = size;
 			}
 
-			for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
-				if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
-					continue;
-				}
+			prepare();
+		}, time, time, TimeUnit.valueOf(timeSetup));
 
-				if (random) {
-					onRandom(p);
-				} else {
-					onInOrder(p);
-				}
-			}
-		}, plugin.getConfig().getInt("time", 5), plugin.getConfig().getInt("time", 5),
-				TimeUnit.valueOf(plugin.getConfig().getString("time-setup", "minutes").toUpperCase()));
 	}
 
 	public void cancelTask() {
@@ -84,17 +77,15 @@ public class Announce {
 		}
 	}
 
-	private void onRandom(ProxiedPlayer p) {
+	private void prepare() {
 		int nm = getNextMessage();
 		String message = plugin.getMessageFileHandler().getTexts().get(nm);
-		lastRandom = nm;
-		send(p, message);
-	}
 
-	private void onInOrder(ProxiedPlayer p) {
-		int nm = getNextMessage();
-		String message = plugin.getMessageFileHandler().getTexts().get(nm);
-		send(p, message);
+		if (random) {
+			lastRandom = nm;
+		}
+
+		send(message);
 	}
 
 	int getNextMessage() {
@@ -117,41 +108,47 @@ public class Announce {
 		return nm;
 	}
 
-	private void send(ProxiedPlayer p, String message) {
+	private void send(String message) {
 		if (message.isEmpty()) {
 			return;
 		}
 
 		String msg = message;
 
-		String server = "";
-		if (message.startsWith("server:")) {
-			msg = msg.replace("server:", "");
+		for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
+			if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
+				continue;
+			}
 
-			String[] split = msg.split("_");
+			String server = "";
+			if (message.startsWith("server:")) {
+				msg = msg.replace("server:", "");
 
-			server = split[0];
-			msg = split[1];
-		}
+				String[] split = msg.split("_");
 
-		String path = "placeholder-format.time.";
-		if (!plugin.getConfig().getString(path + "title", "").isEmpty()) {
-			msg = msg.replace("%title%", plugin.getConfig().getString(path + "title").replace("%newline%", "\n"));
-		}
+				server = split[0];
+				msg = split[1];
+			}
 
-		if (!plugin.getConfig().getString(path + "suffix", "").isEmpty()) {
-			msg = msg.replace("%suffix%", plugin.getConfig().getString(path + "suffix"));
-		}
+			String path = "placeholder-format.time.";
+			if (!plugin.getConfig().getString(path + "title", "").isEmpty()) {
+				msg = msg.replace("%title%", plugin.getConfig().getString(path + "title").replace("%newline%", "\n"));
+			}
 
-		msg = plugin.replaceVariables(msg, p);
+			if (!plugin.getConfig().getString(path + "suffix", "").isEmpty()) {
+				msg = msg.replace("%suffix%", plugin.getConfig().getString(path + "suffix"));
+			}
 
-		String plServer = p.getServer().getInfo().getName();
+			msg = plugin.replaceVariables(msg, p);
 
-		if (server.isEmpty() && !plugin.getConfig().getStringList("disabled-servers").contains(plServer)) {
-			plugin.sendMessage(p, msg);
-		} else if ((server.equalsIgnoreCase(plServer)
-				&& !plugin.getConfig().getStringList("disabled-servers").contains(server))) {
-			plugin.sendMessage(p, msg);
+			String plServer = p.getServer().getInfo().getName();
+
+			if (server.isEmpty() && !plugin.getConfig().getStringList("disabled-servers").contains(plServer)) {
+				plugin.sendMessage(p, msg);
+			} else if ((server.equalsIgnoreCase(plServer)
+					&& !plugin.getConfig().getStringList("disabled-servers").contains(server))) {
+				plugin.sendMessage(p, msg);
+			}
 		}
 
 		if (plugin.getConfig().getBoolean("broadcast-to-console")) {

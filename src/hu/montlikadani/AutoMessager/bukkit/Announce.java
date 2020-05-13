@@ -70,17 +70,7 @@ public class Announce {
 				lastMessage = size;
 			}
 
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				if (Commands.ENABLED.containsKey(p.getUniqueId()) && !Commands.ENABLED.get(p.getUniqueId())) {
-					continue;
-				}
-
-				if (random) {
-					onRandom(p);
-				} else {
-					onInOrder(p);
-				}
-			}
+			prepare();
 		}, plugin.getTimeC().countTimer(), plugin.getTimeC().countTimer());
 	}
 
@@ -89,17 +79,15 @@ public class Announce {
 		task = -1;
 	}
 
-	private void onRandom(Player p) {
+	private void prepare() {
 		int nm = getNextMessage();
 		String message = plugin.getFileHandler().getTexts().get(nm);
-		lastRandom = nm;
-		send(p, message);
-	}
 
-	private void onInOrder(Player p) {
-		int nm = getNextMessage();
-		String message = plugin.getFileHandler().getTexts().get(nm);
-		send(p, message);
+		if (random) {
+			lastRandom = nm;
+		}
+
+		send(message);
 	}
 
 	int getNextMessage() {
@@ -122,167 +110,173 @@ public class Announce {
 		return nm;
 	}
 
-	private void send(Player p, final String message) {
+	private void send(final String message) {
 		if (message.isEmpty()) {
 			return;
 		}
 
 		FileConfiguration config = plugin.getConf().getConfig();
 
-		if (config.getBoolean("disable-messages-when-player-afk", false)) {
-			if (plugin.isPluginEnabled("Essentials")) {
-				if (org.bukkit.plugin.java.JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk()) {
-					return;
-				}
-			} else {
-				logConsole(Level.WARNING, "The Essentials plugin is not enabled or loaded, please enable.");
-			}
-		}
-
-		if (config.getStringList("disabled-worlds").contains(p.getWorld().getName())
-				|| (plugin.getConf().isBlacklistFileExists()
-						&& plugin.getConf().getBlConfig().getStringList("banned-players").contains(p.getName()))) {
-			return;
-		}
-
 		String msg = message;
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (Commands.ENABLED.containsKey(p.getUniqueId()) && !Commands.ENABLED.get(p.getUniqueId())) {
+				continue;
+			}
 
-		msg = Util.replaceVariables(p, msg);
-		msg = msg.replace("\\n", "\n");
-
-		if ((plugin.isPluginEnabled("PermissionsEx")
-				&& PermissionsEx.getPermissionManager().has(p, Perm.SEEMSG.getPerm()))
-				|| p.hasPermission(Perm.SEEMSG.getPerm())) {
-			if (message.startsWith("json:")) {
-				if (!config.getBoolean("use-json-message")) {
-					return;
-				}
-
-				msg = msg.replace("json:", "");
-
-				if (!sendJSON(p, msg)) {
-					return;
-				}
-			} else if (message.startsWith("world:")) {
-				String wName = p.getWorld().getName();
-				String world = msg.split("_")[0].replace("world:", "").replace("_", "");
-
-				if (!wName.equals(world)) {
-					return;
-				}
-
-				msg = msg.replace("world:" + wName + "_", "");
-
-				if (config.getBoolean("use-json-message") && msg.contains("json:")) {
-					msg = msg.replace("json:", "");
-
-					for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
-						if (!sendJSON(wp, msg)) {
-							return;
-						}
+			if (config.getBoolean("disable-messages-when-player-afk", false)) {
+				if (plugin.isPluginEnabled("Essentials")) {
+					if (org.bukkit.plugin.java.JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk()) {
+						return;
 					}
 				} else {
-					for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
-						wp.sendMessage(msg);
-					}
-				}
-			} else if (message.startsWith("player:")) {
-				String player = msg.split("_")[0].replace("player:", "").replace("_", "");
-
-				if (!p.getName().equals(player)) {
-					return;
-				}
-
-				msg = msg.replace("player:" + Bukkit.getPlayer(player).getName() + "_", "");
-
-				Bukkit.getPlayer(player).sendMessage(msg);
-			} else if (message.startsWith("group:")) {
-				if (!plugin.isPluginEnabled("Vault")) {
-					logConsole(Level.WARNING, "The Vault plugin not found. Without the per-group messages not work.");
-					return;
-				}
-
-				String gr = msg.split("_")[0].replace("group:", "").replace("_", "");
-				for (String group : plugin.getVaultPerm().getPlayerGroups(p)) {
-					if (!gr.equals(group)) {
-						continue;
-					}
-
-					msg = msg.replace("group:" + gr + "_", "");
-					p.sendMessage(msg);
-					break;
-				}
-			} else if (message.startsWith("permission:")) {
-				String perm = msg.split("_")[0].replace("permission:", "").replace("_", "");
-
-				msg = msg.replace("permission:" + perm + "_", "");
-
-				if ((plugin.isPluginEnabled("PermissionsEx") && PermissionsEx.getPermissionManager().has(p, perm))
-						|| p.hasPermission(perm)) {
-					p.sendMessage(msg);
-				}
-			} else {
-				p.sendMessage(msg);
-			}
-
-			if (!config.getStringList("run-commands.commands").isEmpty()) {
-				for (String cmd : config.getStringList("run-commands.commands")) {
-					if (!cmd.contains(":")) {
-						continue;
-					}
-
-					String[] arg = cmd.split(": ");
-					if (arg.length < 2) {
-						logConsole(Level.WARNING, "The command " + cmd
-								+ " invalid. Please follow the instructions which found in comments.");
-						continue;
-					}
-
-					String t = arg[1];
-
-					t = Util.setPlaceholders(p, t);
-
-					if (arg[0].equalsIgnoreCase("console")) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), t);
-					} else if (arg[0].equalsIgnoreCase("player")) {
-						p.performCommand(t);
-					}
+					logConsole(Level.WARNING, "The Essentials plugin is not enabled or loaded, please enable.");
 				}
 			}
 
-			if (config.getBoolean("sound.enable")) {
-				String type = config.getString("sound.type", "");
-				if (type.isEmpty()) {
-					return;
-				}
+			if (config.getStringList("disabled-worlds").contains(p.getWorld().getName())
+					|| (plugin.getConf().isBlacklistFileExists()
+							&& plugin.getConf().getBlConfig().getStringList("banned-players").contains(p.getName()))) {
+				return;
+			}
 
-				if (!type.contains(",")) {
-					Sound sound = null;
-					try {
-						sound = Sound.valueOf(type.toUpperCase());
-					} catch (IllegalArgumentException e) {
-						logConsole(Level.WARNING, "Sound by this name not found: " + type);
+			msg = Util.replaceVariables(p, msg);
+			msg = msg.replace("\\n", "\n");
+
+			if ((plugin.isPluginEnabled("PermissionsEx")
+					&& PermissionsEx.getPermissionManager().has(p, Perm.SEEMSG.getPerm()))
+					|| p.hasPermission(Perm.SEEMSG.getPerm())) {
+				if (message.startsWith("json:")) {
+					if (!config.getBoolean("use-json-message")) {
 						return;
 					}
 
-					p.playSound(p.getLocation(), sound, 1f, 1f);
-					return;
+					msg = msg.replace("json:", "");
+
+					if (!sendJSON(p, msg)) {
+						return;
+					}
+				} else if (message.startsWith("world:")) {
+					String wName = p.getWorld().getName();
+					String world = msg.split("_")[0].replace("world:", "").replace("_", "");
+
+					if (!wName.equals(world)) {
+						return;
+					}
+
+					msg = msg.replace("world:" + wName + "_", "");
+
+					if (config.getBoolean("use-json-message") && msg.contains("json:")) {
+						msg = msg.replace("json:", "");
+
+						for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
+							if (!sendJSON(wp, msg)) {
+								return;
+							}
+						}
+					} else {
+						for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
+							wp.sendMessage(msg);
+						}
+					}
+				} else if (message.startsWith("player:")) {
+					String player = msg.split("_")[0].replace("player:", "").replace("_", "");
+
+					if (!p.getName().equals(player)) {
+						return;
+					}
+
+					msg = msg.replace("player:" + Bukkit.getPlayer(player).getName() + "_", "");
+
+					Bukkit.getPlayer(player).sendMessage(msg);
+				} else if (message.startsWith("group:")) {
+					if (!plugin.isPluginEnabled("Vault")) {
+						logConsole(Level.WARNING,
+								"The Vault plugin not found. Without the per-group messages not work.");
+						return;
+					}
+
+					String gr = msg.split("_")[0].replace("group:", "").replace("_", "");
+					for (String group : plugin.getVaultPerm().getPlayerGroups(p)) {
+						if (!gr.equals(group)) {
+							continue;
+						}
+
+						msg = msg.replace("group:" + gr + "_", "");
+						p.sendMessage(msg);
+						break;
+					}
+				} else if (message.startsWith("permission:")) {
+					String perm = msg.split("_")[0].replace("permission:", "").replace("_", "");
+
+					msg = msg.replace("permission:" + perm + "_", "");
+
+					if ((plugin.isPluginEnabled("PermissionsEx") && PermissionsEx.getPermissionManager().has(p, perm))
+							|| p.hasPermission(perm)) {
+						p.sendMessage(msg);
+					}
+				} else {
+					p.sendMessage(msg);
 				}
 
-				String[] split = type.split(", ");
+				if (!config.getStringList("run-commands.commands").isEmpty()) {
+					for (String cmd : config.getStringList("run-commands.commands")) {
+						if (!cmd.contains(":")) {
+							continue;
+						}
 
-				Sound sound = null;
-				try {
-					sound = Sound.valueOf(split[0].toUpperCase());
-				} catch (IllegalArgumentException e) {
-					logConsole(Level.WARNING, "Sound by this name not found: " + split[0]);
-					return;
+						String[] arg = cmd.split(": ");
+						if (arg.length < 2) {
+							logConsole(Level.WARNING, "The command " + cmd
+									+ " invalid. Please follow the instructions which found in comments.");
+							continue;
+						}
+
+						String t = arg[1];
+
+						t = Util.setPlaceholders(p, t);
+
+						if (arg[0].equalsIgnoreCase("console")) {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), t);
+						} else if (arg[0].equalsIgnoreCase("player")) {
+							p.performCommand(t);
+						}
+					}
 				}
 
-				float volume = split.length > 1 ? Float.parseFloat(split[1]) : 1f;
-				float pitch = split.length > 2 ? Float.parseFloat(split[2]) : 1f;
+				if (config.getBoolean("sound.enable")) {
+					String type = config.getString("sound.type", "");
+					if (type.isEmpty()) {
+						return;
+					}
 
-				p.playSound(p.getLocation(), sound, volume, pitch);
+					if (!type.contains(",")) {
+						Sound sound = null;
+						try {
+							sound = Sound.valueOf(type.toUpperCase());
+						} catch (IllegalArgumentException e) {
+							logConsole(Level.WARNING, "Sound by this name not found: " + type);
+							return;
+						}
+
+						p.playSound(p.getLocation(), sound, 1f, 1f);
+						return;
+					}
+
+					String[] split = type.split(", ");
+
+					Sound sound = null;
+					try {
+						sound = Sound.valueOf(split[0].toUpperCase());
+					} catch (IllegalArgumentException e) {
+						logConsole(Level.WARNING, "Sound by this name not found: " + split[0]);
+						return;
+					}
+
+					float volume = split.length > 1 ? Float.parseFloat(split[1]) : 1f;
+					float pitch = split.length > 2 ? Float.parseFloat(split[2]) : 1f;
+
+					p.playSound(p.getLocation(), sound, volume, pitch);
+				}
 			}
 		}
 
