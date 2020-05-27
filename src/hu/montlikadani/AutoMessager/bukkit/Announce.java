@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.earth2me.essentials.Essentials;
 
 import hu.montlikadani.AutoMessager.Global;
+import hu.montlikadani.AutoMessager.bukkit.commands.Commands;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -126,7 +127,7 @@ public class Announce {
 			if (config.getBoolean("disable-messages-when-player-afk", false)) {
 				if (plugin.isPluginEnabled("Essentials")) {
 					if (org.bukkit.plugin.java.JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk()) {
-						return;
+						continue;
 					}
 				} else {
 					logConsole(Level.WARNING, "The Essentials plugin is not enabled or loaded, please enable.");
@@ -134,9 +135,9 @@ public class Announce {
 			}
 
 			if (config.getStringList("disabled-worlds").contains(p.getWorld().getName())
-					|| (plugin.getConf().isBlacklistFileExists()
-							&& plugin.getConf().getBlConfig().getStringList("banned-players").contains(p.getName()))) {
-				return;
+					|| (plugin.getConf().isBlacklistFileExists() && plugin.getConf().getBlConfig()
+							.getStringList("blacklisted-players").contains(p.getName()))) {
+				continue;
 			}
 
 			msg = Util.replaceVariables(p, msg);
@@ -146,10 +147,6 @@ public class Announce {
 					&& PermissionsEx.getPermissionManager().has(p, Perm.SEEMSG.getPerm()))
 					|| p.hasPermission(Perm.SEEMSG.getPerm())) {
 				if (message.startsWith("json:")) {
-					if (!config.getBoolean("use-json-message")) {
-						return;
-					}
-
 					msg = msg.replace("json:", "");
 
 					if (!sendJSON(p, msg)) {
@@ -160,7 +157,7 @@ public class Announce {
 					String world = msg.split("_")[0].replace("world:", "").replace("_", "");
 
 					if (!wName.equals(world)) {
-						return;
+						continue;
 					}
 
 					msg = msg.replace("world:" + wName + "_", "");
@@ -170,7 +167,7 @@ public class Announce {
 
 						for (Player wp : Bukkit.getWorld(wName).getPlayers()) {
 							if (!sendJSON(wp, msg)) {
-								return;
+								continue;
 							}
 						}
 					} else {
@@ -182,7 +179,7 @@ public class Announce {
 					String player = msg.split("_")[0].replace("player:", "").replace("_", "");
 
 					if (!p.getName().equals(player)) {
-						return;
+						continue;
 					}
 
 					msg = msg.replace("player:" + Bukkit.getPlayer(player).getName() + "_", "");
@@ -243,10 +240,10 @@ public class Announce {
 					}
 				}
 
-				if (config.getBoolean("sound.enable")) {
+				s: if (config.getBoolean("sound.enable")) {
 					String type = config.getString("sound.type", "");
 					if (type.isEmpty()) {
-						return;
+						break s;
 					}
 
 					if (!type.contains(",")) {
@@ -255,11 +252,11 @@ public class Announce {
 							sound = Sound.valueOf(type.toUpperCase());
 						} catch (IllegalArgumentException e) {
 							logConsole(Level.WARNING, "Sound by this name not found: " + type);
-							return;
+							break s;
 						}
 
 						p.playSound(p.getLocation(), sound, 1f, 1f);
-						return;
+						break s;
 					}
 
 					String[] split = type.split(", ");
@@ -269,7 +266,7 @@ public class Announce {
 						sound = Sound.valueOf(split[0].toUpperCase());
 					} catch (IllegalArgumentException e) {
 						logConsole(Level.WARNING, "Sound by this name not found: " + split[0]);
-						return;
+						break s;
 					}
 
 					float volume = split.length > 1 ? Float.parseFloat(split[1]) : 1f;

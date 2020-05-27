@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import hu.montlikadani.AutoMessager.bukkit.commands.Commands;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.milkbowl.vault.permission.Permission;
 
@@ -134,7 +135,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		fileHandler.loadMessages();
 	}
 
-	void reload() {
+	public void reload() {
 		if (conf == null) {
 			conf = new Configuration(this);
 		}

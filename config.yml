@@ -4,10 +4,6 @@ enable-broadcast: true
 # Enable to use PlaceholderAPI for the plugin.
 placeholderapi: false
 
-# Use JSON text to show in messages?
-# Usage: https://github.com/montlikadani/AutoMessager/wiki/File-usage#json-message
-use-json-message: false
-
 # Save the toggled messages to a file to load after server restart.
 remember-toggle-to-file: true
 

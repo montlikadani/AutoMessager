@@ -67,7 +67,7 @@ public class Time {
 
 			return t;
 		case "tick":
-			return t *= 1;
+			return t;
 		case "sec":
 		case "second":
 			return t *= 20;

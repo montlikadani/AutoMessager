@@ -18,19 +18,19 @@ import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Util {
 
-	static void logConsole(String error) {
+	public static void logConsole(String error) {
 		logConsole(Level.INFO, error);
 	}
 
-	static void logConsole(String error, boolean loaded) {
+	public static void logConsole(String error, boolean loaded) {
 		logConsole(Level.INFO, error, loaded);
 	}
 
-	static void logConsole(Level level, String error) {
+	public static void logConsole(Level level, String error) {
 		logConsole(level, error, true);
 	}
 
-	static void logConsole(Level level, String error, boolean loaded) {
+	public static void logConsole(Level level, String error, boolean loaded) {
 		if ((!loaded || AutoMessager.getInstance().getConf().getConfig().getBoolean("logconsole")) && error != null
 				&& !error.trim().isEmpty()) {
 			Bukkit.getLogger().log(level == null ? Level.INFO : level, "[AutoMessager] " + error);
@@ -41,7 +41,7 @@ public class Util {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
-	static String getMsg(String key, Object... placeholders) {
+	public static String getMsg(String key, Object... placeholders) {
 		String msg = "";
 
 		if (AutoMessager.getInstance().getConf().getMessages().getString(key, "").isEmpty()) {
@@ -61,15 +61,15 @@ public class Util {
 		return msg;
 	}
 
-	static void sendMsg(String s, boolean bc) {
+	public static void sendMsg(String s, boolean bc) {
 		sendMsg(null, s, bc);
 	}
 
-	static void sendMsg(CommandSender sender, String s) {
+	public static void sendMsg(CommandSender sender, String s) {
 		sendMsg(sender, s, false);
 	}
 
-	static void sendMsg(CommandSender sender, String s, boolean broadcast) {
+	public static void sendMsg(CommandSender sender, String s, boolean broadcast) {
 		if (s != null && !s.isEmpty()) {
 			if (s.contains("\n")) {
 				for (String msg : s.split("\n")) {
@@ -89,7 +89,7 @@ public class Util {
 		}
 	}
 
-	static String replaceVariables(Player pl, String str) {
+	public static String replaceVariables(Player pl, String str) {
 		FileConfiguration config = AutoMessager.getInstance().getConf().getConfig();
 		String path = "placeholder-format.";
 
@@ -150,7 +150,7 @@ public class Util {
 	}
 
 	@SuppressWarnings("deprecation")
-	static String setPlaceholders(Player p, String s) {
+	public static String setPlaceholders(Player p, String s) {
 		if (AutoMessager.getInstance().getConf().papi && AutoMessager.getInstance().isPluginEnabled("PlaceholderAPI")
 				&& PlaceholderAPI.containsPlaceholders(s)) {
 			s = PlaceholderAPI.setPlaceholders(p, s);

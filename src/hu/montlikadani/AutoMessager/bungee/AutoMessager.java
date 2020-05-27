@@ -213,11 +213,7 @@ public class AutoMessager extends Plugin {
 						return;
 					}
 
-					for (String m : texts) {
-						if (!m.isEmpty()) {
-							sendMessage(s, m);
-						}
-					}
+					texts.stream().filter(m -> m.isEmpty()).forEach(m -> sendMessage(s, m));
 				} else if (args[0].equalsIgnoreCase("add")) {
 					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.add")) {
 						sendMessage(s, config.getString("messages.no-permission"));
@@ -235,9 +231,7 @@ public class AutoMessager extends Plugin {
 					}
 
 					String msg = builder.toString();
-
 					messageFileHandler.addText(msg);
-
 					sendMessage(s, config.getString("messages.added-text").replace("%text%", msg));
 				} else if (args[0].equalsIgnoreCase("remove")) {
 					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.remove")) {
