@@ -14,5 +14,3 @@ A fully configurable plugin that allows to send messages to all servers or world
 If you find a bug about the plugin, please send a issue here: https://github.com/montlikadani/AutoMessager/issues
 
 Wiki: https://github.com/montlikadani/AutoMessager/wiki
-
-Changelog: https://github.com/montlikadani/AutoMessager/blob/master/Changelog.txt

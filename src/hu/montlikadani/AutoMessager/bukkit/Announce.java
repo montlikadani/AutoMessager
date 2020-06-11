@@ -118,7 +118,6 @@ public class Announce {
 
 		FileConfiguration config = plugin.getConf().getConfig();
 
-		String msg = message;
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (Commands.ENABLED.containsKey(p.getUniqueId()) && !Commands.ENABLED.get(p.getUniqueId())) {
 				continue;
@@ -140,6 +139,7 @@ public class Announce {
 				continue;
 			}
 
+			String msg = message;
 			msg = Util.replaceVariables(p, msg);
 			msg = msg.replace("\\n", "\n");
 
@@ -229,7 +229,6 @@ public class Announce {
 						}
 
 						String t = arg[1];
-
 						t = Util.setPlaceholders(p, t);
 
 						if (arg[0].equalsIgnoreCase("console")) {
@@ -280,7 +279,7 @@ public class Announce {
 		if (config.getBoolean("broadcast-to-console")
 				&& !(message.startsWith("json:") && message.startsWith("world:") && message.startsWith("player:")
 						&& message.startsWith("group:") && message.startsWith("permission:"))) {
-			Bukkit.getConsoleSender().sendMessage(msg);
+			Bukkit.getConsoleSender().sendMessage(message);
 		}
 	}
 

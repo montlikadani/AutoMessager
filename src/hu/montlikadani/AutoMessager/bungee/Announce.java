@@ -113,12 +113,12 @@ public class Announce {
 			return;
 		}
 
-		String msg = message;
-
 		for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
 			if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
 				continue;
 			}
+
+			String msg = message;
 
 			String server = "";
 			if (message.startsWith("server:")) {
@@ -152,7 +152,7 @@ public class Announce {
 		}
 
 		if (plugin.getConfig().getBoolean("broadcast-to-console")) {
-			plugin.sendMessage(plugin.getProxy().getConsole(), msg);
+			plugin.sendMessage(plugin.getProxy().getConsole(), message);
 		}
 	}
 }

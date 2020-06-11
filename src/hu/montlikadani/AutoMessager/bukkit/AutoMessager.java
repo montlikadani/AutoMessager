@@ -117,11 +117,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		getServer().getScheduler().cancelTasks(this);
 
-		if (conf.getConfig().getBoolean("logconsole")) {
-			String msg = "&6[&4Auto&9Messager&6]&7 >&c The plugin successfully disabled!";
-			Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
-		}
-
 		instance = null;
 	}
 
