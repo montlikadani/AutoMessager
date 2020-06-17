@@ -4,6 +4,7 @@ import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,8 +14,8 @@ public class Configuration {
 
 	private AutoMessager plugin;
 
-	private FileConfiguration config, messages, bl;
-	private File config_file, messages_file, bl_file;
+	private FileConfiguration config, messages, restricted;
+	private File config_file, messages_file, restricted_file;
 
 	public boolean papi = false;
 	public String timer = "-1";
@@ -36,8 +37,8 @@ public class Configuration {
 			messages_file = new File(folder, "plugin-messages.yml");
 		}
 
-		if (bl_file == null) {
-			bl_file = new File(folder, "banned-players.yml");
+		if (restricted_file == null) {
+			restricted_file = new File(folder, "restricted-players.yml");
 		}
 	}
 
@@ -63,10 +64,14 @@ public class Configuration {
 			messages.load(messages_file);
 			messages.save(messages_file);
 
-			if (isBlacklistFileExists()) {
-				bl = YamlConfiguration.loadConfiguration(bl_file);
-				bl.load(bl_file);
-				bl.save(bl_file);
+			if (isRestrictFileExists()) {
+				restricted = YamlConfiguration.loadConfiguration(restricted_file);
+				restricted.load(restricted_file);
+
+				List<String> old = restricted.getStringList("blacklisted-players");
+				restricted.set("restricted-players", old);
+				restricted.set("blacklisted-players", null);
+				restricted.save(restricted_file);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,24 +97,24 @@ public class Configuration {
 		logConsole("The '" + name + "' file successfully created!", false);
 	}
 
-	public void createBlacklistFile() {
-		if (bl != null && isBlacklistFileExists()) {
+	public void createRestrictedFile() {
+		if (restricted != null && isRestrictFileExists()) {
 			return;
 		}
 
 		try {
-			createFile(bl_file, "blacklisted-players.yml", true);
+			createFile(restricted_file, "restricted-players.yml", true);
 
-			bl = YamlConfiguration.loadConfiguration(bl_file);
-			bl.load(bl_file);
-			bl.save(bl_file);
+			restricted = YamlConfiguration.loadConfiguration(restricted_file);
+			restricted.load(restricted_file);
+			restricted.save(restricted_file);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public boolean isBlacklistFileExists() {
-		return bl_file != null && bl_file.exists();
+	public boolean isRestrictFileExists() {
+		return restricted_file != null && restricted_file.exists();
 	}
 
 	public FileConfiguration getMessages() {
@@ -124,15 +129,15 @@ public class Configuration {
 		return config;
 	}
 
-	public FileConfiguration getBlConfig() {
-		return bl;
+	public FileConfiguration getRestrictConfig() {
+		return restricted;
 	}
 
 	public File getConfigFile() {
 		return config_file;
 	}
 
-	public File getBlFile() {
-		return bl_file;
+	public File getRestrictFile() {
+		return restricted_file;
 	}
 }

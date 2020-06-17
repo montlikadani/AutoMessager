@@ -113,7 +113,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 2) {
-			if (args[0].equalsIgnoreCase("blacklist")) {
+			if (args[0].equalsIgnoreCase("restricted")) {
 				Arrays.asList("add", "remove", "list").forEach(cmds::add);
 				partOfCommand = args[1];
 			}
@@ -124,9 +124,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 3) {
-			if (args[0].equalsIgnoreCase("blacklist")) {
+			if (args[0].equalsIgnoreCase("restricted")) {
 				if (args[1].equalsIgnoreCase("remove")) {
-					plugin.getConf().getBlConfig().getStringList("blacklisted-players").forEach(cmds::add);
+					plugin.getConf().getRestrictConfig().getStringList("restricted-players").forEach(cmds::add);
 					partOfCommand = args[2];
 				}
 
@@ -146,7 +146,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	private List<String> getCmds(CommandSender sender) {
 		List<String> c = new ArrayList<>();
 		for (String cmds : Arrays.asList("help", "reload", "toggle", "broadcast", "list", "add", "remove", "clearall",
-				"blacklist")) {
+				"restricted")) {
 			if (!sender.hasPermission("automessager." + cmds)) {
 				continue;
 			}

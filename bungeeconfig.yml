@@ -13,6 +13,14 @@ message-file: "messages.txt"
 # Set 0 to disable this feature.
 min-players: 1
 
+# Custom variables that will be replaced in the custom message file.
+# This useful when we are creating a lot of lines with the same name.
+# Usage: <nameOfPlaceholder>: "&6Text..."
+custom-variables:
+  <title>: "&c[&aAuto&9Messager&c] "
+  <prefix>: "&5&m======================"
+  <suffix>: "&asuffix"
+
 # Placeholder formats
 placeholder-format:
   time:
@@ -29,12 +37,6 @@ placeholder-format:
     # Used for %date% placeholder.
     date-format:
       format: "dd/MM/yyyy"
-
-    # %title% placeholder to show the title in a message.
-    title: "&c[&aAuto&9Messager&c] "
-
-    # %suffix% placeholder to show the suffix in a message.
-    suffix: ""
 
 # Time interval for sending messages.
 time: 3

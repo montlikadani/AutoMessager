@@ -44,9 +44,9 @@ public class Time {
 				return t *= 20;
 			}
 
-			int hour = Integer.parseInt(split[0]);
-			int minute = split.length > 1 ? Integer.parseInt(split[1]) : 0;
-			int second = split.length > 2 ? Integer.parseInt(split[2]) : 0;
+			int hour = Integer.parseInt(split[0]),
+					minute = split.length > 1 ? Integer.parseInt(split[1]) : 0,
+					second = split.length > 2 ? Integer.parseInt(split[2]) : 0;
 
 			// hehe
 			if ((hour == 0) && (minute == 0)) {

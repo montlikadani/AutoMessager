@@ -93,8 +93,15 @@ public class Util {
 		FileConfiguration config = AutoMessager.getInstance().getConf().getConfig();
 		String path = "placeholder-format.";
 
-		String t = null;
-		String dt = null;
+		if (config.contains("custom-variables")) {
+			for (String custom : config.getConfigurationSection("custom-variables").getKeys(true)) {
+				if (custom != null && str.contains(custom)) {
+					str = str.replace(custom, config.getString("custom-variables." + custom));
+				}
+			}
+		}
+
+		String t = null, dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			String tPath = path + "time.";
 			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
@@ -116,6 +123,7 @@ public class Util {
 			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
 		}
 
+		// Old
 		if (!config.getString(path + "title", "").isEmpty()) {
 			str = str.replace("%title%", config.getString(path + "title").replace("\\n", "\n"));
 		}

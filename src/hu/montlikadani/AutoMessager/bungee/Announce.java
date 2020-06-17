@@ -108,7 +108,7 @@ public class Announce {
 		return nm;
 	}
 
-	private void send(String message) {
+	private void send(final String message) {
 		if (message.isEmpty()) {
 			return;
 		}
@@ -118,9 +118,10 @@ public class Announce {
 				continue;
 			}
 
-			String msg = message;
+			String msg = message,
+					server = "",
+					plServer = p.getServer() != null ? p.getServer().getInfo().getName() : "";
 
-			String server = "";
 			if (message.startsWith("server:")) {
 				msg = msg.replace("server:", "");
 
@@ -130,18 +131,7 @@ public class Announce {
 				msg = split[1];
 			}
 
-			String path = "placeholder-format.time.";
-			if (!plugin.getConfig().getString(path + "title", "").isEmpty()) {
-				msg = msg.replace("%title%", plugin.getConfig().getString(path + "title").replace("%newline%", "\n"));
-			}
-
-			if (!plugin.getConfig().getString(path + "suffix", "").isEmpty()) {
-				msg = msg.replace("%suffix%", plugin.getConfig().getString(path + "suffix"));
-			}
-
 			msg = plugin.replaceVariables(msg, p);
-
-			String plServer = p.getServer().getInfo().getName();
 
 			if (server.isEmpty() && !plugin.getConfig().getStringList("disabled-servers").contains(plServer)) {
 				plugin.sendMessage(p, msg);

@@ -18,7 +18,7 @@ import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
 import hu.montlikadani.AutoMessager.bukkit.Perm;
 import hu.montlikadani.AutoMessager.bukkit.commands.ICommand;
 
-public class blacklist implements ICommand {
+public class restricted implements ICommand {
 
 	private enum Actions {
 		ADD, REMOVE, LIST;
@@ -26,8 +26,8 @@ public class blacklist implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.BLACKLISTEDPLAYERS.getPerm())) {
-			sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BLACKLISTEDPLAYERS.getPerm()));
+		if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDPLAYERS.getPerm())) {
+			sendMsg(sender, getMsg("no-permission", "%perm%", Perm.RESTRICTEDPLAYERS.getPerm()));
 			return false;
 		}
 
@@ -41,10 +41,10 @@ public class blacklist implements ICommand {
 			return false;
 		}
 
-		plugin.getConf().createBlacklistFile();
+		plugin.getConf().createRestrictedFile();
 
-		final FileConfiguration file = plugin.getConf().getBlConfig();
-		final List<String> blacklisted = file.getStringList("blacklisted-players");
+		final FileConfiguration file = plugin.getConf().getRestrictConfig();
+		final List<String> restricted = file.getStringList("restricted-players");
 
 		Actions action = Actions.ADD;
 
@@ -64,8 +64,8 @@ public class blacklist implements ICommand {
 
 		switch (action) {
 		case ADD:
-			if (sender instanceof Player && !sender.hasPermission(Perm.BLADD.getPerm())) {
-				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BLADD.getPerm()));
+			if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDADD.getPerm())) {
+				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.RESTRICTEDADD.getPerm()));
 				return false;
 			}
 
@@ -81,29 +81,29 @@ public class blacklist implements ICommand {
 
 			Player target = Bukkit.getPlayer(args[2]);
 			if (target == null) {
-				sendMsg(sender, getMsg("blacklist.player-not-found", "%player%", args[2]));
+				sendMsg(sender, getMsg("restricted.player-not-found", "%player%", args[2]));
 				return false;
 			}
 
 			String name = target.getName();
-			if (blacklisted.contains(name)) {
-				sendMsg(sender, getMsg("blacklist.player-already-added", "%player%", name));
+			if (restricted.contains(name)) {
+				sendMsg(sender, getMsg("restricted.player-already-added", "%player%", name));
 				return false;
 			}
 
-			blacklisted.add(name);
-			file.set("blacklisted-players", blacklisted);
+			restricted.add(name);
+			file.set("restricted-players", restricted);
 			try {
-				file.save(plugin.getConf().getBlFile());
+				file.save(plugin.getConf().getRestrictFile());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
-			sendMsg(sender, getMsg("blacklist.success-add", "%player%", name));
+			sendMsg(sender, getMsg("restricted.success-add", "%player%", name));
 			break;
 		case REMOVE:
-			if (sender instanceof Player && !sender.hasPermission(Perm.BLREMOVE.getPerm())) {
-				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BLREMOVE.getPerm()));
+			if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDREMOVE.getPerm())) {
+				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.RESTRICTEDREMOVE.getPerm()));
 				return false;
 			}
 
@@ -118,36 +118,36 @@ public class blacklist implements ICommand {
 			}
 
 			String pName = args[2];
-			if (!blacklisted.contains(pName)) {
-				sendMsg(sender, getMsg("blacklist.player-already-removed", "%player%", pName));
+			if (!restricted.contains(pName)) {
+				sendMsg(sender, getMsg("restricted.player-already-removed", "%player%", pName));
 				return false;
 			}
 
-			blacklisted.remove(pName);
-			file.set("blacklisted-players", blacklisted);
+			restricted.remove(pName);
+			file.set("restricted-players", restricted);
 			try {
-				file.save(plugin.getConf().getBlFile());
+				file.save(plugin.getConf().getRestrictFile());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
-			sendMsg(sender, getMsg("blacklist.success-remove", "%player%", pName));
+			sendMsg(sender, getMsg("restricted.success-remove", "%player%", pName));
 			break;
 		case LIST:
-			if (sender instanceof Player && !sender.hasPermission(Perm.BLLIST.getPerm())) {
-				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.BLLIST.getPerm()));
+			if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDLIST.getPerm())) {
+				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.RESTRICTEDLIST.getPerm()));
 				return false;
 			}
 
-			if (blacklisted.isEmpty()) {
-				sendMsg(sender, getMsg("blacklist.no-player-added"));
+			if (restricted.isEmpty()) {
+				sendMsg(sender, getMsg("restricted.no-player-added"));
 				return false;
 			}
 
-			Collections.sort(blacklisted);
+			Collections.sort(restricted);
 
 			String msg = "";
-			for (String fpl : blacklisted) {
+			for (String fpl : restricted) {
 				if (!msg.isEmpty()) {
 					msg += "&r, ";
 				}
@@ -155,7 +155,7 @@ public class blacklist implements ICommand {
 				msg += fpl;
 			}
 
-			for (String bp : plugin.getConf().getMessages().getStringList("blacklist.list")) {
+			for (String bp : plugin.getConf().getMessages().getStringList("restricted.list")) {
 				sendMsg(sender, colorMsg(bp.replace("%players%", msg)));
 			}
 

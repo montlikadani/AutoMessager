@@ -36,8 +36,8 @@ public class list implements ICommand {
 
 		Player p = (Player) sender;
 
-		int maxRow = plugin.getConf().getConfig().getInt("show-max-row-in-one-page");
-		int size = texts.size();
+		int maxRow = plugin.getConf().getConfig().getInt("show-max-row-in-one-page"),
+				size = texts.size();
 
 		if (args.length == 1) {
 			List<String> page = makePage(texts, 1, maxRow);

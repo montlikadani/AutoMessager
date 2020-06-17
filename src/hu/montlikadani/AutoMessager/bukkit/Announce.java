@@ -116,7 +116,7 @@ public class Announce {
 			return;
 		}
 
-		FileConfiguration config = plugin.getConf().getConfig();
+		final FileConfiguration config = plugin.getConf().getConfig();
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (Commands.ENABLED.containsKey(p.getUniqueId()) && !Commands.ENABLED.get(p.getUniqueId())) {
@@ -134,8 +134,8 @@ public class Announce {
 			}
 
 			if (config.getStringList("disabled-worlds").contains(p.getWorld().getName())
-					|| (plugin.getConf().isBlacklistFileExists() && plugin.getConf().getBlConfig()
-							.getStringList("blacklisted-players").contains(p.getName()))) {
+					|| (plugin.getConf().isRestrictFileExists() && plugin.getConf().getRestrictConfig()
+							.getStringList("restricted-players").contains(p.getName()))) {
 				continue;
 			}
 

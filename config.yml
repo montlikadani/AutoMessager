@@ -8,7 +8,7 @@ placeholderapi: false
 remember-toggle-to-file: true
 
 # Used for the /am list command.
-show-max-row-in-one-page: 8
+show-max-row-in-one-page: 4
 
 # In what worlds do NOT send a message?
 disabled-worlds:
@@ -26,14 +26,16 @@ min-players: 1
 # Required Essentials plugin!
 disable-messages-when-player-afk: false
 
+# Custom variables that will be replaced in the custom message file.
+# This useful when we are creating a lot of lines with the same name.
+# Usage: <nameOfPlaceholder>: "&6Text..."
+custom-variables:
+  <title>: "&c[&aAuto&9Messager&c] "
+  <prefix>: "&5&m======================"
+  <suffix>: "&asuffix"
+
 # Placeholder formats
 placeholder-format:
-  # %title% placeholder to show the title in a message.
-  title: "&c[&aAuto&9Messager&c] "
-
-  # %suffix% placeholder to show the suffix in a message.
-  suffix: ""
-
   # Time settings
   time:
     # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/

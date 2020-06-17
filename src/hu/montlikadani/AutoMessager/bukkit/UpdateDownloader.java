@@ -27,11 +27,10 @@ public class UpdateDownloader {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				String versionString = "";
-				String lineWithVersion = "";
-
-				int newVersion = 0;
-				int currentVersion = 0;
+				String versionString = "",
+						lineWithVersion = "";
+				int newVersion = 0,
+						currentVersion = 0;
 
 				try {
 					URL githubUrl = new URL(

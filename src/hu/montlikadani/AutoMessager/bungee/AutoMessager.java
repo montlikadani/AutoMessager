@@ -274,12 +274,19 @@ public class AutoMessager extends Plugin {
 		int online = p.getServer().getInfo().getPlayers().size();
 
 		Runtime r = Runtime.getRuntime();
-		Long fram = Long.valueOf(r.freeMemory() / 1048576L);
-		Long mram = Long.valueOf(r.maxMemory() / 1048576L);
-		Long uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
+		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
+				mram = Long.valueOf(r.maxMemory() / 1048576L),
+				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
 
-		String t = null;
-		String dt = null;
+		if (config.contains("custom-variables")) {
+			for (String custom : config.getSection("custom-variables").getKeys()) {
+				if (custom != null && str.contains(custom)) {
+					str = str.replace(custom, config.getString("custom-variables." + custom));
+				}
+			}
+		}
+
+		String t = null, dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			String tPath = "placeholder-format.time.";
 			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
@@ -299,6 +306,15 @@ public class AutoMessager extends Plugin {
 
 			t = form != null ? now.format(form) : cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE);
 			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
+		}
+
+		String path = "placeholder-format.time.";
+		if (!config.getString(path + "title", "").isEmpty()) {
+			str = str.replace("%title%", config.getString(path + "title").replace("%newline%", "\n"));
+		}
+
+		if (!config.getString(path + "suffix", "").isEmpty()) {
+			str = str.replace("%suffix%", config.getString(path + "suffix"));
 		}
 
 		str = Global.setSymbols(str);
