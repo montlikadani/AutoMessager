@@ -28,7 +28,6 @@ public class Announce {
 	private boolean random = false;
 	private int task = -1, messageCounter, lastMessage, lastRandom;
 
-	//private Timer timer;
 	private List<ScheduledExecutorService> schedulers = new ArrayList<>();
 
 	public Announce(AutoMessager plugin) {
@@ -42,10 +41,6 @@ public class Announce {
 	public int getTask() {
 		return task;
 	}
-
-	/*public Timer getTimer() {
-		return timer;
-	}*/
 
 	public List<ScheduledExecutorService> getSchedulers() {
 		return new ArrayList<>(schedulers);
@@ -95,6 +90,7 @@ public class Announce {
 					send(finalMessage);
 				}
 			}, Util.calcNextDelay(h, min, sec), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
+
 			schedulers.add(scheduler);
 		}
 
