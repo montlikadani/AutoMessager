@@ -1,5 +1,8 @@
 package hu.montlikadani.AutoMessager;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import io.netty.util.internal.ThreadLocalRandom;
 
 public class Global {
@@ -10,6 +13,23 @@ public class Global {
 		}
 
 		return ThreadLocalRandom.current().nextInt(min, max + 1);
+	}
+
+	public static String matchColorRegex(String s) {
+		String regex = "&?#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})";
+		Matcher matcher = Pattern.compile(regex).matcher(s);
+		while (matcher.find()) {
+			String group = matcher.group(0);
+			String group2 = matcher.group(1);
+
+			try {
+				s = s.replace(group, net.md_5.bungee.api.ChatColor.of("#" + group2) + "");
+			} catch (Exception e) {
+				System.out.println("[AutoMessager] Bad hex color: " + group);
+			}
+		}
+
+		return s;
 	}
 
 	public static String setSymbols(String s) {

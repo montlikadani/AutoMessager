@@ -58,7 +58,7 @@ public class MessageFileHandler {
 		String fName = plugin.getConf().getConfig().getString("message-file", "");
 		if (fName.trim().isEmpty()) {
 			msg = "The message-file string is empty or not found.";
-		} else if (fName.equals("messages.yml")) {
+		} else if (fName.equals(plugin.getConf().getMessages().getName())) {
 			msg = "The message file cannot be an existing message file!";
 		}
 
@@ -88,7 +88,7 @@ public class MessageFileHandler {
 			loadFile();
 		}
 
-		String fileName = file.getName();
+		String fileName = getFileName();
 		if (fileName.endsWith(".yml")) {
 			yaml = YamlConfiguration.loadConfiguration(file);
 
@@ -118,9 +118,9 @@ public class MessageFileHandler {
 			try (BufferedReader read = new BufferedReader(new FileReader(file))) {
 				String line;
 				while ((line = read.readLine()) != null) {
-					if (!line.startsWith("#")) {
+					//if (!line.startsWith("#")) {
 						texts.add(line);
-					}
+					//}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

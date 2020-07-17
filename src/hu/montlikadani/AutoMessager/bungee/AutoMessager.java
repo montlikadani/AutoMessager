@@ -308,6 +308,7 @@ public class AutoMessager extends Plugin {
 			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
 		}
 
+		// Old
 		String path = "placeholder-format.time.";
 		if (!config.getString(path + "title", "").isEmpty()) {
 			str = str.replace("%title%", config.getString(path + "title").replace("%newline%", "\n"));
@@ -404,6 +405,14 @@ public class AutoMessager extends Plugin {
 	}
 
 	public String colorMsg(String s) {
+		if (s == null) {
+			return "";
+		}
+
+		if (s.contains("#")) {
+			s = Global.matchColorRegex(s);
+		}
+
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 

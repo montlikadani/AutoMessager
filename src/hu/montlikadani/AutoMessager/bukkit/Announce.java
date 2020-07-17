@@ -2,6 +2,12 @@ package hu.montlikadani.AutoMessager.bukkit;
 
 import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -13,19 +19,17 @@ import com.earth2me.essentials.Essentials;
 
 import hu.montlikadani.AutoMessager.Global;
 import hu.montlikadani.AutoMessager.bukkit.commands.Commands;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class Announce {
 
 	private final AutoMessager plugin;
 
 	private boolean random = false;
-	private int task = -1;
-	private int messageCounter;
-	private int lastMessage;
-	private int lastRandom;
+	private int task = -1, messageCounter, lastMessage, lastRandom;
+
+	//private Timer timer;
+	private List<ScheduledExecutorService> schedulers = new ArrayList<>();
 
 	public Announce(AutoMessager plugin) {
 		this.plugin = plugin;
@@ -37,6 +41,14 @@ public class Announce {
 
 	public int getTask() {
 		return task;
+	}
+
+	/*public Timer getTimer() {
+		return timer;
+	}*/
+
+	public List<ScheduledExecutorService> getSchedulers() {
+		return new ArrayList<>(schedulers);
 	}
 
 	public void load() {
@@ -57,32 +69,90 @@ public class Announce {
 			return;
 		}
 
-		if (task != -1) {
-			return;
+		for (final String o : plugin.getFileHandler().getTexts()) {
+			if (!o.startsWith("[time:"))
+				continue;
+
+			String customTime = o.split("]")[0].replace("[time:", "");
+			if (!customTime.contains(":")) {
+				continue;
+			}
+
+			String[] times = customTime.split(":");
+			if (times.length != 3) {
+				continue;
+			}
+
+			int h = Integer.parseInt(times[0]),
+					min = Integer.parseInt(times[1]),
+					sec = Integer.parseInt(times[2]);
+
+			final String finalMessage = o.replace("[time:" + times[0] + ":" + times[1] + ":" + times[2] + "]", "");
+
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			scheduler.scheduleAtFixedRate(() -> {
+				if (plugin.checkOnlinePlayers()) {
+					send(finalMessage);
+				}
+			}, Util.calcNextDelay(h, min, sec), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
+			schedulers.add(scheduler);
 		}
 
-		task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-			if (!plugin.checkOnlinePlayers()) {
+		final Time time = plugin.getTimeC();
+		final long t = time.countTimer();
+
+		if (time.isGiven()) {
+			if (!time.getTime().contains(":")) {
 				return;
 			}
 
-			int size = plugin.getFileHandler().getTexts().size();
-			if (lastMessage != size) {
-				lastMessage = size;
+			String[] times = time.getTime().split(":");
+			if (times.length != 3) {
+				return;
 			}
 
-			prepare();
-		}, plugin.getTimeC().countTimer(), plugin.getTimeC().countTimer());
+			int h = Integer.parseInt(times[0]),
+					min = Integer.parseInt(times[1]),
+					sec = Integer.parseInt(times[2]);
+
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			scheduler.scheduleAtFixedRate(this::prepare, Util.calcNextDelay(h, min, sec), TimeUnit.DAYS.toSeconds(1),
+					TimeUnit.SECONDS);
+			schedulers.add(scheduler);
+			return;
+		}
+
+		if (task == -1) {
+			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::prepare, t, t);
+		}
 	}
 
 	public void cancelTask() {
+		schedulers.forEach(ScheduledExecutorService::shutdown);
+		schedulers.clear();
+
 		Bukkit.getScheduler().cancelTask(task);
 		task = -1;
 	}
 
 	private void prepare() {
+		if (!plugin.checkOnlinePlayers()) {
+			return;
+		}
+
+		int size = plugin.getFileHandler().getTexts().size();
+		if (lastMessage != size) {
+			lastMessage = size;
+		}
+
 		int nm = getNextMessage();
 		String message = plugin.getFileHandler().getTexts().get(nm);
+
+		// skip
+		if (message.startsWith("[time:")) {
+			prepare();
+			return;
+		}
 
 		if (random) {
 			lastRandom = nm;
@@ -141,11 +211,11 @@ public class Announce {
 
 			String msg = message;
 			msg = Util.replaceVariables(p, msg);
-			msg = msg.replace("\\n", "\n");
+			if (!message.startsWith("json:")) {
+				msg = msg.replace("\\n", "\n");
+			}
 
-			if ((plugin.isPluginEnabled("PermissionsEx")
-					&& PermissionsEx.getPermissionManager().has(p, Perm.SEEMSG.getPerm()))
-					|| p.hasPermission(Perm.SEEMSG.getPerm())) {
+			if (PluginUtils.hasPermission(p, Perm.SEEMSG.getPerm())) {
 				if (message.startsWith("json:")) {
 					msg = msg.replace("json:", "");
 
@@ -207,8 +277,7 @@ public class Announce {
 
 					msg = msg.replace("permission:" + perm + "_", "");
 
-					if ((plugin.isPluginEnabled("PermissionsEx") && PermissionsEx.getPermissionManager().has(p, perm))
-							|| p.hasPermission(perm)) {
+					if (PluginUtils.hasPermission(p, perm)) {
 						p.sendMessage(msg);
 					}
 				} else {
@@ -286,18 +355,25 @@ public class Announce {
 	private boolean sendJSON(Player p, String msg) {
 		try {
 			if (plugin.isSpigot()) {
-				BaseComponent[] bc = ComponentSerializer.parse(msg);
-				p.spigot().sendMessage(bc);
+				p.spigot().sendMessage(ComponentSerializer.parse(msg));
 			} else {
 				String ver = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 				Object parsedMessage = Class
 						.forName("net.minecraft.server." + ver + ".IChatBaseComponent$ChatSerializer")
-						.getMethod("a", new Class[] { String.class }).invoke(null,
-								new Object[] { org.bukkit.ChatColor.translateAlternateColorCodes("&".charAt(0), msg) });
-				Object packetPlayOutChat = Class.forName("net.minecraft.server." + ver + ".PacketPlayOutChat")
-						.getConstructor(
-								new Class[] { Class.forName("net.minecraft.server." + ver + ".IChatBaseComponent") })
-						.newInstance(new Object[] { parsedMessage });
+						.getMethod("a", String.class)
+						.invoke(null, org.bukkit.ChatColor.translateAlternateColorCodes('&', msg));
+
+				Object packetPlayOutChat;
+				if (ver.contains("16")) {
+					packetPlayOutChat = Class.forName("net.minecraft.server." + ver + ".PacketPlayOutChat")
+							.getConstructor(Class.forName("net.minecraft.server." + ver + ".IChatBaseComponent"),
+									UUID.class)
+							.newInstance(parsedMessage, p.getUniqueId());
+				} else {
+					packetPlayOutChat = Class.forName("net.minecraft.server." + ver + ".PacketPlayOutChat")
+							.getConstructor(Class.forName("net.minecraft.server." + ver + ".IChatBaseComponent"))
+							.newInstance(parsedMessage);
+				}
 
 				Object craftPlayer = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer").cast(p);
 				Object craftHandle = Class.forName("org.bukkit.craftbukkit." + ver + ".entity.CraftPlayer")
@@ -306,11 +382,11 @@ public class Announce {
 						.getField("playerConnection").get(craftHandle);
 
 				Class.forName("net.minecraft.server." + ver + ".PlayerConnection")
-						.getMethod("sendPacket",
-								new Class[] { Class.forName("net.minecraft.server." + ver + ".Packet") })
-						.invoke(playerConnection, new Object[] { packetPlayOutChat });
+						.getMethod("sendPacket", Class.forName("net.minecraft.server." + ver + ".Packet"))
+						.invoke(playerConnection, packetPlayOutChat);
 			}
 		} catch (Throwable e) {
+			e.printStackTrace();
 			logConsole(Level.WARNING, "Invalid JSON format: " + msg);
 			return false;
 		}

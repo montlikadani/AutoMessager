@@ -14,9 +14,7 @@ public class Announce {
 
 	private boolean random;
 
-	private int messageCounter;
-	private int lastMessage;
-	private int lastRandom;
+	private int messageCounter, lastMessage, lastRandom;
 
 	public Announce(AutoMessager plugin) {
 		this.plugin = plugin;

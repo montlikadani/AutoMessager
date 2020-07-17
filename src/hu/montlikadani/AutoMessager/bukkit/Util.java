@@ -1,6 +1,9 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -38,6 +41,14 @@ public class Util {
 	}
 
 	public static String colorMsg(String msg) {
+		if (msg == null) {
+			return "";
+		}
+
+		if (msg.contains("#") && !msg.contains("json:") && Bukkit.getVersion().contains("1.16")) {
+			msg = Global.matchColorRegex(msg);
+		}
+
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
@@ -95,7 +106,7 @@ public class Util {
 
 		if (config.contains("custom-variables")) {
 			for (String custom : config.getConfigurationSection("custom-variables").getKeys(true)) {
-				if (custom != null && str.contains(custom)) {
+				if (str.contains(custom)) {
 					str = str.replace(custom, config.getString("custom-variables." + custom));
 				}
 			}
@@ -185,5 +196,16 @@ public class Util {
 					: p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
 
 		return s;
+	}
+
+	protected static long calcNextDelay(int hour, int minute, int second) {
+		LocalDateTime localNow = LocalDateTime.now();
+		ZonedDateTime zonedNow = ZonedDateTime.of(localNow, ZoneId.systemDefault());
+		ZonedDateTime zonedNextTarget = zonedNow.withHour(hour).withMinute(minute).withSecond(second);
+		if (zonedNow.compareTo(zonedNextTarget) > 0)
+			zonedNextTarget = zonedNextTarget.plusDays(1);
+
+		Duration duration = Duration.between(zonedNow, zonedNextTarget);
+		return duration.getSeconds();
 	}
 }

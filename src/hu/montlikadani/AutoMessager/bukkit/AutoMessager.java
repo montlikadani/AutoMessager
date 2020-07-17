@@ -50,21 +50,12 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 			startUp();
 
-			if (conf.papi) {
-				if (isPluginEnabled("PlaceholderAPI")) {
-					logConsole("Hooked PlaceholderAPI version: "
-							+ PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
-				} else {
-					logConsole(Level.WARNING, "Could not find PlaceholderAPI!");
-					logConsole("PlaceholderAPI Download: https://www.spigotmc.org/resources/6245/");
-				}
+			if (conf.papi && isPluginEnabled("PlaceholderAPI")) {
+				logConsole("Hooked PlaceholderAPI version: "
+						+ PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
 			}
 
-			// This should need to register to prevent issues when using perm
-			// I don't know why Vault need this
-			if (setupVaultPerm()) {
-				getServer().getPluginManager().registerEvents(this, this);
-			}
+			setupVaultPerm();
 
 			time = new Time(this, conf.timer);
 			announce = new Announce(this);
@@ -187,10 +178,19 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		FileConfiguration config = YamlConfiguration.loadConfiguration(f);
 
-		if (config.contains("players")) {
-			for (String uuid : config.getConfigurationSection("players").getKeys(false)) {
-				Commands.ENABLED.put(UUID.fromString(uuid), config.getConfigurationSection("players").getBoolean(uuid));
-			}
+		if (!config.contains("players")) {
+			return;
+		}
+
+		for (String uuid : config.getConfigurationSection("players").getKeys(false)) {
+			Commands.ENABLED.put(UUID.fromString(uuid), config.getConfigurationSection("players").getBoolean(uuid));
+		}
+
+		config.set("players", null);
+		try {
+			config.save(f);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

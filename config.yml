@@ -2,7 +2,7 @@
 enable-broadcast: true
 
 # Enable to use PlaceholderAPI for the plugin.
-placeholderapi: false
+placeholderapi: true
 
 # Save the toggled messages to a file to load after server restart.
 remember-toggle-to-file: true
@@ -56,9 +56,10 @@ placeholder-format:
 time: 3
 
 # Time settings
-# Variables: ticks, second (or sec), minute (or min), hour (or h), custom
+# Variables: ticks, second (or sec), minute (or min), hour (or h), custom, given
 # Example: 20 ticks = 1 second; 1 second = 20 ticks; 1 minute = 60 second; 1 hour = 60 minute
 # custom usage: "00:01:00" - this counts 1 minute and after it's taken then sending the message
+# given usage: "12:50:00" - this will send a message at 12:50 with your current time zone
 time-setup: min
 
 # Want to broadcast the messages in ordered or randomly?

@@ -5,6 +5,8 @@ public class Time {
 	private AutoMessager plugin;
 	private String time;
 
+	private boolean given;
+
 	public Time(AutoMessager plugin, String time) {
 		this.plugin = plugin;
 		this.time = time;
@@ -18,8 +20,12 @@ public class Time {
 		return time;
 	}
 
-	public int countTimer() {
-		int t = 0;
+	public boolean isGiven() {
+		return given;
+	}
+
+	public long countTimer() {
+		long t = 0;
 
 		if (!time.contains(":")) {
 			t = Integer.parseInt(time);
@@ -30,18 +36,22 @@ public class Time {
 
 		String s = plugin.getConf().getConfig().getString("time-setup", "");
 		if (s.trim().isEmpty()) {
-			return t *= 20;
+			return t * 20;
 		}
 
 		switch (s.toLowerCase()) {
+		case "specified":
+		case "given":
+			given = true;
+			return t;
 		case "custom":
 			if (!time.contains(":")) {
-				return t *= 20;
+				return t * 20;
 			}
 
 			String[] split = time.split(":");
 			if (split.length < 1) {
-				return t *= 20;
+				return t * 20;
 			}
 
 			int hour = Integer.parseInt(split[0]),
@@ -70,15 +80,15 @@ public class Time {
 			return t;
 		case "sec":
 		case "second":
-			return t *= 20;
+			return t * 20;
 		case "min":
 		case "minute":
-			return t *= 1200;
+			return t * 1200;
 		case "h":
 		case "hour":
-			return t *= 72000;
+			return t * 72000;
 		default:
-			return t *= 20;
+			return t * 20;
 		}
 	}
 }
