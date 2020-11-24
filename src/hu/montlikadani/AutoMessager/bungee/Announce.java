@@ -42,11 +42,7 @@ public class Announce {
 	}
 
 	public void schedule() {
-		if (!plugin.getConfig().getBoolean("enable-broadcast")) {
-			return;
-		}
-
-		if (task != null) {
+		if (!plugin.getConfig().getBoolean("enable-broadcast") || task != null) {
 			return;
 		}
 
@@ -112,7 +108,7 @@ public class Announce {
 		}
 
 		for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
-			if (plugin.getEnabledMessages().contains(p.getUniqueId())) {
+			if (plugin.getToggledPlayers().contains(p.getUniqueId())) {
 				continue;
 			}
 
@@ -120,7 +116,7 @@ public class Announce {
 					server = "",
 					plServer = p.getServer() != null ? p.getServer().getInfo().getName() : "";
 
-			if (message.startsWith("server:")) {
+			if (msg.startsWith("server:")) {
 				msg = msg.replace("server:", "");
 
 				String[] split = msg.split("_");

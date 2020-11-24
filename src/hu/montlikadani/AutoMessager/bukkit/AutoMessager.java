@@ -7,6 +7,7 @@ import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -26,11 +27,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	private static AutoMessager instance;
 
-	private Configuration conf = null;
-	private Announce announce = null;
-	private Time time = null;
-	private Permission perm = null;
-	private MessageFileHandler fileHandler = null;
+	private Configuration conf;
+	private Announce announce;
+	private Time time;
+	private MessageFileHandler fileHandler;
+	private Permission perm;
 
 	private boolean isSpigot = false;
 
@@ -61,9 +62,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			announce = new Announce(this);
 			announce.load();
 
-			Commands cmds = new Commands(this);
-			getCommand("automessager").setExecutor(cmds);
-			getCommand("automessager").setTabCompleter(cmds);
+			Optional.ofNullable(getCommand("automessager")).ifPresent(cmd -> {
+				Commands cmds = new Commands(this);
+				cmd.setExecutor(cmds);
+				cmd.setTabCompleter(cmds);
+			});
 
 			getServer().getPluginManager().registerEvents(new Listeners(), this);
 
@@ -72,22 +75,40 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 			UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
 
-			FileConfiguration config = conf.getConfig();
 			Metrics metrics = new Metrics(this, 1594);
 			if (metrics.isEnabled()) {
+				metrics.addCustomChart(new Metrics.SimplePie("using_placeholderapi",
+						() -> conf.getConfig().getString("placeholderapi")));
 				metrics.addCustomChart(
-						new Metrics.SimplePie("using_placeholderapi", () -> config.getString("placeholderapi")));
+						new Metrics.SimplePie("using_random_messages", () -> conf.getConfig().getString("random")));
 				metrics.addCustomChart(
-						new Metrics.SimplePie("using_random_messages", () -> config.getString("random")));
-				metrics.addCustomChart(new Metrics.SimplePie("message_delay", () -> config.getString("time")));
-				metrics.addCustomChart(new Metrics.SimplePie("time_type", () -> config.getString("time-setup")));
-				metrics.addCustomChart(
-						new Metrics.SimplePie("use_json_message", () -> config.getString("use-json-message")));
+						new Metrics.SimplePie("message_delay", () -> conf.getConfig().getString("time")));
+				metrics.addCustomChart(new Metrics.SimplePie("time_type", () -> {
+					switch (conf.getConfig().getString("time-setup", "")) {
+					case "sec":
+					case "second":
+						return "second";
+					case "min":
+					case "minute":
+						return "minute";
+					case "h":
+					case "hour":
+						return "hour";
+					case "ticks":
+						return "ticks";
+					case "custom":
+						return "custom";
+					case "given":
+					case "specified":
+						return "given";
+					default:
+						return "";
+					}
+				}));
 				metrics.addCustomChart(new Metrics.SingleLineChart("amount_of_texts", fileHandler.getTexts()::size));
-				logConsole("Metrics enabled.");
 			}
 
-			if (config.getBoolean("logconsole")) {
+			if (conf.getConfig().getBoolean("logconsole")) {
 				String msg = "&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v"
 						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				sendMsg(getServer().getConsoleSender(), colorMsg(msg));
@@ -104,10 +125,9 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	public void onDisable() {
 		if (instance == null) return;
 
+		announce.cancelTask();
 		saveToggledMessages();
-
 		getServer().getScheduler().cancelTasks(this);
-
 		instance = null;
 	}
 
@@ -177,8 +197,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		}
 
 		FileConfiguration config = YamlConfiguration.loadConfiguration(f);
-
-		if (!config.contains("players")) {
+		if (!config.isConfigurationSection("players")) {
 			return;
 		}
 

@@ -23,7 +23,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 public class AutoMessager extends Plugin {
 
-	private final Set<UUID> msgEnable = new HashSet<>();
+	private final Set<UUID> players = new HashSet<>();
 
 	private static AutoMessager instance;
 
@@ -56,9 +56,7 @@ public class AutoMessager extends Plugin {
 		}
 
 		announce.cancelTask();
-
 		getProxy().getPluginManager().unregisterCommands(this);
-
 		instance = null;
 	}
 
@@ -142,10 +140,10 @@ public class AutoMessager extends Plugin {
 							}
 
 							for (ProxiedPlayer pl : getProxy().getPlayers()) {
-								if (!msgEnable.contains(pl.getUniqueId())) {
-									msgEnable.add(pl.getUniqueId());
+								if (!players.contains(pl.getUniqueId())) {
+									players.add(pl.getUniqueId());
 								} else {
-									msgEnable.remove(pl.getUniqueId());
+									players.remove(pl.getUniqueId());
 								}
 							}
 
@@ -158,11 +156,11 @@ public class AutoMessager extends Plugin {
 							return;
 						}
 
-						if (!msgEnable.contains(target.getUniqueId())) {
-							msgEnable.add(target.getUniqueId());
+						if (!players.contains(target.getUniqueId())) {
+							players.add(target.getUniqueId());
 							sendMessage(s, config.getString("messages.toggle.disabled"));
 						} else {
-							msgEnable.remove(target.getUniqueId());
+							players.remove(target.getUniqueId());
 							sendMessage(s, config.getString("messages.toggle.enabled"));
 						}
 
@@ -170,11 +168,11 @@ public class AutoMessager extends Plugin {
 					}
 
 					ProxiedPlayer player = (ProxiedPlayer) s;
-					if (!msgEnable.contains(player.getUniqueId())) {
-						msgEnable.add(player.getUniqueId());
+					if (!players.contains(player.getUniqueId())) {
+						players.add(player.getUniqueId());
 						sendMessage(player, config.getString("messages.toggle.disabled"));
 					} else {
-						msgEnable.remove(player.getUniqueId());
+						players.remove(player.getUniqueId());
 						sendMessage(player, config.getString("messages.toggle.enabled"));
 					}
 				} else if (args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")) {
@@ -213,7 +211,7 @@ public class AutoMessager extends Plugin {
 						return;
 					}
 
-					texts.stream().filter(m -> m.isEmpty()).forEach(m -> sendMessage(s, m));
+					texts.forEach(m -> sendMessage(s, m));
 				} else if (args[0].equalsIgnoreCase("add")) {
 					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.add")) {
 						sendMessage(s, config.getString("messages.no-permission"));
@@ -280,13 +278,13 @@ public class AutoMessager extends Plugin {
 
 		if (config.contains("custom-variables")) {
 			for (String custom : config.getSection("custom-variables").getKeys()) {
-				if (custom != null && str.contains(custom)) {
+				if (str.contains(custom)) {
 					str = str.replace(custom, config.getString("custom-variables." + custom));
 				}
 			}
 		}
 
-		String t = null, dt = null;
+		String t = "", dt = "";
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			String tPath = "placeholder-format.time.";
 			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
@@ -319,10 +317,10 @@ public class AutoMessager extends Plugin {
 		}
 
 		str = Global.setSymbols(str);
-		if (t != null)
+		if (!t.isEmpty())
 			str = str.replace("%server-time%", t);
 
-		if (dt != null)
+		if (!dt.isEmpty())
 			str = str.replace("%date%", dt);
 
 		if (str.contains("%server%"))
@@ -424,8 +422,8 @@ public class AutoMessager extends Plugin {
 		return config;
 	}
 
-	public Set<UUID> getEnabledMessages() {
-		return msgEnable;
+	public Set<UUID> getToggledPlayers() {
+		return players;
 	}
 
 	public AutoMessager getInstance() {

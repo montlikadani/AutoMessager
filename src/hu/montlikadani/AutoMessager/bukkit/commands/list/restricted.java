@@ -62,6 +62,8 @@ public class restricted implements ICommand {
 			break;
 		}
 
+		boolean fileChanged = false;
+
 		switch (action) {
 		case ADD:
 			if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDADD.getPerm())) {
@@ -91,14 +93,7 @@ public class restricted implements ICommand {
 				return false;
 			}
 
-			restricted.add(name);
-			file.set("restricted-players", restricted);
-			try {
-				file.save(plugin.getConf().getRestrictFile());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+			fileChanged = restricted.add(name);
 			sendMsg(sender, getMsg("restricted.success-add", "%player%", name));
 			break;
 		case REMOVE:
@@ -123,14 +118,7 @@ public class restricted implements ICommand {
 				return false;
 			}
 
-			restricted.remove(pName);
-			file.set("restricted-players", restricted);
-			try {
-				file.save(plugin.getConf().getRestrictFile());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+			fileChanged = restricted.remove(pName);
 			sendMsg(sender, getMsg("restricted.success-remove", "%player%", pName));
 			break;
 		case LIST:
@@ -162,6 +150,15 @@ public class restricted implements ICommand {
 			break;
 		default:
 			break;
+		}
+
+		if (fileChanged) {
+			file.set("restricted-players", restricted);
+			try {
+				file.save(plugin.getConf().getRestrictFile());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return true;

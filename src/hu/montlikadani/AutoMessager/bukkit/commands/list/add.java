@@ -23,9 +23,9 @@ public class add implements ICommand {
 
 		if (args.length < 2) {
 			if (sender instanceof Player) {
-				((Player) sender).performCommand("am add 2");
+				((Player) sender).performCommand("am help 2");
 			} else {
-				Bukkit.dispatchCommand(sender, "am add");
+				Bukkit.dispatchCommand(sender, "am help");
 			}
 
 			sendMsg(sender, getMsg("add-cmd-usage", "%command%", label));

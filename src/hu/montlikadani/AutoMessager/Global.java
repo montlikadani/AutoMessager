@@ -1,9 +1,8 @@
 package hu.montlikadani.AutoMessager;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import io.netty.util.internal.ThreadLocalRandom;
 
 public class Global {
 

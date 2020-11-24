@@ -28,7 +28,7 @@ public class Time {
 		long t = 0;
 
 		if (!time.contains(":")) {
-			t = Integer.parseInt(time);
+			t = Long.parseLong(time);
 			if (t < 1) {
 				return t;
 			}
@@ -78,9 +78,6 @@ public class Time {
 			return t;
 		case "tick":
 			return t;
-		case "sec":
-		case "second":
-			return t * 20;
 		case "min":
 		case "minute":
 			return t * 1200;
@@ -88,6 +85,8 @@ public class Time {
 		case "hour":
 			return t * 72000;
 		default:
+		case "sec":
+		case "second":
 			return t * 20;
 		}
 	}

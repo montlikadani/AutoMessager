@@ -23,7 +23,7 @@ message-file: "announces.yml"
 min-players: 1
 
 # Disable sending auto-messages when the player afk?
-# Required Essentials plugin!
+# Requires Essentials or CMI plugin
 disable-messages-when-player-afk: false
 
 # Custom variables that will be replaced in the custom message file.
@@ -95,7 +95,7 @@ check-update: true
 
 # Download releases to \releases folder
 # This only works if the "check-update" is true.
-download-updates: true
+download-updates: false
 
 # Log plugin messages into console.
 logconsole: true

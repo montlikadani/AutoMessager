@@ -40,10 +40,9 @@ public class broadcast implements ICommand {
 		msg = hu.montlikadani.AutoMessager.Global.setSymbols(msg);
 
 		for (Player pla : Bukkit.getOnlinePlayers()) {
-			msg = Util.setPlaceholders(pla, msg);
+			Util.sendMsg(pla, Util.getMsg("broadcast-message", "%message%", Util.setPlaceholders(pla, msg)));
 		}
 
-		Util.sendMsg(Util.getMsg("broadcast-message", "%message%", msg), true);
 		return true;
 	}
 }

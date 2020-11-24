@@ -25,7 +25,7 @@ public class clearall implements ICommand {
 		}
 
 		MessageFileHandler handler = plugin.getFileHandler();
-		if (handler.isFileExists() || handler.getTexts().size() < 1) {
+		if (handler.isFileExists() || handler.getTexts().isEmpty()) {
 			sendMsg(sender, getMsg("no-messages-in-file"));
 			return false;
 		}

@@ -72,30 +72,14 @@ public class Util {
 		return msg;
 	}
 
-	public static void sendMsg(String s, boolean bc) {
-		sendMsg(null, s, bc);
-	}
-
 	public static void sendMsg(CommandSender sender, String s) {
-		sendMsg(sender, s, false);
-	}
-
-	public static void sendMsg(CommandSender sender, String s, boolean broadcast) {
-		if (s != null && !s.isEmpty()) {
+		if (s != null && !s.isEmpty() && sender != null) {
 			if (s.contains("\n")) {
 				for (String msg : s.split("\n")) {
-					if (broadcast) {
-						Bukkit.broadcastMessage(msg);
-					} else if (sender != null) {
-						sender.sendMessage(msg);
-					}
+					sender.sendMessage(msg);
 				}
 			} else {
-				if (broadcast) {
-					Bukkit.broadcastMessage(s);
-				} else if (sender != null) {
-					sender.sendMessage(s);
-				}
+				sender.sendMessage(s);
 			}
 		}
 	}
@@ -112,7 +96,7 @@ public class Util {
 			}
 		}
 
-		String t = null, dt = null;
+		String t = "", dt = "";
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			String tPath = path + "time.";
 			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
@@ -144,10 +128,10 @@ public class Util {
 
 		str = setPlaceholders(pl, str);
 		str = Global.setSymbols(str);
-		if (t != null)
+		if (!t.isEmpty())
 			str = str.replace("%server-time%", t);
 
-		if (dt != null)
+		if (!dt.isEmpty())
 			str = str.replace("%date%", dt);
 
 		if (str.contains("%online-players%"))
@@ -177,20 +161,28 @@ public class Util {
 
 		if (s.contains("%player%"))
 			s = s.replace("%player%", p.getName());
+
 		if (s.contains("%player-displayname%"))
 			s = s.replace("%player-displayname%", p.getDisplayName());
+
 		if (s.contains("%player-uuid%"))
 			s = s.replace("%player-uuid%", p.getUniqueId().toString());
+
 		if (s.contains("%world%"))
 			s = s.replace("%world%", p.getWorld().getName());
+
 		if (s.contains("%player-gamemode%"))
 			s = s.replace("%player-gamemode%", p.getGameMode().name());
+
 		if (s.contains("%max-players%"))
 			s = s.replace("%max-players%", Integer.toString(Bukkit.getServer().getMaxPlayers()));
+
 		if (s.contains("%online-players%"))
 			s = s.replace("%online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
+
 		if (s.contains("%player-health%"))
 			s = s.replace("%player-health%", String.valueOf(p.getHealth()));
+
 		if (s.contains("%player-max-health%"))
 			s = s.replace("%player-max-health%", String.valueOf(Bukkit.getVersion().contains("1.8") ? p.getMaxHealth()
 					: p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
@@ -207,5 +199,22 @@ public class Util {
 
 		Duration duration = Duration.between(zonedNow, zonedNextTarget);
 		return duration.getSeconds();
+	}
+
+	public static int getCurrentVersion() {
+		String currentVersion = System.getProperty("java.version");
+		if (currentVersion.contains("_")) {
+			currentVersion = currentVersion.split("_")[0];
+		}
+
+		currentVersion = currentVersion.replaceAll("[^\\d]|_", "");
+
+		for (int i = 8; i <= 18; i++) {
+			if (currentVersion.contains(Integer.toString(i))) {
+				return i;
+			}
+		}
+
+		return 0;
 	}
 }

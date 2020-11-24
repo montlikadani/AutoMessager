@@ -1,6 +1,11 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,8 +20,8 @@ public class MessageFileHandler {
 	private AutoMessager plugin;
 
 	private boolean isYaml = false;
-	private File file = null;
-	private FileConfiguration yaml = null;
+	private File file;
+	private FileConfiguration yaml;
 
 	private final List<String> texts = new ArrayList<>();
 
@@ -67,8 +72,8 @@ public class MessageFileHandler {
 		}
 
 		if (!msg.isEmpty()) {
-			Util.logConsole(Level.WARNING, msg + " Defaulting to messages.txt");
 			fName = "messages.txt";
+			Util.logConsole(Level.WARNING, msg + " Defaulting to " + fName);
 		}
 
 		file = new File(plugin.getFolder(), fName);
@@ -84,7 +89,7 @@ public class MessageFileHandler {
 	public void loadMessages() {
 		clearTexts();
 
-		if (file == null || !file.exists()) {
+		if (!isFileExists()) {
 			loadFile();
 		}
 

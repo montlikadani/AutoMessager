@@ -30,7 +30,7 @@ public class list implements ICommand {
 		}
 
 		if (!(sender instanceof Player)) {
-			texts.stream().filter(t -> !t.trim().isEmpty()).forEach(t -> sendMsg(sender, t));
+			texts.forEach(t -> sendMsg(sender, t));
 			return true;
 		}
 
@@ -48,9 +48,9 @@ public class list implements ICommand {
 
 			int maxPage = (int) ((Math.ceil(size / (double) maxRow)));
 
-			sendMsg(p, getMsg("list.header", "%page%", 1, "%max-page%", Integer.toString(maxPage)));
+			sendMsg(p, getMsg("list.header", "%page%", 1, "%max-page%", maxPage));
 			page.forEach(t -> sendMsg(p, getMsg("list.list-texts", "%texts%", t)));
-			sendMsg(p, getMsg("list.footer", "%page%", 1, "%max-page%", Integer.toString(maxPage)));
+			sendMsg(p, getMsg("list.footer", "%page%", 1, "%max-page%", maxPage));
 			return true;
 		}
 
@@ -68,9 +68,9 @@ public class list implements ICommand {
 
 		int maxPage = (int) ((Math.ceil(size / (double) maxRow)));
 
-		sendMsg(p, getMsg("list.header", "%page%", page, "%max-page%", Integer.toString(maxPage)));
+		sendMsg(p, getMsg("list.header", "%page%", page, "%max-page%", maxPage));
 		pages.forEach(t -> sendMsg(p, getMsg("list.list-texts", "%texts%", t)));
-		sendMsg(p, getMsg("list.footer", "%page%", page, "%max-page%", Integer.toString(maxPage)));
+		sendMsg(p, getMsg("list.footer", "%page%", page, "%max-page%", maxPage));
 		return true;
 	}
 

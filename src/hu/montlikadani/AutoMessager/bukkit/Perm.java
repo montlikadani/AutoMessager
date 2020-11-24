@@ -1,24 +1,28 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
 public enum Perm {
-	HELP("help"),
-	RELOAD("reload"),
-	TOGGLE("toggle"),
+	HELP,
+	RELOAD,
+	TOGGLE,
 	BC("broadcast"),
-	LIST("list"),
-	SEEMSG("seemsg"),
-	ADD("add"),
-	REMOVE("remove"),
-	CLEARALL("clearall"),
-	RESTRICTEDPLAYERS("restrictedplayers"),
+	LIST,
+	SEEMSG,
+	ADD,
+	REMOVE,
+	CLEARALL,
+	RESTRICTEDPLAYERS,
 	RESTRICTEDADD("restrictedplayers.add"),
 	RESTRICTEDREMOVE("restrictedplayers.remove"),
 	RESTRICTEDLIST("restrictedplayers.list");
 
 	private String perm;
 
+	Perm() {
+		this("");
+	}
+
 	Perm(String perm) {
-		this.perm = "automessager." + perm;
+		this.perm = "automessager." + (perm.trim().isEmpty() ? toString().toLowerCase() : perm);
 	}
 
 	public String getPerm() {
