@@ -1,6 +1,6 @@
 name: AutoMessager
 main: hu.montlikadani.AutoMessager.bukkit.AutoMessager
-version: 2.7
+version: 2.8
 author: montlikadani
 description: Automatic messages always come in handy! :)
 softdepend: [PlaceholderAPI, Vault]
