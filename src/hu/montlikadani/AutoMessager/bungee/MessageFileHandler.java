@@ -114,9 +114,7 @@ public class MessageFileHandler {
 			try (BufferedReader read = new BufferedReader(new FileReader(file))) {
 				String line;
 				while ((line = read.readLine()) != null) {
-					if (!line.startsWith("#")) {
-						texts.add(line);
-					}
+					texts.add(line);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -137,7 +135,6 @@ public class MessageFileHandler {
 				return;
 			}
 
-			c.set("messages", null);
 			c.set("messages", texts);
 
 			saveMessages(c);
@@ -167,7 +164,6 @@ public class MessageFileHandler {
 					return;
 				}
 
-				c.set("messages", null);
 				c.set("messages", texts);
 
 				saveMessages(c);

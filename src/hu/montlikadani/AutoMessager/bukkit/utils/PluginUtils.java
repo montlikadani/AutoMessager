@@ -21,6 +21,7 @@ public class PluginUtils {
 			try {
 				return PermissionsEx.getPermissionManager().has(player, perm);
 			} catch (Exception e) {
+				// No need Pex2 implementation as it supports default checks
 			}
 		}
 

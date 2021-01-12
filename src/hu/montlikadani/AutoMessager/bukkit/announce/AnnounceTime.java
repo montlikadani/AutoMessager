@@ -85,7 +85,6 @@ public class AnnounceTime {
 				return TimeUnit.MINUTES;
 			case HOUR:
 				return TimeUnit.HOURS;
-			case SECOND:
 			default:
 				return TimeUnit.SECONDS;
 			}
