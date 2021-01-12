@@ -1,8 +1,8 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
-import static hu.montlikadani.AutoMessager.bukkit.Util.colorMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
-import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.colorMsg;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.logConsole;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +19,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import hu.montlikadani.AutoMessager.bukkit.announce.Announce;
 import hu.montlikadani.AutoMessager.bukkit.commands.Commands;
+import hu.montlikadani.AutoMessager.bukkit.utils.Metrics;
+import hu.montlikadani.AutoMessager.bukkit.utils.UpdateDownloader;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.milkbowl.vault.permission.Permission;
 
@@ -29,7 +32,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	private Configuration conf;
 	private Announce announce;
-	private Time time;
 	private MessageFileHandler fileHandler;
 	private Permission perm;
 
@@ -58,10 +60,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 			setupVaultPerm();
 
-			time = new Time(this, conf.timer);
-			announce = new Announce(this);
-			announce.load();
-
 			Optional.ofNullable(getCommand("automessager")).ifPresent(cmd -> {
 				Commands cmds = new Commands(this);
 				cmd.setExecutor(cmds);
@@ -71,44 +69,23 @@ public class AutoMessager extends JavaPlugin implements Listener {
 			getServer().getPluginManager().registerEvents(new Listeners(), this);
 
 			loadToggledMessages();
-			announce.schedule();
+			announce.beginScheduling();
 
 			UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
 
 			Metrics metrics = new Metrics(this, 1594);
 			if (metrics.isEnabled()) {
 				metrics.addCustomChart(new Metrics.SimplePie("using_placeholderapi",
-						() -> conf.getConfig().getString("placeholderapi")));
+						() -> getConfig().getString("placeholderapi")));
 				metrics.addCustomChart(
-						new Metrics.SimplePie("using_random_messages", () -> conf.getConfig().getString("random")));
-				metrics.addCustomChart(
-						new Metrics.SimplePie("message_delay", () -> conf.getConfig().getString("time")));
-				metrics.addCustomChart(new Metrics.SimplePie("time_type", () -> {
-					switch (conf.getConfig().getString("time-setup", "")) {
-					case "sec":
-					case "second":
-						return "second";
-					case "min":
-					case "minute":
-						return "minute";
-					case "h":
-					case "hour":
-						return "hour";
-					case "ticks":
-						return "ticks";
-					case "custom":
-						return "custom";
-					case "given":
-					case "specified":
-						return "given";
-					default:
-						return "";
-					}
-				}));
+						new Metrics.SimplePie("using_random_messages", () -> getConfig().getString("random")));
+				metrics.addCustomChart(new Metrics.SimplePie("message_delay", () -> getConfig().getString("time")));
+				metrics.addCustomChart(new Metrics.SimplePie("time_type",
+						() -> announce.getAnnounceTime().getTimeType().toString().toLowerCase()));
 				metrics.addCustomChart(new Metrics.SingleLineChart("amount_of_texts", fileHandler.getTexts()::size));
 			}
 
-			if (conf.getConfig().getBoolean("logconsole")) {
+			if (getConfig().getBoolean("logconsole")) {
 				String msg = "&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v"
 						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				sendMsg(getServer().getConsoleSender(), colorMsg(msg));
@@ -125,10 +102,16 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	public void onDisable() {
 		if (instance == null) return;
 
-		announce.cancelTask();
+		announce.cancelSchedulers();
 		saveToggledMessages();
+		conf.removeUnnededFiles();
 		getServer().getScheduler().cancelTasks(this);
 		instance = null;
+	}
+
+	@Override
+	public FileConfiguration getConfig() {
+		return conf.getConfig();
 	}
 
 	private void startUp() {
@@ -139,13 +122,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		fileHandler = new MessageFileHandler(this);
 		fileHandler.loadMessages();
+
+		announce = new Announce();
 	}
 
 	public void reload() {
-		if (conf == null) {
-			conf = new Configuration(this);
-		}
-
 		conf.loadFiles();
 		conf.loadConfigs();
 		conf.loadValues();
@@ -157,20 +138,8 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		fileHandler.loadFile();
 		fileHandler.loadMessages();
 
-		if (time == null) {
-			time = new Time(this, conf.timer);
-		} else {
-			time.setTime(conf.timer);
-		}
-
-		if (announce != null) {
-			announce.cancelTask();
-		} else {
-			announce = new Announce(this);
-		}
-
-		announce.load();
-		announce.schedule();
+		announce.cancelSchedulers();
+		(announce = new Announce()).beginScheduling();
 	}
 
 	private boolean setupVaultPerm() {
@@ -185,7 +154,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	private void loadToggledMessages() {
-		if (!conf.getConfig().getBoolean("remember-toggle-to-file", true)) {
+		if (!getConfig().getBoolean("remember-toggle-to-file", true)) {
 			return;
 		}
 
@@ -215,7 +184,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	private void saveToggledMessages() {
 		File f = new File(getFolder(), "toggledmessages.yml");
-		if (!conf.getConfig().getBoolean("remember-toggle-to-file", true)) {
+		if (!getConfig().getBoolean("remember-toggle-to-file", true)) {
 			if (f.exists()) {
 				f.delete();
 			}
@@ -254,17 +223,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		Commands.ENABLED.clear();
 	}
 
-	boolean checkOnlinePlayers() {
-		int min = conf.getConfig().getInt("min-players", 1);
-		if (min < 1) {
-			return false;
-		}
-
-		int online = getServer().getOnlinePlayers().size();
-		return online >= min;
-	}
-
-	File getFolder() {
+	public File getFolder() {
 		File folder = getDataFolder();
 		if (!folder.exists()) {
 			folder.mkdir();
@@ -273,7 +232,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		return folder;
 	}
 
-	boolean isPluginEnabled(String name) {
+	public boolean isPluginEnabled(String name) {
 		return getServer().getPluginManager().getPlugin(name) != null
 				&& getServer().getPluginManager().isPluginEnabled(name);
 	}
@@ -294,10 +253,6 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		return perm;
 	}
 
-	public Time getTimeC() {
-		return time;
-	}
-
 	public boolean isSpigot() {
 		return isSpigot;
 	}
@@ -312,6 +267,9 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		@EventHandler
 		public void onPlJoin(PlayerJoinEvent event) {
 			Player p = event.getPlayer();
+
+			announce.beginScheduling();
+
 			if (p.isOp()) {
 				UpdateDownloader.checkFromGithub(p);
 			}

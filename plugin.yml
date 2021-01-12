@@ -19,15 +19,11 @@ permissions:
      children:
        automessager.seemsg: true
        automessager.toggle: true
-       automessager.broadcast: true
        automessager.add: true
        automessager.remove: true
        automessager.clearall: true
        automessager.list: true
        automessager.restrictedplayers: true
-       automessager.restrictedplayers.add: true
-       automessager.restrictedplayers.remove: true
-       automessager.restrictedplayers.list: true
        automessager.reload: true
        automessager.help: true
   automessager.seemsg:
@@ -35,9 +31,6 @@ permissions:
     default: true
   automessager.toggle:
     description: Allows the player to use the /am toggle command.
-    default: false
-  automessager.broadcast:
-    description: Allows the player to use the /am broadcast command.
     default: false
   automessager.add:
     description: Allows the player to use the /am add command.
@@ -53,15 +46,6 @@ permissions:
     default: false
   automessager.restrictedplayers:
     description: Allows the player to use the /am restricted command.
-    default: false
-  automessager.restrictedplayers.add:
-    description: Allows the player to use the /am restricted add command.
-    default: false
-  automessager.restrictedplayers.remove:
-    description: Allows the player to use the /am restricted remove command.
-    default: false
-  automessager.restrictedplayers.list:
-    description: Allows the player to use the /am restricted list command.
     default: false
   automessager.help:
     description: Help commands for AutoMessager.

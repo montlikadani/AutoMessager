@@ -1,6 +1,6 @@
 package hu.montlikadani.AutoMessager.bukkit;
 
-import static hu.montlikadani.AutoMessager.bukkit.Util.logConsole;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.logConsole;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +110,15 @@ public class Configuration {
 			restricted.save(restricted_file);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void removeUnnededFiles() {
+		try {
+			if (isRestrictFileExists()) {
+				restricted_file.delete();
+			}
+		} catch (Exception e) {
 		}
 	}
 

@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit;
+package hu.montlikadani.AutoMessager.bukkit.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,15 +12,16 @@ import java.util.concurrent.CompletableFuture;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-/**
- * @author montlikadani
- *
- */
-public class UpdateDownloader {
+import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
+
+public abstract class UpdateDownloader {
+
+	private static final File RELEASESFOLDER = new File(AutoMessager.getInstance().getFolder(), "releases");
 
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
-		FileConfiguration conf = AutoMessager.getInstance().getConf().getConfig();
+		FileConfiguration conf = AutoMessager.getInstance().getConfig();
 		if (!conf.getBoolean("check-update", false)) {
+			deleteDirectory();
 			return;
 		}
 
@@ -29,8 +30,9 @@ public class UpdateDownloader {
 				URL githubUrl = new URL(
 						"https://raw.githubusercontent.com/montlikadani/AutoMessager/master/plugin.yml");
 				BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()));
-				String s;
-				String lineWithVersion = "";
+
+				String s, lineWithVersion = "";
+
 				while ((s = br.readLine()) != null) {
 					String line = s;
 					if (line.toLowerCase().contains("version")) {
@@ -47,6 +49,7 @@ public class UpdateDownloader {
 				int currentVersion = Integer.parseInt(cVersion);
 
 				if (newVersion <= currentVersion || currentVersion >= newVersion) {
+					deleteDirectory();
 					return false;
 				}
 
@@ -63,19 +66,18 @@ public class UpdateDownloader {
 				sender.sendMessage(msg);
 
 				if (!conf.getBoolean("download-updates", false)) {
+					deleteDirectory();
 					return false;
 				}
 
 				final String name = "AutoMessager-v" + newVersion;
 
-				String updatesFolder = AutoMessager.getInstance().getFolder() + File.separator + "releases";
-				File temp = new File(updatesFolder);
-				if (!temp.exists()) {
-					temp.mkdir();
+				if (!RELEASESFOLDER.exists()) {
+					RELEASESFOLDER.mkdir();
 				}
 
 				// Do not attempt to download the file again, when it is already downloaded
-				final File jar = new File(updatesFolder + File.separator + name + ".jar");
+				final File jar = new File(RELEASESFOLDER, name + ".jar");
 				if (jar.exists()) {
 					return false;
 				}
@@ -86,18 +88,39 @@ public class UpdateDownloader {
 						"https://github.com/montlikadani/AutoMessager/releases/latest/download/AutoMessager.jar");
 
 				InputStream in = download.openStream();
-				Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				try {
+					Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				} finally {
+					in.close();
+				}
 
-				in.close();
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
-		}).thenAccept(o -> {
-			if (o.booleanValue()) {
+		}).thenAccept(success -> {
+			if (success) {
 				Util.logConsole("The new AutoMessager has been downloaded to releases folder.");
 			}
 		});
+	}
+
+	private static void deleteDirectory() {
+		if (!RELEASESFOLDER.exists()) {
+			return;
+		}
+
+		for (File file : RELEASESFOLDER.listFiles()) {
+			try {
+				file.delete();
+			} catch (SecurityException e) {
+			}
+		}
+
+		try {
+			RELEASESFOLDER.delete();
+		} catch (SecurityException e) {
+		}
 	}
 }

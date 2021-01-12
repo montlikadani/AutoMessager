@@ -1,7 +1,7 @@
 package hu.montlikadani.AutoMessager.bukkit.commands.list;
 
-import static hu.montlikadani.AutoMessager.bukkit.Util.getMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.getMsgProperty;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
 
 import java.util.UUID;
 
@@ -19,13 +19,13 @@ public class toggle implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLE.getPerm())) {
-			sendMsg(sender, getMsg("no-permission", "%perm%", Perm.TOGGLE.getPerm()));
+		if (!hasPerm(sender, Perm.TOGGLE.getPerm())) {
+			sendMsg(sender, getMsgProperty("no-permission", "%perm%", Perm.TOGGLE.getPerm()));
 			return false;
 		}
 
 		if (!(sender instanceof Player) && args.length < 2) {
-			sendMsg(sender, getMsg("toggle.console-usage", "%command%", label));
+			sendMsg(sender, getMsgProperty("toggle.console-usage", "%command%", label));
 			return false;
 		}
 
@@ -45,17 +45,17 @@ public class toggle implements ICommand {
 
 			Player target = Bukkit.getPlayer(args[1]);
 			if (target == null) {
-				sendMsg(sender, getMsg("toggle.player-not-found", "%target%", args[1]));
+				sendMsg(sender, getMsgProperty("toggle.player-not-found", "%target%", args[1]));
 				return false;
 			}
 
 			UUID uuid = target.getUniqueId();
 			if (!Commands.ENABLED.containsKey(uuid)) {
 				Commands.ENABLED.put(uuid, false);
-				sendMsg(sender, getMsg("toggle.disabled"));
+				sendMsg(sender, getMsgProperty("toggle.disabled"));
 			} else {
 				Commands.ENABLED.remove(uuid);
-				sendMsg(sender, getMsg("toggle.enabled"));
+				sendMsg(sender, getMsgProperty("toggle.enabled"));
 			}
 
 			return true;
@@ -65,10 +65,10 @@ public class toggle implements ICommand {
 		UUID uuid = p.getUniqueId();
 		if (!Commands.ENABLED.containsKey(uuid)) {
 			Commands.ENABLED.put(uuid, false);
-			sendMsg(sender, getMsg("toggle.disabled"));
+			sendMsg(sender, getMsgProperty("toggle.disabled"));
 		} else {
 			Commands.ENABLED.remove(uuid);
-			sendMsg(sender, getMsg("toggle.enabled"));
+			sendMsg(sender, getMsgProperty("toggle.enabled"));
 		}
 
 		return true;

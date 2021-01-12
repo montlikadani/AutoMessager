@@ -1,11 +1,14 @@
-package hu.montlikadani.AutoMessager.bukkit;
+package hu.montlikadani.AutoMessager.bukkit.utils;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Level;
 
@@ -16,7 +19,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import com.google.common.reflect.TypeToken;
+
 import hu.montlikadani.AutoMessager.Global;
+import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
+import hu.montlikadani.AutoMessager.bukkit.Configuration;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Util {
@@ -34,7 +41,7 @@ public class Util {
 	}
 
 	public static void logConsole(Level level, String error, boolean loaded) {
-		if ((!loaded || AutoMessager.getInstance().getConf().getConfig().getBoolean("logconsole")) && error != null
+		if ((!loaded || AutoMessager.getInstance().getConfig().getBoolean("logconsole")) && error != null
 				&& !error.trim().isEmpty()) {
 			Bukkit.getLogger().log(level == null ? Level.INFO : level, "[AutoMessager] " + error);
 		}
@@ -52,24 +59,76 @@ public class Util {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
-	public static String getMsg(String key, Object... placeholders) {
-		String msg = "";
+	public static String getMsgProperty(String key, Object... placeholders) {
+		return getMsgProperty(TypeToken.of(String.class), key, placeholders);
+	}
 
-		if (AutoMessager.getInstance().getConf().getMessages().getString(key, "").isEmpty()) {
-			return msg;
+	@SuppressWarnings("unchecked")
+	public static <T> T getMsgProperty(TypeToken<T> type, String key, Object... placeholders) {
+		if (key == null || key.trim().isEmpty()) {
+			return (T) "null";
 		}
 
-		msg = colorMsg(AutoMessager.getInstance().getConf().getMessages().getString(key));
+		final Configuration conf = AutoMessager.getInstance().getConf();
 
-		for (int i = 0; i < placeholders.length; i++) {
-			if (placeholders.length >= i + 2) {
-				msg = msg.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+		if (type.getRawType().isAssignableFrom(String.class)) {
+			if (!conf.getMessagesFile().exists()) {
+				return (T) "FILENF";
 			}
 
-			i++;
+			String msg = "";
+
+			if (!conf.getMessages().contains(key)) {
+				conf.getMessages().set(key, "");
+				try {
+					conf.getMessages().save(conf.getMessagesFile());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (conf.getMessages().getString(key).isEmpty()) {
+				return (T) msg;
+			}
+
+			msg = colorMsg(conf.getMessages().getString(key));
+
+			for (int i = 0; i < placeholders.length; i++) {
+				if (placeholders.length >= i + 2) {
+					msg = msg.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+				}
+
+				i++;
+			}
+
+			return (T) msg;
 		}
 
-		return msg;
+		if (type.getRawType().isAssignableFrom(List.class)) {
+			if (!conf.getMessagesFile().exists()) {
+				return (T) new ArrayList<>();
+			}
+
+			List<String> list = new ArrayList<>();
+
+			for (String one : conf.getMessages().getStringList(key)) {
+				one = colorMsg(one);
+
+				for (int i = 0; i < placeholders.length; i++) {
+					if (placeholders.length >= i + 2) {
+						one = one.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+					}
+
+					i++;
+				}
+
+				list.add(one);
+			}
+
+			return (T) list;
+		}
+
+		return (T) "no msg";
 	}
 
 	public static void sendMsg(CommandSender sender, String s) {
@@ -85,8 +144,7 @@ public class Util {
 	}
 
 	public static String replaceVariables(Player pl, String str) {
-		FileConfiguration config = AutoMessager.getInstance().getConf().getConfig();
-		String path = "placeholder-format.";
+		FileConfiguration config = AutoMessager.getInstance().getConfig();
 
 		if (config.contains("custom-variables")) {
 			for (String custom : config.getConfigurationSection("custom-variables").getKeys(true)) {
@@ -96,7 +154,7 @@ public class Util {
 			}
 		}
 
-		String t = "", dt = "";
+		String t = "", dt = "", path = "placeholder-format.";
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			String tPath = path + "time.";
 			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
@@ -154,8 +212,7 @@ public class Util {
 
 	@SuppressWarnings("deprecation")
 	public static String setPlaceholders(Player p, String s) {
-		if (AutoMessager.getInstance().getConf().papi && AutoMessager.getInstance().isPluginEnabled("PlaceholderAPI")
-				&& PlaceholderAPI.containsPlaceholders(s)) {
+		if (AutoMessager.getInstance().getConf().papi && AutoMessager.getInstance().isPluginEnabled("PlaceholderAPI")) {
 			s = PlaceholderAPI.setPlaceholders(p, s);
 		}
 
@@ -190,15 +247,14 @@ public class Util {
 		return s;
 	}
 
-	protected static long calcNextDelay(int hour, int minute, int second) {
+	public static long calcNextDelay(int hour, int minute, int second) {
 		LocalDateTime localNow = LocalDateTime.now();
 		ZonedDateTime zonedNow = ZonedDateTime.of(localNow, ZoneId.systemDefault());
 		ZonedDateTime zonedNextTarget = zonedNow.withHour(hour).withMinute(minute).withSecond(second);
 		if (zonedNow.compareTo(zonedNextTarget) > 0)
 			zonedNextTarget = zonedNextTarget.plusDays(1);
 
-		Duration duration = Duration.between(zonedNow, zonedNextTarget);
-		return duration.getSeconds();
+		return Duration.between(zonedNow, zonedNextTarget).getSeconds();
 	}
 
 	public static int getCurrentVersion() {

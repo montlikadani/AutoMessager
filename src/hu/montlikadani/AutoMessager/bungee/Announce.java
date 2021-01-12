@@ -10,10 +10,9 @@ public class Announce {
 
 	private final AutoMessager plugin;
 
-	private ScheduledTask task = null;
+	private ScheduledTask task;
 
 	private boolean random;
-
 	private int messageCounter, lastMessage, lastRandom;
 
 	public Announce(AutoMessager plugin) {

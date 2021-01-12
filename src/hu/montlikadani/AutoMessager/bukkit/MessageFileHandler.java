@@ -10,10 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import hu.montlikadani.AutoMessager.bukkit.announce.message.Message;
+import hu.montlikadani.AutoMessager.bukkit.utils.Util;
 
 public class MessageFileHandler {
 
@@ -23,7 +27,7 @@ public class MessageFileHandler {
 	private File file;
 	private FileConfiguration yaml;
 
-	private final List<String> texts = new ArrayList<>();
+	private final List<Message> texts = new ArrayList<>();
 
 	public MessageFileHandler(AutoMessager plugin) {
 		this.plugin = plugin;
@@ -37,16 +41,12 @@ public class MessageFileHandler {
 		return yaml;
 	}
 
-	public List<String> getTexts() {
+	public List<Message> getTexts() {
 		return texts;
 	}
 
 	public boolean isYaml() {
 		return isYaml;
-	}
-
-	public void clearTexts() {
-		texts.clear();
 	}
 
 	public boolean isFileExists() {
@@ -87,7 +87,7 @@ public class MessageFileHandler {
 	}
 
 	public void loadMessages() {
-		clearTexts();
+		texts.clear();
 
 		if (!isFileExists()) {
 			loadFile();
@@ -116,16 +116,14 @@ public class MessageFileHandler {
 
 			isYaml = true;
 
-			yaml.getStringList("messages").forEach(texts::add);
+			yaml.getStringList("messages").forEach(t -> texts.add(new Message(t)));
 		} else {
 			isYaml = false;
 
 			try (BufferedReader read = new BufferedReader(new FileReader(file))) {
 				String line;
 				while ((line = read.readLine()) != null) {
-					//if (!line.startsWith("#")) {
-						texts.add(line);
-					//}
+					texts.add(new Message(line));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -139,22 +137,8 @@ public class MessageFileHandler {
 			loadMessages();
 		}
 
-		texts.add(msg);
-
-		try {
-			if (isYaml) {
-				yaml.set("messages", null);
-				yaml.set("messages", texts);
-				yaml.save(file);
-			} else {
-				FileWriter fw = new FileWriter(file, true);
-				PrintWriter pw = new PrintWriter(fw);
-				pw.println(msg);
-				pw.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		texts.add(new Message(msg));
+		saveText();
 	}
 
 	public void removeText(int index) {
@@ -164,18 +148,20 @@ public class MessageFileHandler {
 		}
 
 		texts.remove(index);
+		saveText();
+	}
 
+	private void saveText() {
 		try {
 			if (isYaml) {
-				yaml.set("messages", null);
-				yaml.set("messages", texts);
+				yaml.set("messages", texts.stream().map(Message::getText).collect(Collectors.toList()));
 				yaml.save(file);
 			} else {
 				FileWriter fw = new FileWriter(file, true);
 				PrintWriter writer = new PrintWriter(fw);
 				writer.print("");
 
-				texts.forEach(writer::println);
+				texts.stream().map(Message::getText).forEach(writer::println);
 				writer.close();
 			}
 		} catch (Exception e) {

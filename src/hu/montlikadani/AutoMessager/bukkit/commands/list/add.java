@@ -1,7 +1,7 @@
 package hu.montlikadani.AutoMessager.bukkit.commands.list;
 
-import static hu.montlikadani.AutoMessager.bukkit.Util.getMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.getMsgProperty;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -16,8 +16,8 @@ public class add implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.ADD.getPerm())) {
-			sendMsg(sender, getMsg("no-permission", "%perm%", Perm.ADD.getPerm()));
+		if (!hasPerm(sender, Perm.ADD.getPerm())) {
+			sendMsg(sender, getMsgProperty("no-permission", "%perm%", Perm.ADD.getPerm()));
 			return false;
 		}
 
@@ -28,7 +28,7 @@ public class add implements ICommand {
 				Bukkit.dispatchCommand(sender, "am help");
 			}
 
-			sendMsg(sender, getMsg("add-cmd-usage", "%command%", label));
+			sendMsg(sender, getMsgProperty("add-cmd-usage", "%command%", label));
 			return false;
 		}
 
@@ -40,7 +40,7 @@ public class add implements ICommand {
 		String msg = builder.toString();
 		plugin.getFileHandler().addText(msg);
 
-		sendMsg(sender, getMsg("success-add-msg", "%message%", msg));
+		sendMsg(sender, getMsgProperty("success-add-msg", "%message%", msg));
 		return true;
 	}
 }

@@ -1,8 +1,8 @@
 package hu.montlikadani.AutoMessager.bukkit.commands.list;
 
-import static hu.montlikadani.AutoMessager.bukkit.Util.colorMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.getMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.colorMsg;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.getMsgProperty;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -26,8 +26,8 @@ public class restricted implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDPLAYERS.getPerm())) {
-			sendMsg(sender, getMsg("no-permission", "%perm%", Perm.RESTRICTEDPLAYERS.getPerm()));
+		if (!hasPerm(sender, Perm.RESTRICTEDPLAYERS.getPerm())) {
+			sendMsg(sender, getMsgProperty("no-permission", "%perm%", Perm.RESTRICTEDPLAYERS.getPerm()));
 			return false;
 		}
 
@@ -66,11 +66,6 @@ public class restricted implements ICommand {
 
 		switch (action) {
 		case ADD:
-			if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDADD.getPerm())) {
-				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.RESTRICTEDADD.getPerm()));
-				return false;
-			}
-
 			if (args.length < 3) {
 				if (sender instanceof Player) {
 					((Player) sender).performCommand("am help 3");
@@ -83,25 +78,20 @@ public class restricted implements ICommand {
 
 			Player target = Bukkit.getPlayer(args[2]);
 			if (target == null) {
-				sendMsg(sender, getMsg("restricted.player-not-found", "%player%", args[2]));
+				sendMsg(sender, getMsgProperty("restricted.player-not-found", "%player%", args[2]));
 				return false;
 			}
 
 			String name = target.getName();
 			if (restricted.contains(name)) {
-				sendMsg(sender, getMsg("restricted.player-already-added", "%player%", name));
+				sendMsg(sender, getMsgProperty("restricted.player-already-added", "%player%", name));
 				return false;
 			}
 
 			fileChanged = restricted.add(name);
-			sendMsg(sender, getMsg("restricted.success-add", "%player%", name));
+			sendMsg(sender, getMsgProperty("restricted.success-add", "%player%", name));
 			break;
 		case REMOVE:
-			if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDREMOVE.getPerm())) {
-				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.RESTRICTEDREMOVE.getPerm()));
-				return false;
-			}
-
 			if (args.length < 3) {
 				if (sender instanceof Player) {
 					((Player) sender).performCommand("am help 3");
@@ -114,21 +104,16 @@ public class restricted implements ICommand {
 
 			String pName = args[2];
 			if (!restricted.contains(pName)) {
-				sendMsg(sender, getMsg("restricted.player-already-removed", "%player%", pName));
+				sendMsg(sender, getMsgProperty("restricted.player-already-removed", "%player%", pName));
 				return false;
 			}
 
 			fileChanged = restricted.remove(pName);
-			sendMsg(sender, getMsg("restricted.success-remove", "%player%", pName));
+			sendMsg(sender, getMsgProperty("restricted.success-remove", "%player%", pName));
 			break;
 		case LIST:
-			if (sender instanceof Player && !sender.hasPermission(Perm.RESTRICTEDLIST.getPerm())) {
-				sendMsg(sender, getMsg("no-permission", "%perm%", Perm.RESTRICTEDLIST.getPerm()));
-				return false;
-			}
-
 			if (restricted.isEmpty()) {
-				sendMsg(sender, getMsg("restricted.no-player-added"));
+				sendMsg(sender, getMsgProperty("restricted.no-player-added"));
 				return false;
 			}
 

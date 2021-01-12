@@ -11,21 +11,6 @@
 	</properties>
 
 	<build>
-		<sourceDirectory>src/hu/montlikadani/AutoMessager</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>${project.basedir}</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/*.yml</include>
-					<include>pom.xml</include>
-				</includes>
-				<excludes>
-					<exclude>.classpath</exclude>
-					<exclude>.project</exclude>
-				</excludes>
-			</resource>
-		</resources>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -51,7 +36,7 @@
 		</repository>
 		<repository>
 			<id>ess-repo</id>
-			<url>https://ci.ender.zone/plugin/repository/everything/</url>
+			<url>https://repo.essentialsx.net/snapshots/</url>
 		</repository>
 		<repository>
 			<id>papi-repo</id>
@@ -61,10 +46,10 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
-		<repository>
+		<!--<repository>
 			<id>pex-repo</id>
 			<url>https://repo.glaremasters.me/repository/permissionsex/</url>
-		</repository>
+		</repository>-->
 	</repositories>
 
 	<dependencies>
@@ -100,22 +85,14 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.ess3</groupId>
+			<groupId>net.essentialsx</groupId>
 			<artifactId>EssentialsX</artifactId>
-			<version>2.18.1</version>
+			<version>2.19.0-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>net.ess3</groupId>
-					<artifactId>1_8_R2Provider</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.ess3</groupId>
-					<artifactId>1_8_R1Provider</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.ess3</groupId>
-					<artifactId>NMSProvider</artifactId>
+					<groupId>org.bstats</groupId>
+					<artifactId>bstats-bukkit</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
@@ -123,7 +100,11 @@
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
-					<artifactId>ReflectionProvider</artifactId>
+					<artifactId>1_8_R1Provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>1_8_R2Provider</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
@@ -131,11 +112,27 @@
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
-					<artifactId>FlattenedProvider</artifactId>
+					<artifactId>NMSProvider</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>io.papermc</groupId>
 					<artifactId>paperlib</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>ReflectionProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>FlattenedProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.googlecode.json-simple</groupId>
+					<artifactId>json-simple</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
@@ -152,6 +149,26 @@
 				<exclusion>
 					<groupId>net.ess3</groupId>
 					<artifactId>PaperProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.essentialsx</groupId>
+					<artifactId>NMSReflectionProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.essentialsx</groupId>
+					<artifactId>1_8Provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.essentialsx</groupId>
+					<artifactId>BaseProviders</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.essentialsx</groupId>
+					<artifactId>PaperProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spigotmc</groupId>
+					<artifactId>spigot-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

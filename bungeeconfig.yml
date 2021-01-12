@@ -61,7 +61,6 @@ messages:
   reload-config: "&aThe plugin successfully reloaded!"
   no-permission: "&cYou don't have permission for this!"
   no-message-to-list: "&cThere is no message in the file."
-  broadcast-message: "&a[&cBroadcast&a]&r %message%"
   toggle:
     enabled: "&aThe messages successfully turned on!"
     disabled: "&cThe messages successfully turned off!"
@@ -71,9 +70,8 @@ messages:
   chat-messages:
   - "&8&l-----------"
   - "&7/&aautomessager reload&7 (or rl)&e -&6 Reloads the plugin and config."
-  - "&7/&aautomessager toggle [player/all]&e -&6 Toggle auto message."
-  - "&7/&aautomessager list&5 -&6 List messages."
-  - "&7/&aautomessager broadcast&5 -&6 Broadcasting a message."
+  - "&7/&aautomessager toggle [player/all]&e -&6 Toggle auto message sending."
+  - "&7/&aautomessager list&5 -&6 List messages that is added to file."
   - "&7/&aautomessager add <text>&5 -&6 Adds a text message to the file."
   - "&7/&aautomessager remove <index>&5 -&6 Removes a message by the given index."
   - "&8&l-----------"

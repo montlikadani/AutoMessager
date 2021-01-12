@@ -56,7 +56,7 @@ placeholder-format:
 time: 3
 
 # Time settings
-# Variables: ticks, second (or sec), minute (or min), hour (or h), custom, given
+# Variables: ticks, second, minute, hour, custom, given
 # Example: 20 ticks = 1 second; 1 second = 20 ticks; 1 minute = 60 second; 1 hour = 60 minute
 # custom usage: "00:01:00" - this counts 1 minute and after it's taken then sending the message
 # given usage: "12:50:00" - this will send a message at 12:50 with your current time zone
@@ -81,11 +81,9 @@ run-commands:
 # 1.9+: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 # 1.8.x: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
 sound:
-  enable: false
-
   # Example: 1.9+: ENTITY_EXPERIENCE_ORB_PICKUP; 1.8: ORB_PICKUP
   # Usage: SOUND_NAME, volume, pitch
-  type: ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1
+  #type: ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1
 
 #=========================================#
 #             Plugin Settings             #
@@ -93,7 +91,7 @@ sound:
 # Check for updates.
 check-update: true
 
-# Download releases to \releases folder
+# Download releases to releases folder
 # This only works if the "check-update" is true.
 download-updates: false
 

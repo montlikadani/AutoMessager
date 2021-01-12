@@ -4,16 +4,13 @@ public enum Perm {
 	HELP,
 	RELOAD,
 	TOGGLE,
-	BC("broadcast"),
 	LIST,
 	SEEMSG,
 	ADD,
 	REMOVE,
 	CLEARALL,
 	RESTRICTEDPLAYERS,
-	RESTRICTEDADD("restrictedplayers.add"),
-	RESTRICTEDREMOVE("restrictedplayers.remove"),
-	RESTRICTEDLIST("restrictedplayers.list");
+	;
 
 	private String perm;
 

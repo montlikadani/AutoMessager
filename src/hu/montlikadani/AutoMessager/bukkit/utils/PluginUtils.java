@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit;
+package hu.montlikadani.AutoMessager.bukkit.utils;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -7,11 +7,12 @@ import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Containers.CMIUser;
 import com.earth2me.essentials.Essentials;
 
+import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PluginUtils {
 
-	protected static boolean hasPermission(Player player, String perm) {
+	public static boolean hasPermission(Player player, String perm) {
 		if (perm.isEmpty()) {
 			return false;
 		}

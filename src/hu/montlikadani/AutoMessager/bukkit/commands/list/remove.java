@@ -1,7 +1,7 @@
 package hu.montlikadani.AutoMessager.bukkit.commands.list;
 
-import static hu.montlikadani.AutoMessager.bukkit.Util.getMsg;
-import static hu.montlikadani.AutoMessager.bukkit.Util.sendMsg;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.getMsgProperty;
+import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -16,8 +16,8 @@ public class remove implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.REMOVE.getPerm())) {
-			sendMsg(sender, getMsg("no-permission", "%perm%", Perm.REMOVE.getPerm()));
+		if (!hasPerm(sender, Perm.REMOVE.getPerm())) {
+			sendMsg(sender, getMsgProperty("no-permission", "%perm%", Perm.REMOVE.getPerm()));
 			return false;
 		}
 
@@ -35,22 +35,22 @@ public class remove implements ICommand {
 		try {
 			index = Integer.parseInt(args[1]);
 		} catch (NumberFormatException e) {
-			sendMsg(sender, getMsg("bad-number"));
+			sendMsg(sender, getMsgProperty("bad-number"));
 			return false;
 		}
 
 		if (index < 0) {
-			sendMsg(sender, getMsg("bad-number"));
+			sendMsg(sender, getMsgProperty("bad-number"));
 			return false;
 		}
 
 		if (index > plugin.getFileHandler().getTexts().size() - 1) {
-			sendMsg(sender, getMsg("index-start"));
+			sendMsg(sender, getMsgProperty("index-start"));
 			return false;
 		}
 
 		plugin.getFileHandler().removeText(index);
-		sendMsg(sender, getMsg("text-removed", "%index%", index));
+		sendMsg(sender, getMsgProperty("text-removed", "%index%", index));
 		return true;
 	}
 }

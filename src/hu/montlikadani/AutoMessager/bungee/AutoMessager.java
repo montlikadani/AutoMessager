@@ -175,30 +175,6 @@ public class AutoMessager extends Plugin {
 						players.remove(player.getUniqueId());
 						sendMessage(player, config.getString("messages.toggle.enabled"));
 					}
-				} else if (args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")) {
-					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.broadcast")) {
-						sendMessage(s, config.getString("messages.no-permission"));
-						return;
-					}
-
-					if (args.length < 2) {
-						config.getStringList("messages.chat-messages").forEach(msg -> sendMessage(s, msg));
-						return;
-					}
-
-					StringBuilder builder = new StringBuilder();
-					for (int i = 1; i < args.length; i++) {
-						builder.append(args[i] + " ");
-					}
-
-					String msg = builder.toString();
-
-					msg = colorMsg(msg);
-					msg = Global.setSymbols(msg);
-
-					getProxy().broadcast(new ComponentBuilder(
-							colorMsg(config.getString("messages.broadcast-message").replace("%message%", msg)))
-									.create());
 				} else if (args[0].equalsIgnoreCase("list")) {
 					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.list")) {
 						sendMessage(s, config.getString("messages.no-permission"));
