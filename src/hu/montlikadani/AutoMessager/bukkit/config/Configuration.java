@@ -76,7 +76,7 @@ public class Configuration {
 
 	public void removeUnnededFiles() {
 		try {
-			if (restrictedFile.exists()) {
+			if (restrictedFile.exists() && restrictedFile.length() == 0L) {
 				restrictedFile.delete();
 			}
 		} catch (SecurityException e) {
