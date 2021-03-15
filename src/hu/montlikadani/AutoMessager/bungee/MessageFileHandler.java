@@ -38,10 +38,8 @@ public class MessageFileHandler {
 			return null;
 		}
 
-		ConfigurationProvider f = ConfigurationProvider.getProvider(YamlConfiguration.class);
-
 		try {
-			return f.load(file);
+			return ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -70,12 +68,10 @@ public class MessageFileHandler {
 		}
 
 		if (!msg.isEmpty()) {
-			plugin.getLogger().log(Level.WARNING, msg + " Defaulting to messages.txt");
-			fName = "messages.txt";
+			plugin.getLogger().log(Level.WARNING, msg + " Defaulting to " + (fName = "messages.txt"));
 		}
 
-		file = new File(plugin.getDataFolder(), fName);
-		if (!file.exists()) {
+		if (!(file = new File(plugin.getDataFolder(), fName)).exists()) {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
@@ -94,7 +90,7 @@ public class MessageFileHandler {
 		if (file.getName().endsWith(".yml")) {
 			Configuration c = getConfig();
 			if (c == null) {
-				plugin.getLogger().log(Level.SEVERE, "Error has occured while loading the file for you!");
+				plugin.getLogger().log(Level.SEVERE, "Error has occured while loading the file!");
 				return;
 			}
 
@@ -104,10 +100,8 @@ public class MessageFileHandler {
 			}
 
 			saveMessages(c);
-
 			isYaml = true;
-
-			c.getStringList("messages").forEach(texts::add);
+			texts.addAll(c.getStringList("messages"));
 		} else {
 			isYaml = false;
 
@@ -116,7 +110,7 @@ public class MessageFileHandler {
 				while ((line = read.readLine()) != null) {
 					texts.add(line);
 				}
-			} catch (Exception e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -131,20 +125,17 @@ public class MessageFileHandler {
 
 		if (isYaml) {
 			Configuration c = getConfig();
-			if (c == null) {
-				return;
+			if (c != null) {
+				c.set("messages", texts);
+				saveMessages(c);
 			}
-
-			c.set("messages", texts);
-
-			saveMessages(c);
 		} else {
 			try {
 				FileWriter fw = new FileWriter(file, true);
 				PrintWriter pw = new PrintWriter(fw);
 				pw.println(message);
 				pw.close();
-			} catch (Exception e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -157,26 +148,23 @@ public class MessageFileHandler {
 			return;
 		}
 
-		try {
-			if (isYaml) {
-				Configuration c = getConfig();
-				if (c == null) {
-					return;
-				}
-
+		if (isYaml) {
+			Configuration c = getConfig();
+			if (c != null) {
 				c.set("messages", texts);
-
 				saveMessages(c);
-			} else {
+			}
+		} else {
+			try {
 				FileWriter fw = new FileWriter(file, true);
 				PrintWriter writer = new PrintWriter(fw);
 				writer.print("");
 
 				texts.forEach(writer::println);
 				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -185,10 +173,8 @@ public class MessageFileHandler {
 			return;
 		}
 
-		ConfigurationProvider f = ConfigurationProvider.getProvider(YamlConfiguration.class);
-
 		try {
-			f.save(conf, file);
+			ConfigurationProvider.getProvider(YamlConfiguration.class).save(conf, file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

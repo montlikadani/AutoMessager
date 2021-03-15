@@ -3,20 +3,25 @@ package hu.montlikadani.AutoMessager.bukkit.announce.message;
 import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionNameCleaner;
 import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionNameCleaner.CleanedName;
 import hu.montlikadani.AutoMessager.bukkit.commands.Commands;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants.ExecutableCommands;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants.ExecutableCommands.SenderType;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants.SoundProperties;
 import hu.montlikadani.AutoMessager.bukkit.utils.PluginUtils;
+import hu.montlikadani.AutoMessager.bukkit.utils.ServerVersion;
 import hu.montlikadani.AutoMessager.bukkit.utils.Util;
-import net.md_5.bungee.chat.ComponentSerializer;
 
 import static hu.montlikadani.AutoMessager.bukkit.utils.Util.logConsole;
 
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import hu.montlikadani.AutoMessager.Global;
 import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
 import hu.montlikadani.AutoMessager.bukkit.Perm;
 import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionName;
@@ -27,6 +32,7 @@ public final class Message implements ActionName {
 	private ActionNameType type;
 
 	private final ActionNameCleaner actionNameCleaner = new ActionNameCleaner();
+	private final AutoMessager plugin = JavaPlugin.getPlugin(AutoMessager.class);
 
 	public Message(String text) {
 		this(text, ActionNameType.WITHOUT);
@@ -37,11 +43,7 @@ public final class Message implements ActionName {
 		setType(type);
 	}
 
-	public AutoMessager getPlugin() {
-		return AutoMessager.getInstance();
-	}
-
-	public void setTypeFromText() {
+	public final void setTypeFromText() {
 		if (text.startsWith("json:")) {
 			setType(ActionNameType.JSON);
 		} else if (text.startsWith("world:")) {
@@ -52,7 +54,7 @@ public final class Message implements ActionName {
 			setType(ActionNameType.GROUP);
 		} else if (text.startsWith("permission:")) {
 			setType(ActionNameType.PERMISSION);
-		} else if (text.contains("[time:")) {
+		} else if (text.startsWith("[time:")) {
 			setType(ActionNameType.TIME);
 		}
 	}
@@ -79,9 +81,8 @@ public final class Message implements ActionName {
 		return actionNameCleaner;
 	}
 
-	public void logToConsole() {
-		if (getPlugin().getConfig().getBoolean("broadcast-to-console")
-				&& (type == ActionNameType.WITHOUT || type == ActionNameType.TIME)) {
+	public final void logToConsole() {
+		if (ConfigConstants.isBcToConsole() && (type == ActionNameType.WITHOUT || type == ActionNameType.TIME)) {
 			Bukkit.getConsoleSender().sendMessage(text);
 		}
 	}
@@ -92,23 +93,37 @@ public final class Message implements ActionName {
 			return;
 		}
 
-		final FileConfiguration config = getPlugin().getConfig();
-
 		if (!Commands.ENABLED.getOrDefault(player.getUniqueId(), true)
-				|| (config.getBoolean("disable-messages-when-player-afk") && PluginUtils.isAfk(player))
-				|| config.getStringList("disabled-worlds").contains(player.getWorld().getName())
-				|| (getPlugin().getConf().isRestrictFileExists() && getPlugin().getConf().getRestrictConfig()
-						.getStringList("restricted-players").contains(player.getName()))
+				|| (ConfigConstants.isDisableMsgsInAfk() && PluginUtils.isAfk(player))
+				|| ConfigConstants.getDisabledWorlds().contains(player.getWorld().getName())
+				|| plugin.getConf().getRestrictConfig().getStringList("restricted-players").contains(player.getName())
 				|| !PluginUtils.hasPermission(player, Perm.SEEMSG.getPerm())) {
 			return;
 		}
 
 		String msg = text;
-
 		msg = Util.replaceVariables(player, msg);
 
+		if (msg.startsWith("center:")) {
+			msg = StringUtils.replace(msg, "center:", "");
+
+			int amount = 0;
+			if (msg.contains("_")) {
+				try {
+					amount = Integer.parseInt(msg.split("_")[0]);
+				} catch (NumberFormatException ex) {
+				}
+
+				msg = StringUtils.replace(msg, amount + "_", "");
+			}
+
+			if (amount > 0) {
+				msg = Global.centerText(msg, amount);
+			}
+		}
+
 		if (type != ActionNameType.JSON) {
-			msg = msg.replace("\\n", "\n");
+			msg = StringUtils.replace(msg, "\\n", "\n");
 		}
 
 		CleanedName cleaned = actionNameCleaner.clean(msg, type);
@@ -128,14 +143,18 @@ public final class Message implements ActionName {
 			msg = cleaned.<String>getResult();
 
 			if (msg.contains("json:")) {
-				msg = msg.replace("json:", "");
+				msg = StringUtils.replace(msg, "json:", "");
 
 				for (Player wp : player.getWorld().getPlayers()) {
-					sendJSON(wp, msg);
+					if (wp != player) {
+						sendJSON(wp, msg);
+					}
 				}
 			} else {
 				for (Player wp : player.getWorld().getPlayers()) {
-					wp.sendMessage(msg);
+					if (wp != player) {
+						wp.sendMessage(msg);
+					}
 				}
 			}
 
@@ -149,13 +168,12 @@ public final class Message implements ActionName {
 			Bukkit.getPlayer(playerName).sendMessage(msg = cleaned.<String>getResult());
 			break;
 		case GROUP:
-			if (!getPlugin().isPluginEnabled("Vault")) {
-				logConsole(Level.WARNING, "Vault plugin not found. Without the per-group messages not work.");
+			if (!plugin.isPluginEnabled("Vault")) {
 				return;
 			}
 
 			try {
-				for (String group : getPlugin().getVaultPerm().getPlayerGroups(player)) {
+				for (String group : plugin.getVaultPerm().getPlayerGroups(player)) {
 					if (cleaned.getSecondaryResult().equalsIgnoreCase(group)) {
 						player.sendMessage(msg = cleaned.<String>getResult());
 						break;
@@ -176,74 +194,42 @@ public final class Message implements ActionName {
 			break;
 		}
 
-		for (String cmd : config.getStringList("run-commands.commands")) {
-			if (!cmd.contains(":")) {
-				continue;
-			}
-
-			String[] arg = cmd.split(": ");
-			if (arg.length < 2) {
-				continue;
-			}
-
-			String t = Util.setPlaceholders(player, arg[1]);
-			if (arg[0].equalsIgnoreCase("console")) {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), t);
-			} else if (arg[0].equalsIgnoreCase("player")) {
-				player.performCommand(t);
-			}
-		}
-
-		if (config.getBoolean("sound.enable")) { // TODO remove this check
-			String type = config.getString("sound.type", "");
-			if (type.isEmpty()) {
-				return;
-			}
-
-			if (!type.contains(",")) {
-				Sound sound = null;
-				try {
-					sound = Sound.valueOf(type.toUpperCase());
-				} catch (IllegalArgumentException e) {
-					logConsole(Level.WARNING, "Sound by this name not found: " + type);
-					return;
+		if (!ConfigConstants.getExecutableCommands().isEmpty()) {
+			Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+				for (ExecutableCommands cmd : ConfigConstants.getExecutableCommands()) {
+					if (cmd.getType() == SenderType.CONSOLE) {
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+								Util.setPlaceholders(player, cmd.getCommand()));
+					} else if (cmd.getType() == SenderType.PLAYER) {
+						player.performCommand(Util.setPlaceholders(player, cmd.getCommand()));
+					}
 				}
 
-				player.playSound(player.getLocation(), sound, 1f, 1f);
-				return;
+				return true;
+			});
+		}
+
+		if (plugin.getConfig().getBoolean("sound.enable", true)) { // TODO remove this check
+			SoundProperties sound = ConfigConstants.getSoundProperties();
+			if (sound.getSound() != null) {
+				player.playSound(player.getLocation(), sound.getSound(), sound.getVolume(), sound.getPitch());
 			}
-
-			String[] split = type.split(", ");
-
-			Sound sound = null;
-			try {
-				sound = Sound.valueOf(split[0].toUpperCase());
-			} catch (IllegalArgumentException e) {
-				logConsole(Level.WARNING, "Sound by this name not found: " + split[0]);
-				return;
-			}
-
-			float volume = split.length > 1 ? Float.parseFloat(split[1]) : 1f;
-			float pitch = split.length > 2 ? Float.parseFloat(split[2]) : 1f;
-
-			player.playSound(player.getLocation(), sound, volume, pitch);
 		}
 	}
 
 	private void sendJSON(Player p, String msg) {
 		try {
-			if (getPlugin().isSpigot()) {
-				p.spigot().sendMessage(ComponentSerializer.parse(msg));
+			if (plugin.isSpigot() || plugin.isPaper()) {
+				plugin.getComplement().sendMessage(p, msg);
 			} else { // CraftBukkit
-				String ver = Bukkit.getServer().getClass().getPackage().getName().replace('.', ',').split(",")[3],
-						nms = "net.minecraft.server." + ver + ".", obc = "org.bukkit.craftbukkit." + ver + ".";
+				String version = ServerVersion.getArrayVersion()[3], nms = "net.minecraft.server." + version + ".";
 
 				Object parsedMessage = Class.forName(nms + "IChatBaseComponent$ChatSerializer")
 						.getMethod("a", String.class)
 						.invoke(null, org.bukkit.ChatColor.translateAlternateColorCodes('&', msg));
 
 				Object packetPlayOutChat;
-				if (ver.contains("16")) {
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
 					packetPlayOutChat = Class.forName(nms + "PacketPlayOutChat")
 							.getConstructor(Class.forName(nms + "IChatBaseComponent"), UUID.class)
 							.newInstance(parsedMessage, p.getUniqueId());
@@ -252,16 +238,15 @@ public final class Message implements ActionName {
 							.getConstructor(Class.forName(nms + "IChatBaseComponent")).newInstance(parsedMessage);
 				}
 
-				Object craftPlayer = Class.forName(obc + "entity.CraftPlayer").cast(p);
-				Object craftHandle = Class.forName(obc + "entity.CraftPlayer").getMethod("getHandle")
-						.invoke(craftPlayer);
+				Class<?> craftPlayer = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
+				Object craftHandle = craftPlayer.getMethod("getHandle").invoke(craftPlayer.cast(p));
 				Object playerConnection = Class.forName(nms + "EntityPlayer").getField("playerConnection")
 						.get(craftHandle);
 
 				Class.forName(nms + "PlayerConnection").getMethod("sendPacket", Class.forName(nms + "Packet"))
 						.invoke(playerConnection, packetPlayOutChat);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logConsole(Level.WARNING, "Invalid JSON format: " + msg);
 		}

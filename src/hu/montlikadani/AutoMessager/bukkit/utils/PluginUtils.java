@@ -12,12 +12,14 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PluginUtils {
 
+	private static final AutoMessager PLUGIN = JavaPlugin.getPlugin(AutoMessager.class);
+
 	public static boolean hasPermission(Player player, String perm) {
 		if (perm.isEmpty()) {
 			return false;
 		}
 
-		if (AutoMessager.getInstance().isPluginEnabled("PermissionsEx")) {
+		if (PLUGIN.isPluginEnabled("PermissionsEx")) {
 			try {
 				return PermissionsEx.getPermissionManager().has(player, perm);
 			} catch (Exception e) {
@@ -29,13 +31,13 @@ public class PluginUtils {
 	}
 
 	public static boolean isAfk(Player p) {
-		if (AutoMessager.getInstance().isPluginEnabled("Essentials")) {
+		if (PLUGIN.isPluginEnabled("Essentials")) {
 			return JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk();
 		}
 
-		if (AutoMessager.getInstance().isPluginEnabled("CMI")) {
+		if (PLUGIN.isPluginEnabled("CMI")) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p);
-			return user != null && user.isVanished();
+			return user != null && user.isAfk();
 		}
 
 		return false;

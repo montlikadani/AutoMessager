@@ -13,18 +13,17 @@ import org.bukkit.entity.Player;
 import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
 import hu.montlikadani.AutoMessager.bukkit.Perm;
 import hu.montlikadani.AutoMessager.bukkit.announce.message.Message;
+import hu.montlikadani.AutoMessager.bukkit.commands.CommandProcessor;
 import hu.montlikadani.AutoMessager.bukkit.commands.ICommand;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
 
+@CommandProcessor(name = "list", permission = Perm.LIST)
 public class list implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (!hasPerm(sender, Perm.LIST.getPerm())) {
-			sendMsg(sender, getMsgProperty("no-permission", "%perm%", Perm.LIST.getPerm()));
-			return false;
-		}
-
 		List<Message> texts = plugin.getFileHandler().getTexts();
+
 		if (texts.isEmpty()) {
 			sendMsg(sender, getMsgProperty("no-message-to-list"));
 			return false;
@@ -37,7 +36,7 @@ public class list implements ICommand {
 
 		Player p = (Player) sender;
 
-		int maxRow = plugin.getConf().getConfig().getInt("show-max-row-in-one-page");
+		int maxRow = ConfigConstants.getListMaxRow();
 		int size = texts.size();
 
 		if (args.length == 1) {

@@ -16,6 +16,7 @@ public final class AnnounceScheduler implements Runnable {
 
 	public void prepare() {
 		int size = announce.getMessageList().size();
+
 		if (announce.lastMessage != size) {
 			announce.lastMessage = size;
 		}
@@ -47,10 +48,9 @@ public final class AnnounceScheduler implements Runnable {
 			return r;
 		}
 
-		int nm = (announce.messageCounter + 1);
+		int nm = announce.messageCounter + 1;
 		if (nm >= announce.lastMessage) {
-			announce.messageCounter = 0;
-			return 0;
+			return announce.messageCounter = 0;
 		}
 
 		++announce.messageCounter;

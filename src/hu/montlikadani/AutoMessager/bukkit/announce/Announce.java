@@ -13,6 +13,7 @@ import hu.montlikadani.AutoMessager.bukkit.announce.AnnounceTime.TimeType;
 import hu.montlikadani.AutoMessager.bukkit.announce.message.Message;
 import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionName.ActionNameType;
 import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionNameCleaner.CleanedName;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
 import hu.montlikadani.AutoMessager.bukkit.utils.Util;
 
 public final class Announce extends IAnnounce {
@@ -26,7 +27,7 @@ public final class Announce extends IAnnounce {
 	private final List<Executor> schedulers = new ArrayList<>();
 
 	public Announce() {
-		announceTime = new AnnounceTime(getPlugin().getConf().timer);
+		announceTime = new AnnounceTime(ConfigConstants.getTime());
 		time = announceTime.countTimer();
 	}
 
@@ -38,7 +39,7 @@ public final class Announce extends IAnnounce {
 
 		cancelSchedulers();
 
-		if (!getPlugin().getConfig().getBoolean("enable-broadcast") || Bukkit.getOnlinePlayers().isEmpty()) {
+		if (!ConfigConstants.isBroadcastEnabled() || Bukkit.getOnlinePlayers().isEmpty()) {
 			return;
 		}
 
@@ -94,7 +95,7 @@ public final class Announce extends IAnnounce {
 			final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
 
 			if (announceTime.getTimeType() == TimeType.CUSTOM) {
-				if (time == 0L) {
+				if (time <= 0L) {
 					return;
 				}
 
@@ -125,7 +126,7 @@ public final class Announce extends IAnnounce {
 			return;
 		}
 
-		if (time == 0L) {
+		if (time <= 0L) {
 			return;
 		}
 
@@ -142,8 +143,8 @@ public final class Announce extends IAnnounce {
 
 	@Override
 	public boolean haveEnoughOnlinePlayers() {
-		int min = getPlugin().getConfig().getInt("min-players", 1);
-		return min > 0 && getPlugin().getServer().getOnlinePlayers().size() >= min;
+		int min = ConfigConstants.getMinPlayers();
+		return min > 0 && Bukkit.getServer().getOnlinePlayers().size() >= min;
 	}
 
 	@Override
@@ -155,8 +156,7 @@ public final class Announce extends IAnnounce {
 	@Override
 	public void reset() {
 		messageCounter = -1;
-		random = getPlugin().getConfig().getBoolean("random") && getMessageList().size() > 2;
-		lastMessage = getMessageList().size();
+		random = ConfigConstants.isRandom() && (lastMessage = getMessageList().size()) > 2;
 	}
 
 	@Override

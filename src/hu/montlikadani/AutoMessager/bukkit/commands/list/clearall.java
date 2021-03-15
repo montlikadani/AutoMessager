@@ -4,26 +4,25 @@ import static hu.montlikadani.AutoMessager.bukkit.utils.Util.getMsgProperty;
 import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
-import hu.montlikadani.AutoMessager.bukkit.MessageFileHandler;
 import hu.montlikadani.AutoMessager.bukkit.Perm;
+import hu.montlikadani.AutoMessager.bukkit.commands.CommandProcessor;
 import hu.montlikadani.AutoMessager.bukkit.commands.ICommand;
+import hu.montlikadani.AutoMessager.bukkit.config.MessageFileHandler;
 
+@CommandProcessor(name = "clearall", permission = Perm.CLEARALL)
 public class clearall implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (!hasPerm(sender, Perm.CLEARALL.getPerm())) {
-			sendMsg(sender, getMsgProperty("no-permission", "%perm%", Perm.CLEARALL.getPerm()));
-			return false;
-		}
-
 		MessageFileHandler handler = plugin.getFileHandler();
+
 		if (!handler.isFileExists() || handler.getTexts().isEmpty()) {
 			sendMsg(sender, getMsgProperty("no-messages-in-file"));
 			return false;
@@ -41,7 +40,7 @@ public class clearall implements ICommand {
 				writer.print("");
 				writer.close();
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import hu.montlikadani.AutoMessager.Global;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public class Announce {
 
@@ -13,7 +14,7 @@ public class Announce {
 	private ScheduledTask task;
 
 	private boolean random;
-	private int messageCounter, lastMessage, lastRandom;
+	private int messageCounter, lastRandom;
 
 	public Announce(AutoMessager plugin) {
 		this.plugin = plugin;
@@ -28,38 +29,24 @@ public class Announce {
 	}
 
 	public void load() {
-		// We need to start from -1, due to first line reading
-		messageCounter = -1;
-		random = false;
-
-		int cm = plugin.getMessageFileHandler().getTexts().size();
-		if (plugin.getConfig().getBoolean("random") && cm > 2) {
-			random = true;
-		}
-
-		lastMessage = cm;
+		messageCounter = -1; // We need to start from -1, due to first line reading
+		random = ConfigConstants.isRandom() && plugin.getMessageFileHandler().getTexts().size() > 2;
 	}
 
 	public void schedule() {
-		if (!plugin.getConfig().getBoolean("enable-broadcast") || task != null) {
+		if (!ConfigConstants.isEnableBroadcast() || task != null) {
 			return;
 		}
 
-		final int time = plugin.getConfig().getInt("time", 5);
-		final String timeSetup = plugin.getConfig().getString("time-setup", "minutes").toUpperCase();
+		final int time = ConfigConstants.getTime();
 
 		task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
 			if (!plugin.checkOnlinePlayers() || plugin.getMessageFileHandler().getTexts().isEmpty()) {
 				return;
 			}
 
-			int size = plugin.getMessageFileHandler().getTexts().size();
-			if (lastMessage != size) {
-				lastMessage = size;
-			}
-
 			prepare();
-		}, time, time, TimeUnit.valueOf(timeSetup));
+		}, time, time, TimeUnit.valueOf(ConfigConstants.getTimeSetup()));
 
 	}
 
@@ -72,29 +59,29 @@ public class Announce {
 
 	private void prepare() {
 		int nm = getNextMessage();
-		String message = plugin.getMessageFileHandler().getTexts().get(nm);
 
 		if (random) {
 			lastRandom = nm;
 		}
 
-		send(message);
+		send(plugin.getMessageFileHandler().getTexts().get(nm));
 	}
 
 	int getNextMessage() {
+		int size = plugin.getMessageFileHandler().getTexts().size();
+
 		if (random) {
-			int r = Global.getRandomInt(0, lastMessage - 1);
+			int r = Global.getRandomInt(0, size - 1);
 			while (r == lastRandom) {
-				r = Global.getRandomInt(0, lastMessage - 1);
+				r = Global.getRandomInt(0, size - 1);
 			}
 
 			return r;
 		}
 
-		int nm = (messageCounter + 1);
-		if (nm >= lastMessage) {
-			messageCounter = 0;
-			return 0;
+		int nm = messageCounter + 1;
+		if (nm >= size) {
+			return messageCounter = 0;
 		}
 
 		++messageCounter;
@@ -111,8 +98,7 @@ public class Announce {
 				continue;
 			}
 
-			String msg = message,
-					server = "",
+			String msg = message, server = "",
 					plServer = p.getServer() != null ? p.getServer().getInfo().getName() : "";
 
 			if (msg.startsWith("server:")) {
@@ -122,19 +108,43 @@ public class Announce {
 
 				server = split[0];
 				msg = split[1];
+			} else if (msg.startsWith("json:")) {
+				msg = msg.replace("json:", "");
+
+				if (!ConfigConstants.getDisabledServers().contains(plServer)) {
+					p.sendMessage(ComponentSerializer.parse(msg));
+				}
+
+				return;
 			}
 
 			msg = plugin.replaceVariables(msg, p);
 
-			if (server.isEmpty() && !plugin.getConfig().getStringList("disabled-servers").contains(plServer)) {
-				plugin.sendMessage(p, msg);
-			} else if ((server.equalsIgnoreCase(plServer)
-					&& !plugin.getConfig().getStringList("disabled-servers").contains(server))) {
+			if (msg.startsWith("center:")) {
+				msg = msg.replace("center:", "");
+
+				int amount = 0;
+				if (msg.contains("_")) {
+					try {
+						amount = Integer.parseInt(msg.split("_")[0]);
+					} catch (NumberFormatException ex) {
+					}
+
+					msg = msg.replace(amount + "_", "");
+				}
+
+				if (amount > 0) {
+					msg = Global.centerText(msg, amount);
+				}
+			}
+
+			if ((server.isEmpty() && !ConfigConstants.getDisabledServers().contains(plServer))
+					|| (server.equalsIgnoreCase(plServer) && !ConfigConstants.getDisabledServers().contains(server))) {
 				plugin.sendMessage(p, msg);
 			}
 		}
 
-		if (plugin.getConfig().getBoolean("broadcast-to-console")) {
+		if (ConfigConstants.isBroadcastToConsole()) {
 			plugin.sendMessage(plugin.getProxy().getConsole(), message);
 		}
 	}

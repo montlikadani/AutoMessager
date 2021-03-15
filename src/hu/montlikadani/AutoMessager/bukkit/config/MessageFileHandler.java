@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit;
+package hu.montlikadani.AutoMessager.bukkit.config;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,6 +16,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
 import hu.montlikadani.AutoMessager.bukkit.announce.message.Message;
 import hu.montlikadani.AutoMessager.bukkit.utils.Util;
 
@@ -54,13 +55,13 @@ public class MessageFileHandler {
 	}
 
 	public String getFileName() {
-		return isFileExists() ? file.getName() : plugin.getConf().getConfig().getString("message-file", "");
+		return isFileExists() ? file.getName() : ConfigConstants.getMessageFile();
 	}
 
 	public void loadFile() {
 		String msg = "";
 
-		String fName = plugin.getConf().getConfig().getString("message-file", "");
+		String fName = ConfigConstants.getMessageFile();
 		if (fName.trim().isEmpty()) {
 			msg = "The message-file string is empty or not found.";
 		} else if (fName.equals(plugin.getConf().getMessages().getName())) {
@@ -72,12 +73,10 @@ public class MessageFileHandler {
 		}
 
 		if (!msg.isEmpty()) {
-			fName = "messages.txt";
-			Util.logConsole(Level.WARNING, msg + " Defaulting to " + fName);
+			Util.logConsole(Level.WARNING, msg + " Defaulting to " + (fName = "messages.txt"));
 		}
 
-		file = new File(plugin.getFolder(), fName);
-		if (!file.exists()) {
+		if (!(file = new File(plugin.getFolder(), fName)).exists()) {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
@@ -93,13 +92,14 @@ public class MessageFileHandler {
 			loadFile();
 		}
 
-		String fileName = getFileName();
-		if (fileName.endsWith(".yml")) {
-			yaml = YamlConfiguration.loadConfiguration(file);
+		if (getFileName().endsWith(".yml")) {
+			yaml = new YamlConfiguration();
 
 			try {
 				yaml.load(file);
-			} catch (InvalidConfigurationException | IOException e1) {
+			} catch (InvalidConfigurationException e) {
+				Util.logConsole(e.getLocalizedMessage());
+			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 
@@ -125,7 +125,7 @@ public class MessageFileHandler {
 				while ((line = read.readLine()) != null) {
 					texts.add(new Message(line));
 				}
-			} catch (Exception e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -164,7 +164,7 @@ public class MessageFileHandler {
 				texts.stream().map(Message::getText).forEach(writer::println);
 				writer.close();
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

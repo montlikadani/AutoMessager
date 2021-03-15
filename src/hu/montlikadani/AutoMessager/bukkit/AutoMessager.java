@@ -21,39 +21,43 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import hu.montlikadani.AutoMessager.bukkit.announce.Announce;
 import hu.montlikadani.AutoMessager.bukkit.commands.Commands;
-import hu.montlikadani.AutoMessager.bukkit.utils.Metrics;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
+import hu.montlikadani.AutoMessager.bukkit.config.Configuration;
+import hu.montlikadani.AutoMessager.bukkit.config.MessageFileHandler;
+import hu.montlikadani.AutoMessager.bukkit.utils.ServerVersion;
 import hu.montlikadani.AutoMessager.bukkit.utils.UpdateDownloader;
+import hu.montlikadani.AutoMessager.bukkit.utils.stuff.Complement;
+import hu.montlikadani.AutoMessager.bukkit.utils.stuff.Complement1;
+import hu.montlikadani.AutoMessager.bukkit.utils.stuff.Complement2;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.milkbowl.vault.permission.Permission;
 
-public class AutoMessager extends JavaPlugin implements Listener {
-
-	private static AutoMessager instance;
+public final class AutoMessager extends JavaPlugin implements Listener {
 
 	private Configuration conf;
 	private Announce announce;
 	private MessageFileHandler fileHandler;
 	private Permission perm;
+	private Complement complement;
 
-	private boolean isSpigot = false;
+	private boolean isPaper = false, isSpigot = false;
 
 	@Override
 	public void onEnable() {
 		long load = System.currentTimeMillis();
 
-		instance = this;
-
 		try {
-			try {
-				Class.forName("org.spigotmc.SpigotConfig");
-				isSpigot = true;
-			} catch (ClassNotFoundException e) {
-				isSpigot = false;
+			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R1)) {
+				logConsole(Level.SEVERE,
+						"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!");
+				getServer().getPluginManager().disablePlugin(this);
+				return;
 			}
 
+			verifyServerSoftware();
 			startUp();
 
-			if (conf.papi && isPluginEnabled("PlaceholderAPI")) {
+			if (ConfigConstants.isPlaceholderapi() && isPluginEnabled("PlaceholderAPI")) {
 				logConsole("Hooked PlaceholderAPI version: "
 						+ PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
 			}
@@ -73,40 +77,24 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 			UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
 
-			Metrics metrics = new Metrics(this, 1594);
-			if (metrics.isEnabled()) {
-				metrics.addCustomChart(new Metrics.SimplePie("using_placeholderapi",
-						() -> getConfig().getString("placeholderapi")));
-				metrics.addCustomChart(
-						new Metrics.SimplePie("using_random_messages", () -> getConfig().getString("random")));
-				metrics.addCustomChart(new Metrics.SimplePie("message_delay", () -> getConfig().getString("time")));
-				metrics.addCustomChart(new Metrics.SimplePie("time_type",
-						() -> announce.getAnnounceTime().getTimeType().toString().toLowerCase()));
-				metrics.addCustomChart(new Metrics.SingleLineChart("amount_of_texts", fileHandler.getTexts()::size));
-			}
-
-			if (getConfig().getBoolean("logconsole")) {
-				String msg = "&6[&4Auto&9Messager&6]&7 >&a The plugin successfully enabled&6 v"
-						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
-				sendMsg(getServer().getConsoleSender(), colorMsg(msg));
+			if (ConfigConstants.isLogConsole()) {
+				sendMsg(getServer().getConsoleSender(), colorMsg("&6[&4Auto&9Messager&6]&7 >&a Enabled&6 v"
+						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)"));
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 			logConsole(Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/AutoMessager/issues",
-					false);
+					"There was an error. Please report it here:\nhttps://github.com/montlikadani/AutoMessager/issues");
 		}
 	}
 
 	@Override
 	public void onDisable() {
-		if (instance == null) return;
-
 		announce.cancelSchedulers();
 		saveToggledMessages();
 		conf.removeUnnededFiles();
+
 		getServer().getScheduler().cancelTasks(this);
-		instance = null;
 	}
 
 	@Override
@@ -114,11 +102,40 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		return conf.getConfig();
 	}
 
+	@Override
+	public void saveConfig() {
+	}
+
+	private void verifyServerSoftware() {
+		try {
+			Class.forName("org.spigotmc.SpigotConfig");
+			isSpigot = true;
+		} catch (ClassNotFoundException e) {
+			isSpigot = false;
+		}
+
+		try {
+			Class.forName("com.destroystokyo.paper.PaperConfig");
+			isPaper = true;
+		} catch (ClassNotFoundException e) {
+			isPaper = false;
+		}
+
+		boolean kyoriSupported = false;
+		try {
+			Class.forName("net.kyori.adventure.text.Component");
+			kyoriSupported = true;
+		} catch (ClassNotFoundException e) {
+		}
+
+		complement = (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) && kyoriSupported)
+				? new Complement2()
+				: new Complement1();
+	}
+
 	private void startUp() {
 		conf = new Configuration(this);
-		conf.loadFiles();
 		conf.loadConfigs();
-		conf.loadValues();
 
 		fileHandler = new MessageFileHandler(this);
 		fileHandler.loadMessages();
@@ -127,9 +144,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 	}
 
 	public void reload() {
-		conf.loadFiles();
 		conf.loadConfigs();
-		conf.loadValues();
 
 		if (fileHandler == null) {
 			fileHandler = new MessageFileHandler(this);
@@ -149,12 +164,11 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager()
 				.getRegistration(Permission.class);
-		perm = rsp == null ? null : rsp.getProvider();
-		return perm != null;
+		return rsp != null && (perm = rsp.getProvider()) != null;
 	}
 
 	private void loadToggledMessages() {
-		if (!getConfig().getBoolean("remember-toggle-to-file", true)) {
+		if (!ConfigConstants.isRememberToggleToFile()) {
 			return;
 		}
 
@@ -184,15 +198,12 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	private void saveToggledMessages() {
 		File f = new File(getFolder(), "toggledmessages.yml");
-		if (!getConfig().getBoolean("remember-toggle-to-file", true)) {
+
+		if (!ConfigConstants.isRememberToggleToFile() || Commands.ENABLED.isEmpty()) {
 			if (f.exists()) {
 				f.delete();
 			}
 
-			return;
-		}
-
-		if (Commands.ENABLED.isEmpty()) {
 			return;
 		}
 
@@ -225,10 +236,7 @@ public class AutoMessager extends JavaPlugin implements Listener {
 
 	public File getFolder() {
 		File folder = getDataFolder();
-		if (!folder.exists()) {
-			folder.mkdir();
-		}
-
+		folder.mkdirs();
 		return folder;
 	}
 
@@ -257,8 +265,12 @@ public class AutoMessager extends JavaPlugin implements Listener {
 		return isSpigot;
 	}
 
-	public static AutoMessager getInstance() {
-		return instance;
+	public boolean isPaper() {
+		return isPaper;
+	}
+
+	public Complement getComplement() {
+		return complement;
 	}
 
 	// To fix issue when Vault not found

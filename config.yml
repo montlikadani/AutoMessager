@@ -76,10 +76,8 @@ run-commands:
   #- "player: baltop"
   #- "console: kit tools %player%"
 
-# Sound playback when broadcasting.
-# All sounds:
+# Sound playback when broadcasting
 # 1.9+: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
-# 1.8.x: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
 sound:
   # Example: 1.9+: ENTITY_EXPERIENCE_ORB_PICKUP; 1.8: ORB_PICKUP
   # Usage: SOUND_NAME, volume, pitch

@@ -1,17 +1,15 @@
 package hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType;
 
-import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionName.ActionNameType;
-
-public class ActionNameCleaner {
+public final class ActionNameCleaner {
 
 	private final CleanedName empty = new CleanedName("", "");
 
-	public CleanedName clean(String name, ActionNameType type) {
-		if (name == null || type == ActionNameType.WITHOUT) {
+	public CleanedName clean(String name, ActionName.ActionNameType type) {
+		if (name == null || type == ActionName.ActionNameType.WITHOUT) {
 			return empty;
 		}
 
-		if (type == ActionNameType.TIME && name.startsWith("[time:")) {
+		if (type == ActionName.ActionNameType.TIME && name.startsWith("[time:")) {
 			String customTime = name.split("]")[0].replace("[time:", "");
 			if (!customTime.contains(":")) {
 				return empty;
@@ -24,7 +22,7 @@ public class ActionNameCleaner {
 
 			return new CleanedName(name, times,
 					name.replace("[time:" + times[0] + ":" + times[1] + ":" + times[2] + "]", ""));
-		} else if (type == ActionNameType.JSON) {
+		} else if (type == ActionName.ActionNameType.JSON) {
 			return new CleanedName(name, name.replace("json:", ""));
 		}
 

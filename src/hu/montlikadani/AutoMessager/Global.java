@@ -4,7 +4,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+
 public class Global {
+
+	private static final Pattern PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
 
 	public static int getRandomInt(int min, int max) {
 		if (min > max) {
@@ -15,23 +19,44 @@ public class Global {
 	}
 
 	public static String matchColorRegex(String s) {
-		String regex = "&?#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})";
-		Matcher matcher = Pattern.compile(regex).matcher(s);
+		Matcher matcher = PATTERN.matcher(s);
 		while (matcher.find()) {
 			String group = matcher.group(0);
-			String group2 = matcher.group(1);
 
 			try {
-				s = s.replace(group, net.md_5.bungee.api.ChatColor.of("#" + group2) + "");
+				s = StringUtils.replace(s, group, net.md_5.bungee.api.ChatColor.of(group) + "");
 			} catch (Exception e) {
-				System.out.println("[AutoMessager] Bad hex color: " + group);
+				System.out.println("[AutoMessager] Invalid hex color " + e.getLocalizedMessage());
 			}
 		}
 
 		return s;
 	}
 
+	public static String centerText(String str, int size) {
+		if (size <= str.length()) {
+			return str;
+		}
+
+		StringBuilder sb = new StringBuilder(size);
+		for (int i = 0; i < size; i++) {
+			sb.append(' ');
+		}
+
+		sb.append(str);
+
+		while (sb.length() < size) {
+			sb.append(' ');
+		}
+
+		return sb.toString();
+	}
+
 	public static String setSymbols(String s) {
+		if (s.indexOf('<') < 0) {
+			return s;
+		}
+
 		s = s.replace("<0>", "•");
 		s = s.replace("<1>", "➤");
 		s = s.replace("<2>", "™");

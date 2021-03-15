@@ -10,10 +10,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
+
 import hu.montlikadani.AutoMessager.Global;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -25,8 +26,6 @@ public class AutoMessager extends Plugin {
 
 	private final Set<UUID> players = new HashSet<>();
 
-	private static AutoMessager instance;
-
 	private Configuration config;
 	private Announce announce;
 	private MessageFileHandler messageFileHandler;
@@ -35,29 +34,21 @@ public class AutoMessager extends Plugin {
 
 	@Override
 	public void onEnable() {
-		instance = this;
 		loadConfig();
 
-		messageFileHandler = new MessageFileHandler(this);
-		messageFileHandler.loadFile();
+		(messageFileHandler = new MessageFileHandler(this)).loadFile();
 		messageFileHandler.loadMessages();
 
 		registerCommand();
 
-		announce = new Announce(this);
-		announce.load();
+		(announce = new Announce(this)).load();
 		announce.schedule();
 	}
 
 	@Override
 	public void onDisable() {
-		if (instance == null) {
-			return;
-		}
-
 		announce.cancelTask();
 		getProxy().getPluginManager().unregisterCommands(this);
-		instance = null;
 	}
 
 	private void loadConfig() {
@@ -69,12 +60,13 @@ public class AutoMessager extends Plugin {
 
 			File file = new File(folder, "bungeeconfig.yml");
 			if (!file.exists()) {
-				InputStream in = getResourceAsStream("bungeeconfig.yml");
-				Files.copy(in, file.toPath());
-				in.close();
+				try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {
+					Files.copy(in, file.toPath());
+				}
 			}
 
 			config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+			ConfigConstants.load(config);
 
 			if (!config.get("config-version").equals(cver)) {
 				getLogger().log(Level.WARNING, "Found outdated configuration (bungeeconfig.yml)! (Your version: "
@@ -110,7 +102,7 @@ public class AutoMessager extends Plugin {
 					if (announce != null) {
 						announce.cancelTask();
 					} else {
-						announce = new Announce(instance);
+						announce = new Announce((AutoMessager) getProxy().getPluginManager().getPlugin("AutoMessager"));
 					}
 
 					announce.load();
@@ -201,7 +193,7 @@ public class AutoMessager extends Plugin {
 
 					StringBuilder builder = new StringBuilder();
 					for (int i = 1; i < args.length; i++) {
-						builder.append(args[i] + " ");
+						builder.append(args[i] + (i + 1 < args.length ? " " : ""));
 					}
 
 					String msg = builder.toString();
@@ -245,42 +237,19 @@ public class AutoMessager extends Plugin {
 
 	@SuppressWarnings("deprecation")
 	public String replaceVariables(String str, ProxiedPlayer p) {
-		int online = p.getServer().getInfo().getPlayers().size();
-
 		Runtime r = Runtime.getRuntime();
 		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
 				mram = Long.valueOf(r.maxMemory() / 1048576L),
 				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
 
-		if (config.contains("custom-variables")) {
-			for (String custom : config.getSection("custom-variables").getKeys()) {
-				if (str.contains(custom)) {
-					str = str.replace(custom, config.getString("custom-variables." + custom));
-				}
+		for (java.util.Map.Entry<String, String> map : ConfigConstants.CUSTOM_VARIABLES.entrySet()) {
+			if (str.indexOf(map.getKey()) >= 0) {
+				str = StringUtils.replace(str, map.getKey(), map.getValue());
 			}
 		}
 
-		String t = "", dt = "";
-		if (str.contains("%server-time%") || str.contains("%date%")) {
-			String tPath = "placeholder-format.time.";
-			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
-					? DateTimeFormatter.ofPattern(config.getString(tPath + "time-format.format"))
-					: null;
-
-			DateTimeFormatter form2 = !config.getString(tPath + "date-format.format", "").isEmpty()
-					? DateTimeFormatter.ofPattern(config.getString(tPath + "date-format.format"))
-					: null;
-
-			TimeZone zone = config.getBoolean(tPath + "use-system-zone", false)
-					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-					: TimeZone.getTimeZone(config.getString(tPath + "time-zone", "GMT0"));
-			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
-
-			Calendar cal = Calendar.getInstance();
-
-			t = form != null ? now.format(form) : cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE);
-			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
-		}
+		String time = str.indexOf("%server-time%") >= 0 ? getTimeAsString(ConfigConstants.getTimeFormat()) : "";
+		String date = str.indexOf("%date%") >= 0 ? getTimeAsString(ConfigConstants.getDateFormat()) : "";
 
 		// Old
 		String path = "placeholder-format.time.";
@@ -293,17 +262,23 @@ public class AutoMessager extends Plugin {
 		}
 
 		str = Global.setSymbols(str);
-		if (!t.isEmpty())
-			str = str.replace("%server-time%", t);
 
-		if (!dt.isEmpty())
-			str = str.replace("%date%", dt);
+		if (!time.isEmpty())
+			str = str.replace("%server-time%", time);
 
-		if (str.contains("%server%"))
-			str = str.replace("%server%", p.getServer().getInfo().getName());
+		if (!date.isEmpty())
+			str = str.replace("%date%", date);
 
-		if (str.contains("%server-online%"))
-			str = str.replace("%server-online%", Integer.toString(online));
+		if (p.getServer() != null) {
+			if (str.contains("%server%"))
+				str = str.replace("%server%", p.getServer().getInfo().getName());
+
+			if (str.contains("%server-online%"))
+				str = str.replace("%server-online%", Integer.toString(p.getServer().getInfo().getPlayers().size()));
+
+			if (str.contains("%bungee-motd%"))
+				str = str.replace("%bungee-motd%", p.getServer().getInfo().getMotd());
+		}
 
 		if (str.contains("%max-players%"))
 			str = str.replace("%max-players%", Integer
@@ -352,9 +327,6 @@ public class AutoMessager extends Plugin {
 		if (str.contains("%bungee-online%"))
 			str = str.replace("%bungee-online%", Integer.toString(getProxy().getOnlineCount()));
 
-		if (str.contains("%bungee-motd%"))
-			str = str.replace("%bungee-motd%", p.getServer().getInfo().getMotd());
-
 		if (str.contains("%player-country%"))
 			str = str.replace("%player-country%", p.getLocale() == null ? "unknown" : p.getLocale().getCountry());
 
@@ -362,19 +334,27 @@ public class AutoMessager extends Plugin {
 		return colorMsg(str);
 	}
 
-	public boolean checkOnlinePlayers() {
-		int min = config.getInt("min-players", 1);
-		if (min < 1) {
-			return false;
+	private String getTimeAsString(String pattern) {
+		if (pattern.isEmpty()) {
+			return pattern;
 		}
 
-		int online = getProxy().getPlayers().size();
-		return online >= min;
+		TimeZone zone = ConfigConstants.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+				: TimeZone.getTimeZone(ConfigConstants.getTimeZone());
+		LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
+
+		return now.format(DateTimeFormatter.ofPattern(pattern));
 	}
 
+	public boolean checkOnlinePlayers() {
+		int min = ConfigConstants.getMinPlayers();
+		return min > 0 && getProxy().getPlayers().size() >= min;
+	}
+
+	@SuppressWarnings("deprecation")
 	void sendMessage(CommandSender s, String msg) {
 		if (msg != null && !msg.trim().isEmpty()) {
-			s.sendMessage(new ComponentBuilder(colorMsg(msg)).create());
+			s.sendMessage(colorMsg(msg));
 		}
 	}
 
@@ -400,9 +380,5 @@ public class AutoMessager extends Plugin {
 
 	public Set<UUID> getToggledPlayers() {
 		return players;
-	}
-
-	public AutoMessager getInstance() {
-		return instance;
 	}
 }

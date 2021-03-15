@@ -14,23 +14,23 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import com.google.common.reflect.TypeToken;
+
 import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
 import hu.montlikadani.AutoMessager.bukkit.Perm;
+import hu.montlikadani.AutoMessager.bukkit.commands.CommandProcessor;
 import hu.montlikadani.AutoMessager.bukkit.commands.ICommand;
 
+@CommandProcessor(name = "restricted", permission = Perm.RESTRICTEDPLAYERS)
 public class restricted implements ICommand {
 
 	private enum Actions {
 		ADD, REMOVE, LIST;
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (!hasPerm(sender, Perm.RESTRICTEDPLAYERS.getPerm())) {
-			sendMsg(sender, getMsgProperty("no-permission", "%perm%", Perm.RESTRICTEDPLAYERS.getPerm()));
-			return false;
-		}
-
 		if (args.length < 2) {
 			if (sender instanceof Player) {
 				((Player) sender).performCommand("am help 3");
@@ -40,8 +40,6 @@ public class restricted implements ICommand {
 
 			return false;
 		}
-
-		plugin.getConf().createRestrictedFile();
 
 		final FileConfiguration file = plugin.getConf().getRestrictConfig();
 		final List<String> restricted = file.getStringList("restricted-players");
@@ -128,7 +126,7 @@ public class restricted implements ICommand {
 				msg += fpl;
 			}
 
-			for (String bp : plugin.getConf().getMessages().getStringList("restricted.list")) {
+			for (String bp : getMsgProperty(new TypeToken<List<String>>() {}.getSubtype(List.class), "restricted.list")) {
 				sendMsg(sender, colorMsg(bp.replace("%players%", msg)));
 			}
 
@@ -139,6 +137,7 @@ public class restricted implements ICommand {
 
 		if (fileChanged) {
 			file.set("restricted-players", restricted);
+
 			try {
 				file.save(plugin.getConf().getRestrictFile());
 			} catch (IOException e) {

@@ -2,7 +2,7 @@ package hu.montlikadani.AutoMessager.bukkit.announce;
 
 import java.util.concurrent.TimeUnit;
 
-import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
 
 public class AnnounceTime {
 
@@ -27,9 +27,11 @@ public class AnnounceTime {
 	}
 
 	public long countTimer() {
-		timeType = TimeType.getType(AutoMessager.getInstance().getConfig().getString("time-setup", ""));
+		if (time.isEmpty()) {
+			return 0L;
+		}
 
-		if (timeType == TimeType.CUSTOM) {
+		if ((timeType = TimeType.getType(ConfigConstants.getTimeSetup())) == TimeType.CUSTOM) {
 			if (!time.contains(":")) {
 				return 0L;
 			}

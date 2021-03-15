@@ -7,43 +7,38 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.reflect.TypeToken;
 
 import hu.montlikadani.AutoMessager.Global;
 import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
-import hu.montlikadani.AutoMessager.bukkit.Configuration;
+import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
+import hu.montlikadani.AutoMessager.bukkit.config.Configuration;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Util {
+
+	private static final AutoMessager PLUGIN = JavaPlugin.getPlugin(AutoMessager.class);
 
 	public static void logConsole(String error) {
 		logConsole(Level.INFO, error);
 	}
 
-	public static void logConsole(String error, boolean loaded) {
-		logConsole(Level.INFO, error, loaded);
-	}
-
-	public static void logConsole(Level level, String error) {
-		logConsole(level, error, true);
-	}
-
-	public static void logConsole(Level level, String error, boolean loaded) {
-		if ((!loaded || AutoMessager.getInstance().getConfig().getBoolean("logconsole")) && error != null
-				&& !error.trim().isEmpty()) {
-			Bukkit.getLogger().log(level == null ? Level.INFO : level, "[AutoMessager] " + error);
+	public static void logConsole(Level level, String msg) {
+		if (ConfigConstants.isLogConsole() && msg != null && !msg.trim().isEmpty()) {
+			Bukkit.getLogger().log(level == null ? Level.INFO : level, "[AutoMessager] " + msg);
 		}
 	}
 
@@ -52,7 +47,7 @@ public class Util {
 			return "";
 		}
 
-		if (msg.contains("#") && !msg.contains("json:") && Bukkit.getVersion().contains("1.16")) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && !msg.contains("json:") && msg.contains("#")) {
 			msg = Global.matchColorRegex(msg);
 		}
 
@@ -65,17 +60,13 @@ public class Util {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getMsgProperty(TypeToken<T> type, String key, Object... placeholders) {
-		if (key == null || key.trim().isEmpty()) {
+		if (key == null || key.isEmpty()) {
 			return (T) "null";
 		}
 
-		final Configuration conf = AutoMessager.getInstance().getConf();
+		final Configuration conf = PLUGIN.getConf();
 
 		if (type.getRawType().isAssignableFrom(String.class)) {
-			if (!conf.getMessagesFile().exists()) {
-				return (T) "FILENF";
-			}
-
 			String msg = "";
 
 			if (!conf.getMessages().contains(key)) {
@@ -95,7 +86,7 @@ public class Util {
 
 			for (int i = 0; i < placeholders.length; i++) {
 				if (placeholders.length >= i + 2) {
-					msg = msg.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+					msg = StringUtils.replace(msg, String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
 				}
 
 				i++;
@@ -105,10 +96,6 @@ public class Util {
 		}
 
 		if (type.getRawType().isAssignableFrom(List.class)) {
-			if (!conf.getMessagesFile().exists()) {
-				return (T) new ArrayList<>();
-			}
-
 			List<String> list = new ArrayList<>();
 
 			for (String one : conf.getMessages().getStringList(key)) {
@@ -116,7 +103,7 @@ public class Util {
 
 				for (int i = 0; i < placeholders.length; i++) {
 					if (placeholders.length >= i + 2) {
-						one = one.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+						one = StringUtils.replace(one, String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
 					}
 
 					i++;
@@ -144,120 +131,121 @@ public class Util {
 	}
 
 	public static String replaceVariables(Player pl, String str) {
-		FileConfiguration config = AutoMessager.getInstance().getConfig();
-
-		if (config.contains("custom-variables")) {
-			for (String custom : config.getConfigurationSection("custom-variables").getKeys(true)) {
-				if (str.contains(custom)) {
-					str = str.replace(custom, config.getString("custom-variables." + custom));
-				}
+		for (java.util.Map.Entry<String, String> map : ConfigConstants.CUSTOM_VARIABLES.entrySet()) {
+			if (str.indexOf(map.getKey()) >= 0) {
+				str = StringUtils.replace(str, map.getKey(), map.getValue());
 			}
 		}
 
-		String t = "", dt = "", path = "placeholder-format.";
-		if (str.contains("%server-time%") || str.contains("%date%")) {
-			String tPath = path + "time.";
-			DateTimeFormatter form = !config.getString(tPath + "time-format.format", "").isEmpty()
-					? DateTimeFormatter.ofPattern(config.getString(tPath + "time-format.format"))
-					: null;
+		String time = str.indexOf("%server-time%") >= 0 ? getTimeAsString(ConfigConstants.getTimeFormat()) : "";
+		String date = str.indexOf("%date%") >= 0 ? getTimeAsString(ConfigConstants.getDateFormat()) : "";
 
-			DateTimeFormatter form2 = !config.getString(tPath + "date-format.format", "").isEmpty()
-					? DateTimeFormatter.ofPattern(config.getString(tPath + "date-format.format"))
-					: null;
-
-			TimeZone zone = config.getBoolean(tPath + "use-system-zone", false)
-					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-					: TimeZone.getTimeZone(config.getString(tPath + "time-zone", "GMT0"));
-			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
-
-			Calendar cal = Calendar.getInstance();
-
-			t = form != null ? now.format(form) : cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE);
-			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
-		}
-
+		String path = "placeholder-format.";
+		FileConfiguration config = PLUGIN.getConfig();
 		// Old
 		if (!config.getString(path + "title", "").isEmpty()) {
-			str = str.replace("%title%", config.getString(path + "title").replace("\\n", "\n"));
+			str = StringUtils.replace(str, "%title%", config.getString(path + "title").replace("\\n", "\n"));
 		}
 		if (!config.getString(path + "suffix", "").isEmpty()) {
-			str = str.replace("%suffix%", config.getString(path + "suffix").replace("\\n", "\n"));
+			str = StringUtils.replace(str, "%suffix%", config.getString(path + "suffix").replace("\\n", "\n"));
 		}
 
 		str = setPlaceholders(pl, str);
 		str = Global.setSymbols(str);
-		if (!t.isEmpty())
-			str = str.replace("%server-time%", t);
 
-		if (!dt.isEmpty())
-			str = str.replace("%date%", dt);
+		if (!time.isEmpty())
+			str = StringUtils.replace(str, "%server-time%", time);
+
+		if (!date.isEmpty())
+			str = StringUtils.replace(str, "%date%", date);
 
 		if (str.contains("%online-players%"))
-			str = str.replace("%online-players%", Integer.toString(Bukkit.getOnlinePlayers().size()));
+			str = StringUtils.replace(str, "%online-players%", Integer.toString(Bukkit.getOnlinePlayers().size()));
 
 		if (str.contains("%max-players%"))
-			str = str.replace("%max-players%", Integer.toString(Bukkit.getMaxPlayers()));
+			str = StringUtils.replace(str, "%max-players%", Integer.toString(Bukkit.getMaxPlayers()));
 
 		if (str.contains("%servertype%"))
-			str = str.replace("%servertype%", Bukkit.getServer().getName());
+			str = StringUtils.replace(str, "%servertype%", Bukkit.getServer().getName());
 
 		if (str.contains("%mc-version%"))
-			str = str.replace("%mc-version%", Bukkit.getBukkitVersion());
+			str = StringUtils.replace(str, "%mc-version%", Bukkit.getBukkitVersion());
 
 		if (str.contains("%motd%"))
-			str = str.replace("%motd%", Bukkit.getServer().getMotd());
+			str = StringUtils.replace(str, "%motd%", PLUGIN.getComplement().getMotd());
 
 		return colorMsg(str);
 	}
 
 	@SuppressWarnings("deprecation")
 	public static String setPlaceholders(Player p, String s) {
-		if (AutoMessager.getInstance().getConf().papi && AutoMessager.getInstance().isPluginEnabled("PlaceholderAPI")) {
+		if (ConfigConstants.isPlaceholderapi() && PLUGIN.isPluginEnabled("PlaceholderAPI")) {
 			s = PlaceholderAPI.setPlaceholders(p, s);
 		}
 
 		if (s.contains("%player%"))
-			s = s.replace("%player%", p.getName());
+			s = StringUtils.replace(s, "%player%", p.getName());
 
 		if (s.contains("%player-displayname%"))
-			s = s.replace("%player-displayname%", p.getDisplayName());
+			s = StringUtils.replace(s, "%player-displayname%", PLUGIN.getComplement().getDisplayName(p));
 
 		if (s.contains("%player-uuid%"))
-			s = s.replace("%player-uuid%", p.getUniqueId().toString());
+			s = StringUtils.replace(s, "%player-uuid%", p.getUniqueId().toString());
 
 		if (s.contains("%world%"))
-			s = s.replace("%world%", p.getWorld().getName());
+			s = StringUtils.replace(s, "%world%", p.getWorld().getName());
 
 		if (s.contains("%player-gamemode%"))
-			s = s.replace("%player-gamemode%", p.getGameMode().name());
+			s = StringUtils.replace(s, "%player-gamemode%", p.getGameMode().name());
 
 		if (s.contains("%max-players%"))
-			s = s.replace("%max-players%", Integer.toString(Bukkit.getServer().getMaxPlayers()));
+			s = StringUtils.replace(s, "%max-players%", Integer.toString(Bukkit.getServer().getMaxPlayers()));
 
 		if (s.contains("%online-players%"))
-			s = s.replace("%online-players%", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
+			s = StringUtils.replace(s, "%online-players%",
+					Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
 
 		if (s.contains("%player-health%"))
-			s = s.replace("%player-health%", String.valueOf(p.getHealth()));
+			s = StringUtils.replace(s, "%player-health%", String.valueOf(p.getHealth()));
 
 		if (s.contains("%player-max-health%"))
-			s = s.replace("%player-max-health%", String.valueOf(Bukkit.getVersion().contains("1.8") ? p.getMaxHealth()
-					: p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
+			s = StringUtils.replace(s, "%player-max-health%",
+					String.valueOf(ServerVersion.isCurrentLower(ServerVersion.v1_9_R1) ? p.getMaxHealth()
+							: p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
 
 		return s;
 	}
 
+	private static String getTimeAsString(String pattern) {
+		if (pattern.isEmpty()) {
+			return pattern;
+		}
+
+		TimeZone zone = ConfigConstants.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+				: TimeZone.getTimeZone(ConfigConstants.getTimeZone());
+		LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
+
+		return now.format(DateTimeFormatter.ofPattern(pattern));
+	}
+
 	public static long calcNextDelay(int hour, int minute, int second) {
-		LocalDateTime localNow = LocalDateTime.now();
-		ZonedDateTime zonedNow = ZonedDateTime.of(localNow, ZoneId.systemDefault());
+		ZonedDateTime zonedNow = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
 		ZonedDateTime zonedNextTarget = zonedNow.withHour(hour).withMinute(minute).withSecond(second);
-		if (zonedNow.compareTo(zonedNextTarget) > 0)
+
+		if (zonedNow.compareTo(zonedNextTarget) > 0) {
 			zonedNextTarget = zonedNextTarget.plusDays(1);
+		}
 
 		return Duration.between(zonedNow, zonedNextTarget).getSeconds();
 	}
 
+	private static int jVersion = -1;
+
 	public static int getCurrentVersion() {
+		if (jVersion != -1) {
+			return jVersion;
+		}
+
 		String currentVersion = System.getProperty("java.version");
 		if (currentVersion.contains("_")) {
 			currentVersion = currentVersion.split("_")[0];
@@ -267,7 +255,7 @@ public class Util {
 
 		for (int i = 8; i <= 18; i++) {
 			if (currentVersion.contains(Integer.toString(i))) {
-				return i;
+				return jVersion = i;
 			}
 		}
 

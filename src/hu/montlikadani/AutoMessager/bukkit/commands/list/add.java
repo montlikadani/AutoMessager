@@ -10,17 +10,14 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
 import hu.montlikadani.AutoMessager.bukkit.Perm;
+import hu.montlikadani.AutoMessager.bukkit.commands.CommandProcessor;
 import hu.montlikadani.AutoMessager.bukkit.commands.ICommand;
 
+@CommandProcessor(name = "add", permission = Perm.ADD)
 public class add implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (!hasPerm(sender, Perm.ADD.getPerm())) {
-			sendMsg(sender, getMsgProperty("no-permission", "%perm%", Perm.ADD.getPerm()));
-			return false;
-		}
-
 		if (args.length < 2) {
 			if (sender instanceof Player) {
 				((Player) sender).performCommand("am help 2");
@@ -34,7 +31,7 @@ public class add implements ICommand {
 
 		StringBuilder builder = new StringBuilder();
 		for (int i = 1; i < args.length; i++) {
-			builder.append(args[i] + " ");
+			builder.append(args[i] + (i + 1 < args.length ? " " : ""));
 		}
 
 		String msg = builder.toString();
