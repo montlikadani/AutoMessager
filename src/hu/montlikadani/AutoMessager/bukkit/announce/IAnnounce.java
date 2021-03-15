@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.announce;
+package hu.montlikadani.automessager.bukkit.announce;
 
 import java.util.List;
 import java.util.concurrent.Executor;

@@ -1,11 +1,11 @@
-package hu.montlikadani.AutoMessager.bukkit.announce;
+package hu.montlikadani.automessager.bukkit.announce;
 
 import java.util.List;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.Message;
+import hu.montlikadani.automessager.bukkit.AutoMessager;
+import hu.montlikadani.automessager.bukkit.announce.message.Message;
 
 public interface BaseAnnounce {
 

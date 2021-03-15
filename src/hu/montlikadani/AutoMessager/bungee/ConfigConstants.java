@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bungee;
+package hu.montlikadani.automessager.bungee;
 
 import java.util.HashMap;
 import java.util.List;

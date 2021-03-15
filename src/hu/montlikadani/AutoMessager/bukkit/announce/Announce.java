@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.announce;
+package hu.montlikadani.automessager.bukkit.announce;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,12 +9,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 
-import hu.montlikadani.AutoMessager.bukkit.announce.AnnounceTime.TimeType;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.Message;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionName.ActionNameType;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionNameCleaner.CleanedName;
-import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
-import hu.montlikadani.AutoMessager.bukkit.utils.Util;
+import hu.montlikadani.automessager.bukkit.announce.AnnounceTime.TimeType;
+import hu.montlikadani.automessager.bukkit.announce.message.Message;
+import hu.montlikadani.automessager.bukkit.announce.message.actionNameType.ActionName.ActionNameType;
+import hu.montlikadani.automessager.bukkit.announce.message.actionNameType.ActionNameCleaner.CleanedName;
+import hu.montlikadani.automessager.bukkit.config.ConfigConstants;
+import hu.montlikadani.automessager.bukkit.utils.Util;
 
 public final class Announce extends IAnnounce {
 

@@ -1,10 +1,10 @@
-package hu.montlikadani.AutoMessager.bukkit.announce;
+package hu.montlikadani.automessager.bukkit.announce;
 
 import org.bukkit.Bukkit;
 
-import hu.montlikadani.AutoMessager.Global;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.Message;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionName.ActionNameType;
+import hu.montlikadani.automessager.Global;
+import hu.montlikadani.automessager.bukkit.announce.message.Message;
+import hu.montlikadani.automessager.bukkit.announce.message.actionNameType.ActionName.ActionNameType;
 
 public final class AnnounceScheduler implements Runnable {
 

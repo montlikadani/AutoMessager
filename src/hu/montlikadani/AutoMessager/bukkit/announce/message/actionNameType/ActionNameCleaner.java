@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType;
+package hu.montlikadani.automessager.bukkit.announce.message.actionNameType;
 
 public final class ActionNameCleaner {
 

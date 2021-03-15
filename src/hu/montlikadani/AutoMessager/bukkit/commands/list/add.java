@@ -1,17 +1,17 @@
-package hu.montlikadani.AutoMessager.bukkit.commands.list;
+package hu.montlikadani.automessager.bukkit.commands.list;
 
-import static hu.montlikadani.AutoMessager.bukkit.utils.Util.getMsgProperty;
-import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
+import static hu.montlikadani.automessager.bukkit.utils.Util.getMsgProperty;
+import static hu.montlikadani.automessager.bukkit.utils.Util.sendMsg;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
-import hu.montlikadani.AutoMessager.bukkit.Perm;
-import hu.montlikadani.AutoMessager.bukkit.commands.CommandProcessor;
-import hu.montlikadani.AutoMessager.bukkit.commands.ICommand;
+import hu.montlikadani.automessager.bukkit.AutoMessager;
+import hu.montlikadani.automessager.bukkit.Perm;
+import hu.montlikadani.automessager.bukkit.commands.CommandProcessor;
+import hu.montlikadani.automessager.bukkit.commands.ICommand;
 
 @CommandProcessor(name = "add", permission = Perm.ADD)
 public class add implements ICommand {

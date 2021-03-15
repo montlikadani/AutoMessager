@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit;
+package hu.montlikadani.automessager.bukkit;
 
 public enum Perm {
 	HELP,

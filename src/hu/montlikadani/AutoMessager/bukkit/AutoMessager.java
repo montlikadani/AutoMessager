@@ -1,8 +1,8 @@
-package hu.montlikadani.AutoMessager.bukkit;
+package hu.montlikadani.automessager.bukkit;
 
-import static hu.montlikadani.AutoMessager.bukkit.utils.Util.colorMsg;
-import static hu.montlikadani.AutoMessager.bukkit.utils.Util.logConsole;
-import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
+import static hu.montlikadani.automessager.bukkit.utils.Util.colorMsg;
+import static hu.montlikadani.automessager.bukkit.utils.Util.logConsole;
+import static hu.montlikadani.automessager.bukkit.utils.Util.sendMsg;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,16 +19,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.AutoMessager.bukkit.announce.Announce;
-import hu.montlikadani.AutoMessager.bukkit.commands.Commands;
-import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
-import hu.montlikadani.AutoMessager.bukkit.config.Configuration;
-import hu.montlikadani.AutoMessager.bukkit.config.MessageFileHandler;
-import hu.montlikadani.AutoMessager.bukkit.utils.ServerVersion;
-import hu.montlikadani.AutoMessager.bukkit.utils.UpdateDownloader;
-import hu.montlikadani.AutoMessager.bukkit.utils.stuff.Complement;
-import hu.montlikadani.AutoMessager.bukkit.utils.stuff.Complement1;
-import hu.montlikadani.AutoMessager.bukkit.utils.stuff.Complement2;
+import hu.montlikadani.automessager.bukkit.announce.Announce;
+import hu.montlikadani.automessager.bukkit.commands.Commands;
+import hu.montlikadani.automessager.bukkit.config.ConfigConstants;
+import hu.montlikadani.automessager.bukkit.config.Configuration;
+import hu.montlikadani.automessager.bukkit.config.MessageFileHandler;
+import hu.montlikadani.automessager.bukkit.utils.ServerVersion;
+import hu.montlikadani.automessager.bukkit.utils.UpdateDownloader;
+import hu.montlikadani.automessager.bukkit.utils.stuff.Complement;
+import hu.montlikadani.automessager.bukkit.utils.stuff.Complement1;
+import hu.montlikadani.automessager.bukkit.utils.stuff.Complement2;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.milkbowl.vault.permission.Permission;
 

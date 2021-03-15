@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.config;
+package hu.montlikadani.automessager.bukkit.config;
 
 import java.util.HashMap;
 import java.util.HashSet;

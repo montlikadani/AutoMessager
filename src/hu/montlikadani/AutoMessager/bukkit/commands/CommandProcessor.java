@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.commands;
+package hu.montlikadani.automessager.bukkit.commands;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
@@ -17,6 +17,6 @@ public @interface CommandProcessor {
 	/**
 	 * @return the permission of this command
 	 */
-	hu.montlikadani.AutoMessager.bukkit.Perm permission();
+	hu.montlikadani.automessager.bukkit.Perm permission();
 
 }

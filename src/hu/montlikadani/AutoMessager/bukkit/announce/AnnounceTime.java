@@ -1,8 +1,8 @@
-package hu.montlikadani.AutoMessager.bukkit.announce;
+package hu.montlikadani.automessager.bukkit.announce;
 
 import java.util.concurrent.TimeUnit;
 
-import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
+import hu.montlikadani.automessager.bukkit.config.ConfigConstants;
 
 public class AnnounceTime {
 

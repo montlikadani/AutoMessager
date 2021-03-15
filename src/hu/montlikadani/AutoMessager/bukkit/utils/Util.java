@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.utils;
+package hu.montlikadani.automessager.bukkit.utils;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -22,10 +22,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.reflect.TypeToken;
 
-import hu.montlikadani.AutoMessager.Global;
-import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
-import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
-import hu.montlikadani.AutoMessager.bukkit.config.Configuration;
+import hu.montlikadani.automessager.Global;
+import hu.montlikadani.automessager.bukkit.AutoMessager;
+import hu.montlikadani.automessager.bukkit.config.ConfigConstants;
+import hu.montlikadani.automessager.bukkit.config.Configuration;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Util {

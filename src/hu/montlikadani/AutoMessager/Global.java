@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager;
+package hu.montlikadani.automessager;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;

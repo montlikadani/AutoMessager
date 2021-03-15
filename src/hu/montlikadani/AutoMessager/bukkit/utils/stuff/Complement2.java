@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.utils.stuff;
+package hu.montlikadani.automessager.bukkit.utils.stuff;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

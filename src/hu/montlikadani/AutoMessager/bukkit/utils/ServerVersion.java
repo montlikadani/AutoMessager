@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.utils;
+package hu.montlikadani.automessager.bukkit.utils;
 
 public enum ServerVersion {
 	v1_8_R1,

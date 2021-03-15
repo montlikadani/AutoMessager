@@ -1,7 +1,7 @@
-package hu.montlikadani.AutoMessager.bukkit.commands;
+package hu.montlikadani.automessager.bukkit.commands;
 
-import static hu.montlikadani.AutoMessager.bukkit.utils.Util.colorMsg;
-import static hu.montlikadani.AutoMessager.bukkit.utils.Util.sendMsg;
+import static hu.montlikadani.automessager.bukkit.utils.Util.colorMsg;
+import static hu.montlikadani.automessager.bukkit.utils.Util.sendMsg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +20,9 @@ import org.bukkit.entity.Player;
 
 import com.google.common.reflect.TypeToken;
 
-import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
-import hu.montlikadani.AutoMessager.bukkit.Perm;
-import hu.montlikadani.AutoMessager.bukkit.utils.Util;
+import hu.montlikadani.automessager.bukkit.AutoMessager;
+import hu.montlikadani.automessager.bukkit.Perm;
+import hu.montlikadani.automessager.bukkit.utils.Util;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
@@ -40,7 +40,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 				Class<?> c = null;
 				try {
 					c = AutoMessager.class.getClassLoader()
-							.loadClass("hu.montlikadani.AutoMessager.bukkit.commands.list." + s);
+							.loadClass("hu.montlikadani.automessager.bukkit.commands.list." + s);
 				} catch (ClassNotFoundException e) {
 				}
 

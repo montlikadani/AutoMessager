@@ -1,17 +1,6 @@
-package hu.montlikadani.AutoMessager.bukkit.announce.message;
+package hu.montlikadani.automessager.bukkit.announce.message;
 
-import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionNameCleaner;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionNameCleaner.CleanedName;
-import hu.montlikadani.AutoMessager.bukkit.commands.Commands;
-import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants;
-import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants.ExecutableCommands;
-import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants.ExecutableCommands.SenderType;
-import hu.montlikadani.AutoMessager.bukkit.config.ConfigConstants.SoundProperties;
-import hu.montlikadani.AutoMessager.bukkit.utils.PluginUtils;
-import hu.montlikadani.AutoMessager.bukkit.utils.ServerVersion;
-import hu.montlikadani.AutoMessager.bukkit.utils.Util;
-
-import static hu.montlikadani.AutoMessager.bukkit.utils.Util.logConsole;
+import static hu.montlikadani.automessager.bukkit.utils.Util.logConsole;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -21,10 +10,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.AutoMessager.Global;
-import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
-import hu.montlikadani.AutoMessager.bukkit.Perm;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType.ActionName;
+import hu.montlikadani.automessager.Global;
+import hu.montlikadani.automessager.bukkit.AutoMessager;
+import hu.montlikadani.automessager.bukkit.Perm;
+import hu.montlikadani.automessager.bukkit.announce.message.actionNameType.ActionName;
+import hu.montlikadani.automessager.bukkit.announce.message.actionNameType.ActionNameCleaner;
+import hu.montlikadani.automessager.bukkit.announce.message.actionNameType.ActionNameCleaner.CleanedName;
+import hu.montlikadani.automessager.bukkit.commands.Commands;
+import hu.montlikadani.automessager.bukkit.config.ConfigConstants;
+import hu.montlikadani.automessager.bukkit.config.ConfigConstants.ExecutableCommands;
+import hu.montlikadani.automessager.bukkit.config.ConfigConstants.SoundProperties;
+import hu.montlikadani.automessager.bukkit.config.ConfigConstants.ExecutableCommands.SenderType;
+import hu.montlikadani.automessager.bukkit.utils.PluginUtils;
+import hu.montlikadani.automessager.bukkit.utils.ServerVersion;
+import hu.montlikadani.automessager.bukkit.utils.Util;
 
 public final class Message implements ActionName {
 

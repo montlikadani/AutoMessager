@@ -1,8 +1,8 @@
-package hu.montlikadani.AutoMessager.bungee;
+package hu.montlikadani.automessager.bungee;
 
 import java.util.concurrent.TimeUnit;
 
-import hu.montlikadani.AutoMessager.Global;
+import hu.montlikadani.automessager.Global;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.chat.ComponentSerializer;

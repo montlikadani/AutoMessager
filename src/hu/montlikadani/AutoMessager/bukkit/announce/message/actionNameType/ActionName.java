@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.announce.message.actionNameType;
+package hu.montlikadani.automessager.bukkit.announce.message.actionNameType;
 
 import org.bukkit.entity.Player;
 

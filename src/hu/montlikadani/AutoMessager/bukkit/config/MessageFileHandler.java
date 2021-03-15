@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bukkit.config;
+package hu.montlikadani.automessager.bukkit.config;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,9 +16,9 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import hu.montlikadani.AutoMessager.bukkit.AutoMessager;
-import hu.montlikadani.AutoMessager.bukkit.announce.message.Message;
-import hu.montlikadani.AutoMessager.bukkit.utils.Util;
+import hu.montlikadani.automessager.bukkit.AutoMessager;
+import hu.montlikadani.automessager.bukkit.announce.message.Message;
+import hu.montlikadani.automessager.bukkit.utils.Util;
 
 public class MessageFileHandler {
 

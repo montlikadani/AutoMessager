@@ -1,4 +1,4 @@
-package hu.montlikadani.AutoMessager.bungee;
+package hu.montlikadani.automessager.bungee;
 
 import java.io.File;
 import java.io.InputStream;
@@ -12,7 +12,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
 
-import hu.montlikadani.AutoMessager.Global;
+import hu.montlikadani.automessager.Global;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

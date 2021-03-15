@@ -1,7 +1,5 @@
 # AutoMessager [![GitHub release](https://img.shields.io/github/release/montlikadani/AutoMessager.svg)](https://github.com/montlikadani/AutoMessager/releases) [![Github All Releases](https://img.shields.io/github/downloads/montlikadani/AutoMessager/total.svg)](https://github.com/montlikadani/AutoMessager/releases) [![GitHub issues](https://img.shields.io/github/issues/montlikadani/AutoMessager.svg)](https://github.com/montlikadani/AutoMessager/issues)
 
-[![bStats](https://img.shields.io/badge/bStats-1.8-brightgreen)](https://bstats.org/plugin/bukkit/AutoMessager)
-
 ***
 
 A fully configurable plugin that allows to send messages to separate servers or worlds or other.
