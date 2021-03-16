@@ -87,16 +87,16 @@ public final class Message implements ActionName {
 	}
 
 	@Override
-	public void sendTo(Player player) {
+	public void sendTo(Player player, boolean ignoreConditions) {
 		if (text.isEmpty()) {
 			return;
 		}
 
-		if (!Commands.ENABLED.getOrDefault(player.getUniqueId(), true)
+		if (!ignoreConditions && (!Commands.ENABLED.getOrDefault(player.getUniqueId(), true)
 				|| (ConfigConstants.isDisableMsgsInAfk() && PluginUtils.isAfk(player))
 				|| ConfigConstants.getDisabledWorlds().contains(player.getWorld().getName())
 				|| plugin.getConf().getRestrictConfig().getStringList("restricted-players").contains(player.getName())
-				|| !PluginUtils.hasPermission(player, Perm.SEEMSG.getPerm())) {
+				|| !PluginUtils.hasPermission(player, Perm.SEEMSG.getPerm()))) {
 			return;
 		}
 
@@ -106,7 +106,7 @@ public final class Message implements ActionName {
 		if (msg.startsWith("center:")) {
 			msg = StringUtils.replace(msg, "center:", "");
 
-			int amount = 0;
+			int amount = 15; // Default value
 			if (msg.contains("_")) {
 				try {
 					amount = Integer.parseInt(msg.split("_")[0]);
@@ -191,6 +191,10 @@ public final class Message implements ActionName {
 		default:
 			player.sendMessage(msg);
 			break;
+		}
+
+		if (ignoreConditions) {
+			return;
 		}
 
 		if (!ConfigConstants.getExecutableCommands().isEmpty()) {

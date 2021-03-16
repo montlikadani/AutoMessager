@@ -10,6 +10,7 @@ public enum Perm {
 	REMOVE,
 	CLEARALL,
 	RESTRICTEDPLAYERS,
+	FORCESEND,
 	;
 
 	private String perm;

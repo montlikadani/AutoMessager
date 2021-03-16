@@ -35,7 +35,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 	public Commands(AutoMessager plugin) {
 		this.plugin = plugin;
 
-		for (String s : Arrays.asList("help", "reload", "toggle", "list", "add", "remove", "clearall", "restricted")) {
+		for (String s : Arrays.asList("help", "reload", "toggle", "list", "add", "remove", "clearall", "restricted",
+				"forcesend")) {
 			try {
 				Class<?> c = null;
 				try {
@@ -88,6 +89,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 			CommandProcessor proc = command.getClass().getAnnotation(CommandProcessor.class);
 			if (proc != null && proc.name().equalsIgnoreCase(args[0])) {
 				found = true;
+
+				if (proc.playerOnly() && !(sender instanceof Player)) {
+					sendMsg(sender, "&cThis command can only be performed by player.");
+					return false;
+				}
 
 				if (sender instanceof Player && !sender.hasPermission(proc.permission().getPerm())) {
 					sendMsg(sender, Util.getMsgProperty("no-permission", "%perm%", proc.permission().getPerm()));

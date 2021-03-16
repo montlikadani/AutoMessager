@@ -20,7 +20,7 @@ public class add implements ICommand {
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length < 2) {
 			if (sender instanceof Player) {
-				((Player) sender).performCommand("am help 2");
+				((Player) sender).performCommand("am help");
 			} else {
 				Bukkit.dispatchCommand(sender, "am help");
 			}

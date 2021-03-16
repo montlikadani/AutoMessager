@@ -70,7 +70,7 @@ public final class Announce extends IAnnounce {
 				}
 
 				if (haveEnoughOnlinePlayers()) {
-					Bukkit.getOnlinePlayers().forEach(msg::sendTo);
+					Bukkit.getOnlinePlayers().forEach(player -> msg.sendTo(player, false));
 					msg.logToConsole();
 				}
 			}, Util.calcNextDelay(hour, minutes, seconds), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);

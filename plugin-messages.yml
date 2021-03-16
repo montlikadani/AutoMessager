@@ -46,3 +46,4 @@ chat-messages:
 - "&7/%command% restricted add <playerName>&6 - Adds a player to the list to not receive any auto-messages."
 - "&7/%command% restricted remove <playerName>&6 - Removes the player from the list."
 - "&7/%command% restricted list&6 - List the added players that is in the restricted list."
+- "&7/%command% forcesend <index>&6 - Force sends a message by list index."

@@ -19,4 +19,11 @@ public @interface CommandProcessor {
 	 */
 	hu.montlikadani.automessager.bukkit.Perm permission();
 
+	/**
+	 * whenever this command should only be performed with player
+	 * 
+	 * @return <code>false</code> by default
+	 */
+	boolean playerOnly() default false;
+
 }

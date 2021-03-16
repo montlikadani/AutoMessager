@@ -3,7 +3,6 @@ package hu.montlikadani.automessager.bukkit.commands.list;
 import static hu.montlikadani.automessager.bukkit.utils.Util.getMsgProperty;
 import static hu.montlikadani.automessager.bukkit.utils.Util.sendMsg;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,18 +12,13 @@ import hu.montlikadani.automessager.bukkit.Perm;
 import hu.montlikadani.automessager.bukkit.commands.CommandProcessor;
 import hu.montlikadani.automessager.bukkit.commands.ICommand;
 
-@CommandProcessor(name = "remove", permission = Perm.REMOVE)
-public class remove implements ICommand {
+@CommandProcessor(name = "forcesend", permission = Perm.FORCESEND, playerOnly = true)
+public class forcesend implements ICommand {
 
 	@Override
 	public boolean run(AutoMessager plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length < 2) {
-			if (sender instanceof Player) {
-				((Player) sender).performCommand("am help");
-			} else {
-				Bukkit.dispatchCommand(sender, "am help");
-			}
-
+			((Player) sender).performCommand("am help");
 			return false;
 		}
 
@@ -44,8 +38,7 @@ public class remove implements ICommand {
 			return false;
 		}
 
-		plugin.getFileHandler().removeText(index);
-		sendMsg(sender, getMsgProperty("text-removed", "%index%", index));
+		plugin.getFileHandler().getTexts().get(index).sendTo(((Player) sender), true);
 		return true;
 	}
 }

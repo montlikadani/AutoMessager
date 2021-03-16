@@ -10,7 +10,7 @@ public interface ActionName {
 
 	void setType(ActionNameType type);
 
-	void sendTo(Player player);
+	void sendTo(Player player, boolean ignoreConditions);
 
 	ActionNameCleaner getCleaner();
 

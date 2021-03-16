@@ -34,7 +34,7 @@ public final class AnnounceScheduler implements Runnable {
 			announce.lastRandom = next;
 		}
 
-		Bukkit.getOnlinePlayers().forEach(message::sendTo);
+		Bukkit.getOnlinePlayers().forEach(player -> message.sendTo(player, false));
 		message.logToConsole();
 	}
 

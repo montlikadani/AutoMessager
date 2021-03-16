@@ -71,7 +71,7 @@ public final class ConfigConstants {
 		private SenderType type = SenderType.CONSOLE;
 
 		ExecutableCommands(String command) {
-			String[] arg = command.contains(":") ? command.split(": ") : new String[] { "console", command };
+			String[] arg = command.contains(": ") ? command.split(": ", 2) : new String[] { "console", command };
 			if (arg.length < 2) {
 				return;
 			}
@@ -88,7 +88,7 @@ public final class ConfigConstants {
 				type = SenderType.PLAYER;
 			}
 
-			this.command = command;
+			this.command = line;
 		}
 
 		public String getCommand() {
@@ -124,7 +124,7 @@ public final class ConfigConstants {
 				return;
 			}
 
-			String[] split = soundType.split(", ");
+			String[] split = soundType.split(", ", 3);
 
 			try {
 				sound = Sound.valueOf(split[0].toUpperCase());

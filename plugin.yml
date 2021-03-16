@@ -1,5 +1,5 @@
 name: AutoMessager
-main: hu.montlikadani.AutoMessager.bukkit.AutoMessager
+main: hu.montlikadani.automessager.bukkit.AutoMessager
 version: 3.0
 author: montlikadani
 description: Automatic messages always come in handy! :)
@@ -26,6 +26,7 @@ permissions:
        automessager.restrictedplayers: true
        automessager.reload: true
        automessager.help: true
+       automessager.forcesend: true
   automessager.seemsg:
     description: Allows you to see the messages broadcasted by AutoMessager.
     default: true
@@ -46,6 +47,9 @@ permissions:
     default: false
   automessager.restrictedplayers:
     description: Allows the player to use the /am restricted command.
+    default: false
+  automessager.forcesend:
+    description: Allows the player to use the /am forcesend command.
     default: false
   automessager.help:
     description: Help commands for AutoMessager.
