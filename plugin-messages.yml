@@ -12,7 +12,7 @@ toggle:
   enabled: "&aYou have enabled now the auto messages!"
   disabled: "&cYou have disabled now the auto messages!"
   no-player: "&cThere is no player available on the server."
-  player-not-found: "&cThis player&7 %player%&c not found!"
+  player-not-found: "&cThis player&7 %target%&c not found!"
 
 list:
   page-must-be-number: "&cThe page must be a number!"
