@@ -66,7 +66,7 @@ public class restricted implements ICommand {
 		case ADD:
 			if (args.length < 3) {
 				if (sender instanceof Player) {
-					((Player) sender).performCommand("am help 3");
+					((Player) sender).performCommand("am help");
 				} else {
 					Bukkit.dispatchCommand(sender, "am help");
 				}
@@ -92,7 +92,7 @@ public class restricted implements ICommand {
 		case REMOVE:
 			if (args.length < 3) {
 				if (sender instanceof Player) {
-					((Player) sender).performCommand("am help 3");
+					((Player) sender).performCommand("am help");
 				} else {
 					Bukkit.dispatchCommand(sender, "am help");
 				}

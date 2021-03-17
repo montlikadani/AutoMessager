@@ -36,7 +36,7 @@ public class AnnounceTime {
 				return 0L;
 			}
 
-			String[] split = time.split(":");
+			String[] split = time.split(":", 3);
 			if (split.length == 0) {
 				return 0L;
 			}

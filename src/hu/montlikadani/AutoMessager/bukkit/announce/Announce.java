@@ -83,7 +83,7 @@ public final class Announce extends IAnnounce {
 				return;
 			}
 
-			final String[] times = announceTime.getTime().split(":");
+			final String[] times = announceTime.getTime().split(":", 3);
 			if (times.length != 3) {
 				return;
 			}

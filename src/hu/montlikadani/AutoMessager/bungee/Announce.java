@@ -104,7 +104,7 @@ public class Announce {
 			if (msg.startsWith("server:")) {
 				msg = msg.replace("server:", "");
 
-				String[] split = msg.split("_");
+				String[] split = msg.split("_", 2);
 
 				server = split[0];
 				msg = split[1];
@@ -118,15 +118,13 @@ public class Announce {
 				return;
 			}
 
-			msg = plugin.replaceVariables(msg, p);
-
 			if (msg.startsWith("center:")) {
 				msg = msg.replace("center:", "");
 
 				int amount = 0;
 				if (msg.contains("_")) {
 					try {
-						amount = Integer.parseInt(msg.split("_")[0]);
+						amount = Integer.parseInt(msg.split("_", 2)[0]);
 					} catch (NumberFormatException ex) {
 					}
 
@@ -137,6 +135,8 @@ public class Announce {
 					msg = Global.centerText(msg, amount);
 				}
 			}
+
+			msg = plugin.replaceVariables(msg, p);
 
 			if ((server.isEmpty() && !ConfigConstants.getDisabledServers().contains(plServer))
 					|| (server.equalsIgnoreCase(plServer) && !ConfigConstants.getDisabledServers().contains(server))) {

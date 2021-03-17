@@ -15,14 +15,14 @@ public final class AnnounceScheduler implements Runnable {
 	}
 
 	public void prepare() {
-		int size = announce.getMessageList().size();
+		java.util.List<Message> list = announce.getMessageList();
 
-		if (announce.lastMessage != size) {
-			announce.lastMessage = size;
+		if (announce.lastMessage != list.size()) {
+			announce.lastMessage = list.size();
 		}
 
 		int next = getNextMessage();
-		Message message = announce.getMessageList().get(next);
+		Message message = list.get(next);
 
 		// skip time variable
 		if (message.getType() == ActionNameType.TIME) {

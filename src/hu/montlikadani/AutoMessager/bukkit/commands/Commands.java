@@ -91,7 +91,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 				found = true;
 
 				if (proc.playerOnly() && !(sender instanceof Player)) {
-					sendMsg(sender, "&cThis command can only be performed by player.");
+					sendMsg(sender, colorMsg("&cThis command can only be performed by player."));
 					return false;
 				}
 

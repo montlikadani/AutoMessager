@@ -10,6 +10,10 @@ remember-toggle-to-file: true
 # Used for the /am list command.
 show-max-row-in-one-page: 4
 
+# Allows the player to receive messages only if the player have
+# "automessager.seemsg" permission.
+use-permission: false
+
 # In what worlds do NOT send a message?
 disabled-worlds:
 #- hubs
@@ -97,4 +101,4 @@ download-updates: false
 logconsole: true
 
 # DO NOT CHANGE THIS!
-config-version: 6
+config-version: 7

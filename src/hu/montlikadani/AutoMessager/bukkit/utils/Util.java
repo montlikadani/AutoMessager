@@ -159,12 +159,6 @@ public class Util {
 		if (!date.isEmpty())
 			str = StringUtils.replace(str, "%date%", date);
 
-		if (str.contains("%online-players%"))
-			str = StringUtils.replace(str, "%online-players%", Integer.toString(Bukkit.getOnlinePlayers().size()));
-
-		if (str.contains("%max-players%"))
-			str = StringUtils.replace(str, "%max-players%", Integer.toString(Bukkit.getMaxPlayers()));
-
 		if (str.contains("%servertype%"))
 			str = StringUtils.replace(str, "%servertype%", Bukkit.getServer().getName());
 
@@ -206,7 +200,7 @@ public class Util {
 					Integer.toString(Bukkit.getServer().getOnlinePlayers().size()));
 
 		if (s.contains("%player-health%"))
-			s = StringUtils.replace(s, "%player-health%", String.valueOf(p.getHealth()));
+			s = StringUtils.replace(s, "%player-health%", Double.toString(p.getHealth()));
 
 		if (s.contains("%player-max-health%"))
 			s = StringUtils.replace(s, "%player-max-health%",
@@ -248,7 +242,7 @@ public class Util {
 
 		String currentVersion = System.getProperty("java.version");
 		if (currentVersion.contains("_")) {
-			currentVersion = currentVersion.split("_")[0];
+			currentVersion = currentVersion.split("_", 2)[0];
 		}
 
 		currentVersion = currentVersion.replaceAll("[^\\d]|_", "");

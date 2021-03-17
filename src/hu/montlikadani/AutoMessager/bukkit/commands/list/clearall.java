@@ -3,7 +3,6 @@ package hu.montlikadani.automessager.bukkit.commands.list;
 import static hu.montlikadani.automessager.bukkit.utils.Util.getMsgProperty;
 import static hu.montlikadani.automessager.bukkit.utils.Util.sendMsg;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -31,12 +30,11 @@ public class clearall implements ICommand {
 		handler.getTexts().clear();
 
 		try {
-			File file = handler.getFile();
 			if (handler.isYaml()) {
 				handler.getFileConfig().set("messages", null);
-				handler.getFileConfig().save(file);
+				handler.getFileConfig().save(handler.getFile());
 			} else {
-				PrintWriter writer = new PrintWriter(file);
+				PrintWriter writer = new PrintWriter(handler.getFile());
 				writer.print("");
 				writer.close();
 			}

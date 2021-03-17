@@ -13,10 +13,7 @@ import java.util.logging.Level;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import hu.montlikadani.automessager.bukkit.announce.Announce;
@@ -29,7 +26,6 @@ import hu.montlikadani.automessager.bukkit.utils.UpdateDownloader;
 import hu.montlikadani.automessager.bukkit.utils.stuff.Complement;
 import hu.montlikadani.automessager.bukkit.utils.stuff.Complement1;
 import hu.montlikadani.automessager.bukkit.utils.stuff.Complement2;
-import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.milkbowl.vault.permission.Permission;
 
 public final class AutoMessager extends JavaPlugin implements Listener {
@@ -59,7 +55,7 @@ public final class AutoMessager extends JavaPlugin implements Listener {
 
 			if (ConfigConstants.isPlaceholderapi() && isPluginEnabled("PlaceholderAPI")) {
 				logConsole("Hooked PlaceholderAPI version: "
-						+ PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
+						+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
 			}
 
 			setupVaultPerm();
@@ -70,7 +66,7 @@ public final class AutoMessager extends JavaPlugin implements Listener {
 				cmd.setTabCompleter(cmds);
 			});
 
-			getServer().getPluginManager().registerEvents(new Listeners(), this);
+			getServer().getPluginManager().registerEvents(new Listeners(this), this);
 
 			loadToggledMessages();
 			announce.beginScheduling();
@@ -271,20 +267,5 @@ public final class AutoMessager extends JavaPlugin implements Listener {
 
 	public Complement getComplement() {
 		return complement;
-	}
-
-	// To fix issue when Vault not found
-	private class Listeners implements Listener {
-
-		@EventHandler
-		public void onPlJoin(PlayerJoinEvent event) {
-			Player p = event.getPlayer();
-
-			announce.beginScheduling();
-
-			if (p.isOp()) {
-				UpdateDownloader.checkFromGithub(p);
-			}
-		}
 	}
 }

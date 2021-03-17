@@ -18,7 +18,7 @@ public class Configuration {
 	private FileConfiguration config, messages, restricted;
 	private File configFile, messagesFile, restrictedFile;
 
-	private int cver = 6;
+	private int cver = 7;
 
 	public Configuration(AutoMessager plugin) {
 		this.plugin = plugin;

@@ -7,7 +7,10 @@ import java.net.SocketAddress;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +27,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 public class AutoMessager extends Plugin {
 
-	private final Set<UUID> players = new HashSet<>();
+	private final Set<UUID> players = new java.util.HashSet<>();
 
 	private Configuration config;
 	private Announce announce;
@@ -54,9 +57,7 @@ public class AutoMessager extends Plugin {
 	private void loadConfig() {
 		try {
 			File folder = getDataFolder();
-			if (!folder.exists()) {
-				folder.mkdir();
-			}
+			folder.mkdirs();
 
 			File file = new File(folder, "bungeeconfig.yml");
 			if (!file.exists()) {
@@ -132,10 +133,11 @@ public class AutoMessager extends Plugin {
 							}
 
 							for (ProxiedPlayer pl : getProxy().getPlayers()) {
-								if (!players.contains(pl.getUniqueId())) {
-									players.add(pl.getUniqueId());
+								UUID uuid = pl.getUniqueId();
+								if (!players.contains(uuid)) {
+									players.add(uuid);
 								} else {
-									players.remove(pl.getUniqueId());
+									players.remove(uuid);
 								}
 							}
 
@@ -148,24 +150,25 @@ public class AutoMessager extends Plugin {
 							return;
 						}
 
-						if (!players.contains(target.getUniqueId())) {
-							players.add(target.getUniqueId());
+						UUID uuid = target.getUniqueId();
+						if (!players.contains(uuid)) {
+							players.add(uuid);
 							sendMessage(s, config.getString("messages.toggle.disabled"));
 						} else {
-							players.remove(target.getUniqueId());
+							players.remove(uuid);
 							sendMessage(s, config.getString("messages.toggle.enabled"));
 						}
 
 						return;
 					}
 
-					ProxiedPlayer player = (ProxiedPlayer) s;
-					if (!players.contains(player.getUniqueId())) {
-						players.add(player.getUniqueId());
-						sendMessage(player, config.getString("messages.toggle.disabled"));
+					UUID uuid = ((ProxiedPlayer) s).getUniqueId();
+					if (!players.contains(uuid)) {
+						players.add(uuid);
+						sendMessage(s, config.getString("messages.toggle.disabled"));
 					} else {
-						players.remove(player.getUniqueId());
-						sendMessage(player, config.getString("messages.toggle.enabled"));
+						players.remove(uuid);
+						sendMessage(s, config.getString("messages.toggle.enabled"));
 					}
 				} else if (args[0].equalsIgnoreCase("list")) {
 					if (s instanceof ProxiedPlayer && !s.hasPermission("automessager.list")) {

@@ -96,32 +96,32 @@ public final class Message implements ActionName {
 				|| (ConfigConstants.isDisableMsgsInAfk() && PluginUtils.isAfk(player))
 				|| ConfigConstants.getDisabledWorlds().contains(player.getWorld().getName())
 				|| plugin.getConf().getRestrictConfig().getStringList("restricted-players").contains(player.getName())
-				|| !PluginUtils.hasPermission(player, Perm.SEEMSG.getPerm()))) {
+				|| (ConfigConstants.isUsePermission() && !PluginUtils.hasPermission(player, Perm.SEEMSG.getPerm())))) {
 			return;
 		}
 
 		String msg = text;
 		msg = Util.replaceVariables(player, msg);
 
-		if (msg.startsWith("center:")) {
-			msg = StringUtils.replace(msg, "center:", "");
+		if (type != ActionNameType.JSON) {
+			if (msg.startsWith("center:")) {
+				msg = StringUtils.replace(msg, "center:", "");
 
-			int amount = 15; // Default value
-			if (msg.contains("_")) {
-				try {
-					amount = Integer.parseInt(msg.split("_")[0]);
-				} catch (NumberFormatException ex) {
+				int amount = 15; // Default value
+				if (msg.contains("_")) {
+					try {
+						amount = Integer.parseInt(msg.split("_", 2)[0]);
+					} catch (NumberFormatException ex) {
+					}
+
+					msg = StringUtils.replace(msg, amount + "_", "");
 				}
 
-				msg = StringUtils.replace(msg, amount + "_", "");
+				if (amount > 0) {
+					msg = Global.centerText(msg, amount);
+				}
 			}
 
-			if (amount > 0) {
-				msg = Global.centerText(msg, amount);
-			}
-		}
-
-		if (type != ActionNameType.JSON) {
 			msg = StringUtils.replace(msg, "\\n", "\n");
 		}
 
@@ -141,17 +141,24 @@ public final class Message implements ActionName {
 
 			msg = cleaned.<String>getResult();
 
+			java.util.List<Player> list = player.getWorld().getPlayers();
 			if (msg.contains("json:")) {
 				msg = StringUtils.replace(msg, "json:", "");
 
-				for (Player wp : player.getWorld().getPlayers()) {
-					if (wp != player) {
-						sendJSON(wp, msg);
+				if (list.size() == 1) {
+					player.sendMessage(msg);
+				} else {
+					for (Player wp : list) {
+						if (wp != player) {
+							sendJSON(wp, msg);
+						}
 					}
 				}
+			} else if (list.size() == 1) { // Send the world message to the first player
+				player.sendMessage(msg);
 			} else {
-				for (Player wp : player.getWorld().getPlayers()) {
-					if (wp != player) {
+				for (Player wp : list) {
+					if (wp != player) { // If this condition not exist, it will send two messages at once
 						wp.sendMessage(msg);
 					}
 				}

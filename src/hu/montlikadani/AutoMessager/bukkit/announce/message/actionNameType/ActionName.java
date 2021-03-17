@@ -17,26 +17,10 @@ public interface ActionName {
 	public enum ActionNameType {
 		TIME, WORLD, JSON, PLAYER, GROUP, PERMISSION, WITHOUT;
 
-		private String typeName = toString().toLowerCase();
+		private String typeName = super.toString().toLowerCase();
 
-		ActionNameType() {
-		}
-
-		ActionNameType(String typeName) {
-			this.typeName = typeName;
-		}
-
-		public static ActionNameType getType(String name) {
-			for (ActionNameType t : ActionNameType.values()) {
-				if (t.name().equalsIgnoreCase(name) || t.typeName.equalsIgnoreCase(name)) {
-					return t;
-				}
-			}
-
-			return ActionNameType.WITHOUT;
-		}
-
-		public String getTypeName() {
+		@Override
+		public String toString() {
 			return typeName;
 		}
 	}

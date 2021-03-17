@@ -10,12 +10,12 @@ public final class ActionNameCleaner {
 		}
 
 		if (type == ActionName.ActionNameType.TIME && name.startsWith("[time:")) {
-			String customTime = name.split("]")[0].replace("[time:", "");
+			String customTime = name.split("]", 2)[0].replace("[time:", "");
 			if (!customTime.contains(":")) {
 				return empty;
 			}
 
-			String[] times = customTime.split(":");
+			String[] times = customTime.split(":", 3);
 			if (times.length != 3) {
 				return empty;
 			}
@@ -26,8 +26,8 @@ public final class ActionNameCleaner {
 			return new CleanedName(name, name.replace("json:", ""));
 		}
 
-		String action = name.split("_")[0].replaceAll(type.getTypeName().toLowerCase() + ":|_", "");
-		return new CleanedName(name, name.replace(type.getTypeName().toLowerCase() + ":" + action + "_", ""), action);
+		String action = name.split("_", 2)[0].replaceAll(type.toString() + ":|_", "");
+		return new CleanedName(name, name.replace(type.toString() + ":" + action + "_", ""), action);
 	}
 
 	public static class CleanedName {

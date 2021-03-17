@@ -46,7 +46,7 @@ public abstract class UpdateDownloader {
 					}
 				}
 
-				String versionString = lineWithVersion.split(": ")[1],
+				String versionString = lineWithVersion.split(": ", 2)[1],
 						nVersion = versionString.replaceAll("[^0-9]", ""),
 						cVersion = PLUGIN.getDescription().getVersion().replaceAll("[^0-9]", "");
 
@@ -87,10 +87,9 @@ public abstract class UpdateDownloader {
 
 				Util.logConsole("Downloading new version of AutoMessager...");
 
-				final URL download = new URL(
-						"https://github.com/montlikadani/AutoMessager/releases/latest/download/AutoMessager.jar");
-
-				InputStream in = download.openStream();
+				InputStream in = new URL(
+						"https://github.com/montlikadani/AutoMessager/releases/latest/download/AutoMessager.jar")
+								.openStream();
 				try {
 					Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				} finally {

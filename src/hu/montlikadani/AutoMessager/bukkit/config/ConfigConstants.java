@@ -12,7 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public final class ConfigConstants {
 
 	private static boolean logConsole = false, checkUpdate, downloadUpdates, broadcastEnabled, placeholderapi,
-			rememberToggleToFile, disableMsgsInAfk, useSystemZone, random, bcToConsole;
+			rememberToggleToFile, disableMsgsInAfk, useSystemZone, random, bcToConsole, usePermission;
 
 	private static int listMaxRow, minPlayers;
 
@@ -29,6 +29,7 @@ public final class ConfigConstants {
 		CUSTOM_VARIABLES.clear();
 		EXECUTABLE_COMMANDS.clear();
 
+		usePermission = conf.getBoolean("use-permission");
 		checkUpdate = conf.getBoolean("check-update");
 		downloadUpdates = conf.getBoolean("download-updates");
 		logConsole = conf.getBoolean("logconsole");
@@ -236,5 +237,9 @@ public final class ConfigConstants {
 
 	public static boolean isDownloadUpdates() {
 		return downloadUpdates;
+	}
+
+	public static boolean isUsePermission() {
+		return usePermission;
 	}
 }

@@ -34,7 +34,7 @@ public class Global {
 	}
 
 	public static String centerText(String str, int size) {
-		if (size <= str.length()) {
+		if (str.isEmpty()) {
 			return str;
 		}
 
