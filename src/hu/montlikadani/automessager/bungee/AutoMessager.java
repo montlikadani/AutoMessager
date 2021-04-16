@@ -81,7 +81,7 @@ public class AutoMessager extends Plugin {
 	}
 
 	private void registerCommand() {
-		getProxy().getPluginManager().registerCommand(this, new Command("automessager", "automesager.help", "am") {
+		getProxy().getPluginManager().registerCommand(this, new Command("automessager", "automessager.help", "am") {
 			@Override
 			public void execute(CommandSender s, String[] args) {
 				if (args.length == 0) {
